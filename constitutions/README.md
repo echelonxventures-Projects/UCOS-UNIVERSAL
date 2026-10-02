@@ -144,15 +144,48 @@ Engineering companions: [../engineering/KERNEL-DESIGN.md](../engineering/KERNEL-
 | U109 | Real-time Communications & Contact Centre | P3 | ✅ | [U109-realtime-comms-contact-center](U109-realtime-comms-contact-center/constitution.md) |
 
 ### Phase 2 — Marketplace, finance, logistics
-⬜ U17 Resource · U25 Marketplace · U27 Subscription · U30 Ledger & Finance · U36 Logistics · U59 Generation · U69 Risk · U70 Trust & Reputation
+
+| ID | Universe | Phase | Status | Spec |
+|---|---|---|---|---|
+| U17 | Resource | P2 | ✅ | [U17-resource](U17-resource/constitution.md) |
+| U25 | Marketplace | P2 | ✅ | [U25-marketplace](U25-marketplace/constitution.md) |
+| U27 | Subscription & Billing | P2 | ✅ | [U27-subscription](U27-subscription/constitution.md) |
+| U30 | Ledger & Finance | P2 | ✅ | [U30-ledger-finance](U30-ledger-finance/constitution.md) |
+| U36 | Logistics | P2 | ✅ | [U36-logistics](U36-logistics/constitution.md) |
+| U59 | Generation | P2 | ✅ | [U59-generation](U59-generation/constitution.md) |
+| U69 | Risk | P2 | ✅ | [U69-risk](U69-risk/constitution.md) |
+| U70 | Trust & Reputation | P2 | ✅ | [U70-trust-reputation](U70-trust-reputation/constitution.md) |
 
 ### Phase 3 — Builders, CRM/support, AI v1
-⬜ U32 Loyalty & Incentive · U38 CRM · U39 Support & Case · U49 AI/Model · U50 Prompt · U51 Agent · U71 Dispute & Resolution · U76 Evolution
+
+| ID | Universe | Phase | Status | Spec |
+|---|---|---|---|---|
+| U32 | Loyalty & Incentive | P3 | ⬜ | — |
+| U38 | CRM | P3 | ⬜ | — |
+| U39 | Support & Case | P3 | ⬜ | — |
+| U49 | AI/Model | P3 | ✅ | [U49-ai-model](U49-ai-model/constitution.md) |
+| U50 | Prompt | P3 | ✅ | [U50-prompt](U50-prompt/constitution.md) |
+| U51 | Agent | P3 | ✅ | [U51-agent](U51-agent/constitution.md) |
+| U71 | Dispute & Resolution | P3 | ⬜ | — |
+| U76 | Evolution | P3 | ⬜ | — |
 
 ### Phase 4–6 — Intelligence, verticals
-⬜ U33 Advertising · U41 Content & Media · U45 ERP/Procurement · U46 Workforce/HRMS · U52 Recommendation (P4) · U37 Mobility & Dispatch · U54 Simulation · U55 Digital Twin · U56 Learning (P5) · U47 Manufacturing · U48 Industry packs (P6)
 
-**Progress:** 82 of 109 universes specified (75%). Phases 0 and 1 are fully specified. Communication is complete (U40 + U109). `spec/` checks clean: 109 manifests, 0 errors, and three reference platform definitions (D2C IN+AE, B2B IN, omnichannel IN) compose with 0 gaps. Remaining: 27 planned universes in Phases 2–6.
+| ID | Universe | Phase | Status | Spec |
+|---|---|---|---|---|
+| U33 | Advertising | P4 | ⬜ | — |
+| U41 | Content & Media | P4 | ⬜ | — |
+| U45 | ERP/Procurement | P4 | ⬜ | — |
+| U46 | Workforce/HRMS | P4 | ⬜ | — |
+| U52 | Recommendation | P4 | ⬜ | — |
+| U37 | Mobility & Dispatch | P5 | ⬜ | — |
+| U54 | Simulation | P5 | ⬜ | — |
+| U55 | Digital Twin | P5 | ⬜ | — |
+| U56 | Learning | P5 | ⬜ | — |
+| U47 | Manufacturing | P6 | ⬜ | — |
+| U48 | Industry Packs | P6 | ⬜ | — |
+
+**Progress:** 93 of 109 universes specified (85%). Phases 0 and 1 are fully specified. Communication is complete (U40 + U109). `spec/` checks clean: 109 manifests, 0 errors, and three reference platform definitions (D2C IN+AE, B2B IN, omnichannel IN) compose with 0 gaps. Remaining: 16 planned universes in Phases 2–6.
 
 ## Amendments register (to fold into the master via a governed change)
 
@@ -224,6 +257,7 @@ Engineering companions: [../engineering/KERNEL-DESIGN.md](../engineering/KERNEL-
 | A-64 | U40 | Communication completeness: channel registry (email, SMS, WhatsApp, web and mobile push, in-app, RCS, Telegram, LINE, WeChat, Viber, Messenger, Instagram, voice, video, live chat, postal, broadcast, agent-protocol); in-app notification centre; inbound routing with opt-out first; real-time conversations; broadcast and emergency alerts with dual approval; agent-to-agent protocol. `communication.inapp` and `communication.inbound` join the base capability set. |
 | A-65 | U109 | Real-time Communications & Contact Centre universe: voice, IVR, masked calling, video sessions, live chat, bot hand-off, routing, call-backs, recordings with consent, supervision. |
 | A-66 | spec/ | 23 new manifests (5 capabilities, 12 messaging adapters, the `rtc.provider` port, voice and video adapters, a simulator, contact centre, video sessions). New controls for recording consent and bot disclosure. `targetPhase` added to platform definitions. New reference platform `omnichannel-in` (Phase 4). A negative test confirms the checker blocks mobile, voice and video at Phase 1. |
+| A-67 | U49–U51, U17, U25, U27, U30, U36, U59, U69, U70 | AI & Agents specs (gateway, prompts as code, agent run loop with autonomy levels and kill switch) and the Phase 2 core. Ledger posting rules are idempotent by `(sourceEventId, ruleId)`, which makes the P1 replay (A-19) deterministic. Marketplace payouts respect Temporal return-window holds. Subscription mandates follow RBI e-mandate and SCA MIT rules. Risk falls back to `unknown` and never to `low`. U59 registers `gen.schema.object-types` for `spec/object-types/`. |
 
 ## Open decisions raised by the specs
 

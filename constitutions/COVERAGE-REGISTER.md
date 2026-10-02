@@ -52,7 +52,7 @@
 | Places, hierarchy, addresses, address formats, geocoding | U12 Geography | P0 | ✅ |
 | Jurisdictions (national, subnational, municipal, free zones, supranational, treaty, station, virtual-world, DAO) | U12 (+ U77 authorities) | P0 | ✅ |
 | Zones, geofences, service areas, delivery areas, territories | U12 | P0 | ✅ |
-| Maps, routing, distance matrices, ETA | U36 Logistics (Maps port) | P2 | ⬜ |
+| Maps, routing, distance matrices, ETA | U36 Logistics (Maps port) | P2 | ✅ |
 | Indoor positioning, site maps, warehouse locations | U12 (local frames) + U34 | P2+ | ✅ |
 | Planets and space locations | U12 within U77 frames | P6+ | ✅ |
 
@@ -71,7 +71,7 @@
 |---|---|---|---|
 | Money value type, currencies, FX rates and rate policies, rounding, allocation | U14 Currency & Unit | P0 | ✅ |
 | Units, quantities, dimensions, packaging units, conversions | U14 | P0 | ✅ |
-| Ledger, double entry, accounts, journals, settlement, invoices, credit notes, revenue recognition, period close | U30 Ledger & Finance | P2 | ⬜ |
+| Ledger, double entry, accounts, journals, settlement, invoices, credit notes, revenue recognition, period close | U30 Ledger & Finance | P2 | ✅ |
 | Accounts payable/receivable, expense management, budgeting/FP&A, treasury, fixed assets | U30 (extension planned) + U79 for asset units | P4 | ⬜ |
 | Tax (GST, VAT, sales tax, withholding/TCS, e-invoicing, tax documents) | U31 Tax | P1 | ✅ |
 | Customs duties and landed cost | U90 Global Trade | P2 | ✅ |
@@ -108,8 +108,8 @@
 | Service request catalogue (customer and employee, ITSM requests) | U82 Field Service & Work Mgmt | P5 | ✅ |
 | Work orders, dispatch, technicians, proof of service | U82 | P5 | ✅ |
 | Appointments and bookings | U13 (+ U19, U17 Resource) | P0/P2 | ✅ / ⬜ |
-| Resources (people, vehicles, rooms, machines), capacity, skills | U17 Resource | P2 | ⬜ |
-| Subscriptions, memberships, plans, usage metering and rating, dunning | U27 Subscription | P2 | ⬜ |
+| Resources (people, vehicles, rooms, machines), capacity, skills | U17 Resource | P2 | ✅ |
+| Subscriptions, memberships, plans, usage metering and rating, dunning | U27 Subscription | P2 | ✅ |
 | Entitlements, licences, feature access, quotas, seats | U28 Entitlement | P0–P2 | ✅ |
 | Support cases, tickets, knowledge base, SLAs | U39 Support & Case | P3 | ⬜ |
 | Professional services (time & materials), timesheets | U96 + U19 | P5 | ✅ |
@@ -123,7 +123,7 @@
 | Orders, seller sub-orders, adjustments, cancellations, returns, exchanges | U26 Order | P1 | ✅ |
 | Pricing, price lists, B2B/contract prices, fees, dynamic pricing, quotes | U23 Pricing | P1 | ✅ |
 | Offers, discounts, promotions, coupons, vouchers, BOGO, tiered, free shipping, flash sales, campaigns, bank offers | U22 Offer | P1 | ✅ |
-| Marketplace (sellers, commissions, payouts, seller policies) | U25 Marketplace | P2 | ⬜ |
+| Marketplace (sellers, commissions, payouts, seller policies) | U25 Marketplace | P2 | ✅ |
 | Auctions, best-offer, RFQ/tenders, reverse auctions, negotiation (human and agent) | U91 | P5 | ✅ |
 | B2B commerce (accounts, approvals, punch-out, credit terms) | U23 + U89 + U45 + U100 | P3+ | ✅ / ⬜ |
 | Point of sale (POS), kiosk | U64 channels + U92 devices + core commerce | P5 | ✅ |
@@ -137,7 +137,7 @@
 | Payment gateways/PSPs (Stripe, Adyen, Razorpay, PayU, Network International, PayPal…), methods (cards, UPI, net banking, wallets, BNPL, bank transfer, COD) | U29 Payment (adapters) | P1 | ✅ |
 | Strong customer authentication, tokenisation, mandates/autopay, refunds, reconciliation | U29 | P1 | ✅ |
 | Payouts, split payments, chargebacks/disputes | U29 (P2) + U71 Dispute | P2/P3 | ✅ / ⬜ |
-| Fraud and risk scoring, AML monitoring | U69 Risk | P2 | ⬜ |
+| Fraud and risk scoring, AML monitoring | U69 Risk | P2 | ✅ |
 
 ## J. Operations and supply chain
 | Concept | Home | Phase | Status |
@@ -145,7 +145,7 @@
 | Inventory, stock locations, reservations, lots/serials, cycle counts, transfers | U34 Inventory | P1 | ✅ |
 | Warehouse operations (pick, pack, put-away, waves) | U35 + U34 (WMS pack) | P2 | ✅ 📦 |
 | Fulfilment, sourcing, delivery promises, pickup, digital delivery | U35 | P1 | ✅ |
-| Shipping, carriers, rates, labels, tracking, routing, fleet, last mile | U36 Logistics | P2 | ⬜ |
+| Shipping, carriers, rates, labels, tracking, routing, fleet, last mile | U36 Logistics | P2 | ✅ |
 | Customs, export controls, sanctions screening of goods | U90 | P2 | ✅ |
 | Procurement, suppliers, purchase orders, goods receipt, 3-way match | U45 ERP/Procurement | P4 | ⬜ |
 | Demand planning, replenishment | U34 + U94 | P4 | ✅ |
@@ -170,7 +170,7 @@
 | Advertising, sponsored listings, ad auctions | U33 Advertising | P4 | ⬜ |
 | SEO, URLs, sitemaps, structured data, redirects, hreflang, AI-crawler policy | U87 Web Presence & SEO | P1 | ✅ |
 | Social media: social graph, posts, comments, communities, moderation, publishing to and listening on external networks | U88 Social & Community | P5 | ✅ |
-| Reviews, ratings, reputation, seller and customer trust scores | U70 | P2 | ⬜ |
+| Reviews, ratings, reputation, seller and customer trust scores | U70 | P2 | ✅ |
 | Surveys, NPS, CSAT, forms, feedback | U97 | P3 | ✅ |
 | Personalisation, recommendations, cross-sell, upsell | U52 Recommendation | P4 | ⬜ |
 | Search (keyword, semantic, hybrid), merchandising | U44 | P1 | ✅ |
@@ -190,9 +190,9 @@
 ## M. Intelligence
 | Concept | Home | Phase | Status |
 |---|---|---|---|
-| LLMs, model registry, providers, routing, guardrails, evaluations | U49 AI/Model | P3 | ⬜ |
-| Prompts | U50 | P3 | ⬜ |
-| AI agents, tools (MCP), memory, authority, multi-agent | U51 Agent | P3 | ⬜ |
+| LLMs, model registry, providers, routing, guardrails, evaluations | U49 AI/Model | P3 | ✅ |
+| Prompts | U50 | P3 | ✅ |
+| AI agents, tools (MCP), memory, authority, multi-agent | U51 Agent | P3 | ✅ |
 | Classical ML: features, training, serving, drift, fairness | U94 ML Platform | P2/P4 | ✅ |
 | Recommendation | U52 | P4 | ⬜ |
 | Decisions and rules (decision tables, decision models) | U53 Decision | P1 | ✅ |
@@ -206,7 +206,7 @@
 |---|---|---|---|
 | Capabilities, packs, capability marketplace | U57 | P0 | ✅ |
 | Composition, blueprints, platform definitions | U58 | P0 | ✅ |
-| Generators (SDKs, docs, infrastructure-as-code, tests, mobile builds) | U59 Generation | P2 | ⬜ |
+| Generators (SDKs, docs, infrastructure-as-code, tests, mobile builds) | U59 Generation | P2 | ✅ |
 | Git, repositories, pull requests, CI/CD, artifacts, provenance, definitions-as-code sync | U95 Software Delivery | P0/P3 | ✅ |
 | Workflows, human tasks, sagas | U60 | P1 | ✅ |
 | Events, topics, data contracts for events, replay | U61 | P0 | ✅ |
@@ -226,7 +226,7 @@
 | Gap discovery, completeness | U75 | P0 | ✅ |
 | Privacy, consent, data subject requests, retention, cross-border transfers, records of processing, DPIA, cookies | U66 | P1 | ✅ |
 | Compliance (regulations, controls, posture, regulatory change) | U67 | P1 | ✅ |
-| Risk, fraud, AML transaction monitoring, credit risk signals | U69 Risk | P2 | ⬜ |
+| Risk, fraud, AML transaction monitoring, credit risk signals | U69 Risk | P2 | ✅ |
 | Trust and safety, content moderation | U88 (UGC) + U43 (media) + U69 | P5 | ✅ / ⬜ |
 | Disputes, claims, arbitration, chargebacks, appeals | U71 | P3 | ⬜ |
 | Contracts and legal agreements | U89 | P2 | ✅ |

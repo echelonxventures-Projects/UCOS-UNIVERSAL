@@ -1,0 +1,87 @@
+apiVersion: ucos.io/v1
+kind: Capability
+metadata:
+  id: subscription.core
+  version: 1.0.0
+  universe: U27-subscription
+  steward: ucos:org:steward-subscription
+  purpose: Subscription owns recurring commercial relationships and usage billing.
+  capabilityKind: core
+  maturity: experimental
+  phase: 2
+  scope: tenant
+spec:
+  provides:
+    objectTypes:
+    - ucos.subscription.SubscriptionPlan
+    - ucos.subscription.Subscription
+    - ucos.subscription.UsageRecord
+    - ucos.subscription.RatedCharge
+    - ucos.subscription.BillingRun
+    - ucos.subscription.DunningPlan
+    commands:
+    - CreatePlan
+    - Subscribe
+    - StartTrial
+    - ChangePlan
+    - UpdateQuantity
+    - Pause
+    - Resume
+    - Cancel
+    - ReportUsage
+    - RunBilling
+    - RetryPayment
+    - ApplyCredit
+    queries:
+    - PreviewChange
+    - UpcomingInvoice
+    - UsageSummary
+    - MRR
+    - ARR
+    events:
+    - subscription.subscription.created
+    - subscription.subscription.activated
+    - subscription.subscription.renewed
+    - subscription.subscription.past-due
+    - subscription.subscription.paused
+    - subscription.subscription.canceled
+    - subscription.subscription.plan-changed
+    - subscription.usage.rated
+    - subscription.invoice.issued
+    - subscription.dunning.step
+  requires:
+  - capability: temporal.core
+    version: '>=1 <2'
+  - capability: pricing.engine
+    version: '>=1 <2'
+  - capability: entitlement.core
+    version: '>=1 <2'
+  - capability: payment.core
+    version: '>=1 <2'
+  - capability: ledger.core
+    version: '>=1 <2'
+  - capability: tax.core
+    version: '>=1 <2'
+  - capability: document.core
+    version: '>=1 <2'
+  - capability: communication.core
+    version: '>=1 <2'
+  - capability: decision.core
+    version: '>=1 <2'
+  - capability: currency.core
+    version: '>=1 <2'
+  temporal:
+    kind: S
+    uses:
+    - TR
+    - R
+    - TRG
+    - D
+    - BD
+  certification:
+    gates:
+    - ARCH-*
+    - SEC-*
+    - TEST-*
+    - DOC-*
+    - OBS-*

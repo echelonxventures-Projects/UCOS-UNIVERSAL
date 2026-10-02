@@ -1,0 +1,85 @@
+apiVersion: ucos.io/v1
+kind: Capability
+metadata:
+  id: ledger.core
+  version: 1.0.0
+  universe: U30-ledger-finance
+  steward: ucos:org:steward-ledger-finance
+  purpose: Ledger owns financial truth.
+  capabilityKind: core
+  maturity: experimental
+  phase: 2
+  scope: tenant
+spec:
+  provides:
+    objectTypes:
+    - ucos.ledger.LedgerEntity
+    - ucos.ledger.Account
+    - ucos.ledger.JournalEntry
+    - ucos.ledger.PostingRule
+    - ucos.ledger.Settlement
+    - ucos.ledger.RevenueSchedule
+    - ucos.ledger.Period
+    - ucos.ledger.Reconciliation
+    - ucos.ledger.Invoice
+    commands:
+    - CreateLedgerEntity
+    - DefineAccount
+    - PublishPostingRule
+    - PostManualJournal
+    - ReverseEntry
+    - ClosePeriod
+    - ReopenPeriod
+    - ImportStatement
+    - Reconcile
+    - ScheduleRevenue
+    - RunReplay
+    queries:
+    - TrialBalance
+    - AccountActivity
+    - Balance
+    - FinancialStatements
+    - Aging
+    events:
+    - ledger.journal.posted
+    - ledger.period.closed
+    - ledger.period.reopened
+    - ledger.settlement.completed
+    - ledger.reconciliation.break
+  requires:
+  - capability: currency.core
+    version: '>=1 <2'
+  - capability: temporal.core
+    version: '>=1 <2'
+  - capability: org.core
+    version: '>=1 <2'
+  - capability: tax.core
+    version: '>=1 <2'
+  - capability: payment.core
+    version: '>=1 <2'
+  - capability: order.core
+    version: '>=1 <2'
+  - capability: marketplace.core
+    version: '>=1 <2'
+  - capability: event.core
+    version: '>=1 <2'
+  - capability: audit.core
+    version: '>=1 <2'
+  - capability: compliance.core
+    version: '>=1 <2'
+  temporal:
+    kind: S
+    uses:
+    - CAL
+    - R
+    - D
+    - BD
+  certification:
+    gates:
+    - ARCH-*
+    - SEC-*
+    - TEST-*
+    - DOC-*
+    - OBS-*
+  optional:
+  - capability: stored-value.core

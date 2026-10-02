@@ -7,8 +7,8 @@ A platform factory: platforms (commerce, marketplaces, mobility, media, fintech,
 | [`UCOS-MASTER-ARCHITECTURE.md`](UCOS-MASTER-ARCHITECTURE.md) | The constitution: architecture, laws, meta-model, composition, runtime, trust, experience, operations, roadmap (v1.1+) |
 | [`constitutions/`](constitutions/README.md) | One specification per universe (status table, amendments register), plus the Coverage Register, Temporal Binding Matrix and Industry/Product/Domain catalogue |
 | [`engineering/`](engineering/) | Kernel design and Phase 1 readiness |
-| [`spec/`](spec/README.md) | Machine-readable schemas, capability manifests, rule facts, policies, decisions, reference platform definitions |
-| [`tools/ucos_check.py`](tools/ucos_check.py) | Consistency checker (CI gate) |
+| [`spec/`](spec/README.md) | Machine-readable schemas, capability manifests, object-type schemas, gate catalogue, error registry, rule facts, policies, decisions, reference platform definitions |
+| [`tools/`](tools/) | `ucos_check.py` consistency checker (CI gate) · `gen_manifests.py` manifest source · `gen_registries.py` error registry and object-type schemas |
 | `Chat.txt` | Original source material that the master document consolidates |
 
 ```bash

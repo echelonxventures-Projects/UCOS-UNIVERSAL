@@ -23,7 +23,7 @@
 | CNT-L4 | Age/content ratings are set per jurisdiction scheme before publishing restricted content; access is gated. | Rating required field + entitlement/age gates. |
 
 ## 2. Objects
-`ContentType { id, fields (U04 types), blocks allowed, workflow, rating scheme }` · `Entry { type, locale variants, fields, blocks, status: draft|in-review|scheduled|published|archived, versions, publishWindow: TimeRange, embargo?: TimePoint, seo (U86) }` · `MediaProgramme { kind: series|season|episode|film|live-event, assets (U43), rights [{territory, window: TimeRange, platforms}], ratings [{scheme, rating}], drm: {provider, keyIds} }` · `Playlist/Collection` · `LiveEvent { schedule: TimeRange, ingest, DVR window: Duration }`.
+`ContentType { id, fields (U04 types), blocks allowed, workflow, rating scheme }` · `Entry { type, locale variants, fields, blocks, status: draft|in-review|scheduled|published|archived, versions, publishWindow: TimeRange, embargo?: TimePoint, seo (U86) }` · `MediaProgramme { kind: series|season|episode|film|live-event, assets (U43), rights [{territory, licenceRange: TimeRange, platforms}], ratings [{scheme, rating}], drm: {provider, keyIds} }` · `Playlist/Collection` · `LiveEvent { schedule: TimeRange, ingest, dvrDuration: Duration }`.
 
 ## 3. Commands, Events, APIs
 Commands: `DefineContentType`, `CreateEntry`, `SubmitForReview`, `Approve`, `SchedulePublish`, `Unpublish`, `Localise`, `PackageMedia`, `GrantRights`, `StartLiveEvent`.

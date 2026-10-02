@@ -185,7 +185,7 @@ Engineering companions: [../engineering/KERNEL-DESIGN.md](../engineering/KERNEL-
 | U47 | Manufacturing | P6 | ✅ | [U47-manufacturing](U47-manufacturing/constitution.md) |
 | U48 | Industry Packs | P6 | ✅ | [U48-industry-packs](U48-industry-packs/constitution.md) |
 
-**Progress:** 109 of 109 universes specified (100%). Phases 0 and 1 are specified in depth; Phases 2–6 at v0.1 depth (laws, objects, commands, events, APIs, gap rules, UI). Communication is complete (U40 + U109). `spec/` checks clean: 109 manifests, 0 errors, and three reference platform definitions (D2C IN+AE, B2B IN, omnichannel IN) compose with 0 gaps.
+**Progress:** 109 of 109 universes specified (100%). Phases 0 and 1 are specified in depth; Phases 2–6 at v0.1 depth (laws, objects, commands, events, APIs, gap rules, UI). Communication is complete (U40 + U109). `spec/` checks clean: 165 manifests, 613 object-type schemas, 55 gates, 219 error codes, 0 errors, and three reference platform definitions (D2C IN+AE, B2B IN, omnichannel IN) compose with 0 gaps.
 
 ## Amendments register (to fold into the master via a governed change)
 
@@ -259,6 +259,7 @@ Engineering companions: [../engineering/KERNEL-DESIGN.md](../engineering/KERNEL-
 | A-66 | spec/ | 23 new manifests (5 capabilities, 12 messaging adapters, the `rtc.provider` port, voice and video adapters, a simulator, contact centre, video sessions). New controls for recording consent and bot disclosure. `targetPhase` added to platform definitions. New reference platform `omnichannel-in` (Phase 4). A negative test confirms the checker blocks mobile, voice and video at Phase 1. |
 | A-67 | U49–U51, U17, U25, U27, U30, U36, U59, U69, U70 | AI & Agents specs (gateway, prompts as code, agent run loop with autonomy levels and kill switch) and the Phase 2 core. Ledger posting rules are idempotent by `(sourceEventId, ruleId)`, which makes the P1 replay (A-19) deterministic. Marketplace payouts respect Temporal return-window holds. Subscription mandates follow RBI e-mandate and SCA MIT rules. Risk falls back to `unknown` and never to `low`. U59 registers `gen.schema.object-types` for `spec/object-types/`. |
 | A-68 | U32, U33, U37–U39, U41, U45–U48, U52, U54–U56, U71, U76 | The remaining 16 universes are specified, so all 109 now have constitutions. Points are U84 stored value with U30 liability postings. Support owns cases while U109 owns routing. Every appeal goes to an independent human reviewer. Sponsored items are always labelled. Simulations run only in the `simulation` reality frame. Industry packs add composition but never fork a universe. |
+| A-69 | spec/, tools/ | Machine-readable registries. `spec/certification/gates.yaml` holds 55 gates in 11 families with U74 profiles; every gate referenced anywhere is defined. `spec/registries/errors.yaml` holds 219 codes. `spec/object-types/` holds 613 schemas. The manifest generator moved into the repo as `tools/gen_manifests.py` and now derives `<slug>.core` manifests for the 56 universes without hand-authored ones. The checker enforces gates and registry sync. Naming-rule fixes in the new specs: `window` renamed to `rollingWindow`, `lookback`, `licenceRange`, `arrivalRange`, `biddingRange` and `responseDuration`. |
 
 ## Open decisions raised by the specs
 

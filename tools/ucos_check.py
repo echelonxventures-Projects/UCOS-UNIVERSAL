@@ -7,7 +7,8 @@ spec/rules/core/closure.dl over the facts in spec/ to prove the machine-readable
   1. JSON Schema validity of all schemas, manifests and platform definitions
   2. Registry integrity: unique ids, sole ownership of object types/events (L4), resolvable requires/implements,
      consumed events have producers, controls exist, universes exist, phase ordering, temporal dependency (ARCH-TMP-05),
-     agreement with TEMPORAL-BINDING-MATRIX.md
+     agreement with TEMPORAL-BINDING-MATRIX.md, every referenced certification gate defined (gates.yaml),
+     generated registries (errors.yaml, object-types/) in sync with the specs
   3. Reference composition of every golden PlatformDefinition → deterministic blueprint + gap report
 
 Exit code 0 = no errors and no MANDATORY gaps; 1 otherwise.
@@ -124,6 +125,39 @@ for uid, k in matrix_kind.items():
     ks = {spec_of(packs[c]).get('temporal', {}).get('kind') for c in packs if packs[c]['metadata']['universe'].startswith(uid + '-')}
     if k == 'S' and ks and 'S' not in ks:
         warn(f'{uid}: matrix says S but no pack of this universe declares temporal kind S')
+
+# certification gates (spec/certification/gates.yaml): every referenced gate id and wildcard family is defined
+gcat = load_yaml(os.path.join(SPEC, 'certification', 'gates.yaml'))
+gate_ids = [g['id'] for g in gcat['gates']]
+for d in {x for x in gate_ids if gate_ids.count(x) > 1}:
+    err(f'gate catalogue: duplicate gate id {d}')
+families = set(gcat['families'])
+GATE_RE = re.compile(r'(?<![A-Za-z0-9-])((?:' + '|'.join(sorted(families)) + r')-(?:[A-Z0-9]+-)*\d{2,3})(?![A-Za-z0-9])')
+refs = {}
+for path in glob.glob(os.path.join(ROOT, '**', '*.md'), recursive=True) + glob.glob(os.path.join(SPEC, '**', '*.yaml'), recursive=True):
+    if '/node_modules/' in path or path.endswith('gates.yaml'):
+        continue
+    for gid in GATE_RE.findall(open(path, encoding='utf-8').read()):
+        refs.setdefault(gid, os.path.relpath(path, ROOT))
+for gid, where in sorted(refs.items()):
+    if gid not in gate_ids:
+        err(f'gate {gid} referenced in {where} is not defined in spec/certification/gates.yaml')
+for c in packs:
+    for g in spec_of(packs[c]).get('certification', {}).get('gates', []):
+        fam = g.split('-')[0]
+        if (g.endswith('-*') and fam not in families) or (not g.endswith('-*') and g not in gate_ids):
+            err(f'{c}: certification gate {g} not in the gate catalogue')
+for prof, gs in gcat.get('profiles', {}).items():
+    for g in gs:
+        if (g.endswith('-*') and g[:-2] not in families) or (not g.endswith('-*') and g not in gate_ids):
+            err(f'gate profile {prof}: unknown gate {g}')
+
+# generated registries (errors.yaml, object-types/) must match the specs and manifests
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import gen_registries
+bad, extra = gen_registries.stale(gen_registries.render())
+for p_ in bad + extra:
+    err(f'registry out of date: {p_} (run python3 tools/gen_registries.py)')
 
 # ---------------------------------------------------------------- 3. composition
 def adapters_for(abs_, jur, method):
@@ -251,7 +285,7 @@ for p in sorted(glob.glob(os.path.join(SPEC, 'composition', 'golden', '*.pd.yaml
         json.dump(gr1, open(os.path.join(out, base + '.gaps.json'), 'w'), indent=2, sort_keys=True)
 
 # ---------------------------------------------------------------- report
-print(f'packs: {len(packs)}  object types: {sum(1 for k in owners if k[0]=="objectTypes")}  events: {len(event_producers)}  controls: {len(facts_ctl)}  regulations: {len(facts_reg)}')
+print(f'packs: {len(packs)}  gates: {len(gate_ids)} ({len(refs)} referenced)  object types: {sum(1 for k in owners if k[0]=="objectTypes")}  events: {len(event_producers)}  controls: {len(facts_ctl)}  regulations: {len(facts_reg)}')
 for name, bp, gr in results:
     tenant_caps = sum(1 for c in bp['capabilities'] if c['scope'] == 'tenant')
     print(f'\n== {name} → {bp["id"][:40]}…')

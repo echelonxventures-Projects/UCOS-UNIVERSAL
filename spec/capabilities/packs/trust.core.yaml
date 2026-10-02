@@ -1,0 +1,66 @@
+apiVersion: ucos.io/v1
+kind: Capability
+metadata:
+  id: trust.core
+  version: 1.0.0
+  universe: U70-trust-reputation
+  steward: ucos:org:steward-trust-reputation
+  purpose: Trust owns reputation signals.
+  capabilityKind: core
+  maturity: experimental
+  phase: 2
+  scope: tenant
+spec:
+  provides:
+    objectTypes:
+    - ucos.trust.Review
+    - ucos.trust.ReviewResponse
+    - ucos.trust.Aggregate
+    - ucos.trust.TrustScore
+    - ucos.trust.Badge
+    commands:
+    - RequestReview
+    - SubmitReview
+    - ModerateReview
+    - RespondToReview
+    - ReportReview
+    - RecomputeAggregates
+    - AwardBadge
+    - RevokeBadge
+    events:
+    - trust.review.published
+    - trust.review.removed
+    - trust.aggregate.updated
+    - trust.badge.awarded
+    - trust.badge.revoked
+  requires:
+  - capability: order.core
+    version: '>=1 <2'
+  - capability: party.core
+    version: '>=1 <2'
+  - capability: risk.core
+    version: '>=1 <2'
+  - capability: temporal.core
+    version: '>=1 <2'
+  - capability: product.intelligence
+    version: '>=1 <2'
+  - capability: marketplace.core
+    version: '>=1 <2'
+  - capability: privacy.consent
+    version: '>=1 <2'
+  - capability: compliance.core
+    version: '>=1 <2'
+  optional:
+  - capability: social.core
+  temporal:
+    kind: S
+    uses:
+    - TRG
+    - D
+  certification:
+    gates:
+    - ARCH-*
+    - SEC-*
+    - TEST-*
+    - DOC-*
+    - OBS-*

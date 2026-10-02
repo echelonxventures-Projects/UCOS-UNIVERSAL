@@ -1,0 +1,66 @@
+apiVersion: ucos.io/v1
+kind: Capability
+metadata:
+  id: risk.core
+  version: 1.0.0
+  universe: U69-risk
+  steward: ucos:org:steward-risk
+  purpose: Risk owns scoring and managing risk.
+  capabilityKind: core
+  maturity: experimental
+  phase: 2
+  scope: tenant
+spec:
+  provides:
+    objectTypes:
+    - ucos.risk.RiskModel
+    - ucos.risk.RiskAssessment
+    - ucos.risk.VelocityCounter
+    - ucos.risk.ReviewCase
+    - ucos.risk.ListEntry
+    - ucos.risk.AMLAlert
+    - ucos.risk.RiskRegisterItem
+    commands:
+    - Score
+    - RecordOutcome
+    - OpenReview
+    - DecideReview
+    - AddListEntry
+    - PublishRiskModel
+    - RaiseAMLAlert
+    - FileReport
+    events:
+    - risk.assessment.high
+    - risk.review.decided
+    - risk.label.recorded
+    - risk.aml.alert-raised
+  requires:
+  - capability: ml.core
+    version: '>=1 <2'
+  - capability: decision.core
+    version: '>=1 <2'
+  - capability: context.core
+    version: '>=1 <2'
+  - capability: event.core
+    version: '>=1 <2'
+  - capability: identity.core
+    version: '>=1 <2'
+  - capability: temporal.core
+    version: '>=1 <2'
+  - capability: workflow.core
+    version: '>=1 <2'
+  - capability: observability.core
+    version: '>=1 <2'
+  - capability: compliance.core
+    version: '>=1 <2'
+  temporal:
+    kind: S
+    uses:
+    - D
+  certification:
+    gates:
+    - ARCH-*
+    - SEC-*
+    - TEST-*
+    - DOC-*
+    - OBS-*

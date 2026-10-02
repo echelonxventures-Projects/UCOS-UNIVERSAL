@@ -1,0 +1,90 @@
+apiVersion: ucos.io/v1
+kind: Capability
+metadata:
+  id: marketplace.core
+  version: 1.0.0
+  universe: U25-marketplace
+  steward: ucos:org:steward-marketplace
+  purpose: Marketplace owns multi-sided economics.
+  capabilityKind: core
+  maturity: experimental
+  phase: 2
+  scope: tenant
+spec:
+  provides:
+    objectTypes:
+    - ucos.marketplace.SellerAccount
+    - ucos.marketplace.CommissionPlan
+    - ucos.marketplace.PayoutSchedule
+    - ucos.marketplace.SellerStatement
+    - ucos.marketplace.SellerPerformance
+    - ucos.marketplace.MarketplacePolicy
+    commands:
+    - ApplyAsSeller
+    - CompleteKYB
+    - ApproveSeller
+    - RejectSeller
+    - SignSellerAgreement
+    - ApproveCategory
+    - SetSellerStanding
+    - DefineCommissionPlan
+    - AccrueCommission
+    - ComputePayout
+    - ReleasePayout
+    - HoldPayout
+    - IssueStatement
+    queries:
+    - SellerDashboard
+    - PayableBalance
+    - PerformanceScorecard
+    - NextPayout
+    events:
+    - marketplace.seller.approved
+    - marketplace.seller.suspended
+    - marketplace.seller.reinstated
+    - marketplace.commission.accrued
+    - marketplace.payout.scheduled
+    - marketplace.payout.paid
+    - marketplace.payout.held
+    - marketplace.statement.issued
+  requires:
+  - capability: org.core
+    version: '>=1 <2'
+  - capability: identity.core
+    version: '>=1 <2'
+  - capability: contract.core
+    version: '>=1 <2'
+  - capability: catalog.listing
+    version: '>=1 <2'
+  - capability: order.core
+    version: '>=1 <2'
+  - capability: payment.core
+    version: '>=1 <2'
+  - capability: tax.core
+    version: '>=1 <2'
+  - capability: decision.core
+    version: '>=1 <2'
+  - capability: risk.core
+    version: '>=1 <2'
+  - capability: temporal.core
+    version: '>=1 <2'
+  - capability: entitlement.core
+    version: '>=1 <2'
+  temporal:
+    kind: S
+    uses:
+    - POL
+    - CAL
+    - R
+    - TR
+    - SLA
+  certification:
+    gates:
+    - ARCH-*
+    - SEC-*
+    - TEST-*
+    - DOC-*
+    - OBS-*
+  optional:
+  - capability: ledger.core
+  - capability: trust.core

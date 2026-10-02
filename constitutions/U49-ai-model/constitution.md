@@ -26,14 +26,14 @@
 | AI-L7 | AI outputs shown to people are labelled as AI-generated where law or policy requires, and outputs used for decisions about people are explainable and contestable. | UI obligation + U53 decision logs. |
 
 ## 2. Ontology
-- `Provider { id, kind: hosted-api|self-hosted|on-device, vendor, regions, dataTerms: {training: none|opt-in|yes, retention: zero|days, residency}, contractRef (U89), status }`
+- `Provider { id, kind: hosted-api|self-hosted|on-device, vendor, regions, dataTerms: {training: none|opt-in|yes, providerRetention: zero|Duration, residency}, contractRef (U89), status }`
 - `Model { id (e.g. model.anthropic.claude-opus-5-5), provider, providerModelId, modality: [text, vision, audio, embedding, rerank, code], capabilities: [reasoning, tool-use, long-context, structured-output, …], contextWindow, residency, dataPolicy, price: PriceRef (U23 price list, temporal validity), evaluations: [EvalResultRef], card: ModelCardRef, riskNotes, status: experimental|certified|deprecated }` (shared registry with U94 classical models).
 - `Route { id, rules: DecisionRef (inputs: task, data class, latency budget, tenant AI profile, residency, cost tier), fallbacks: [ModelRef], circuit policy }` — seed routing per master §21.2: `claude-opus-5-5` (complex reasoning/agent planning), `claude-sonnet-5-5` (general/tool use), `claude-haiku-4-5-20251001` (high-volume classification/extraction), self-hosted for on-prem/PHI-restricted tenants.
 - `Guardrail { id, stage: input|output|tool-call, kind: pii-redaction|prompt-injection-detection|untrusted-content-isolation|toxicity|jailbreak|schema-validation|grounding-check|copyright|secret-leak, action: block|redact|flag|route-to-human, config }`
 - `AIUseCase { id, owner capability, purpose (U66), riskClass: minimal|limited|high|prohibited (+ internal tier), dataClassesAllowed, humanOversight: none|review-sample|approve-each|approve-above-threshold, evalSuite, route, guardrails, userDisclosure: bool, status }`
 - `EvalSuite { id, useCase, datasets (U93 data products; golden sets), metrics (accuracy, F1, faithfulness, toxicity, bias slices), thresholds, cadence: Recurrence }`, `EvalResult { suite, model@version, prompt@version, scores, at: TimePoint }`
 - `ModelCard { model, intendedUse, limitations, trainingDataSummary (provider-supplied), evals, risks, contacts }`
-- `AIBudget { scope: tenant|use-case|agent, limit: Money, window: Duration, onExceed: block|downgrade-route|alert }`
+- `AIBudget { scope: tenant|use-case|agent, limit: Money, rollingWindow: Duration, onExceed: block|downgrade-route|alert }`
 - `AIIncident { useCase, kind: harmful-output|data-leak|hallucination-impact|bias|security, severity, reportedAt: TimePoint, actions, notifications (EU AI Act serious incident reporting where applicable) }`
 
 ## 3. AI Gateway (runtime contract)

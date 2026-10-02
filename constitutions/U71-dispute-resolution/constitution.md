@@ -23,7 +23,7 @@
 | DSP-L4 | Chargeback representments are submitted before the network deadline with complete evidence or are accepted deliberately (no silent loss). | Deadline alarms; decision record. |
 
 ## 2. Objects
-`Dispute { id, kind: claim|chargeback|appeal|contract, parties [{party, role: claimant|respondent|operator}], subject refs, reason code (network/category), amount?: Money, status, deadlines [{name, at: TimePoint}], evidence [DocumentRef], decision {outcome, reasons, decidedBy, at: TimePoint}, remedies [{command, target, result}] }` · `Appeal` (dispute kind `appeal` with `appealedDecision` ref) · `ReasonCode { network/category, code, required evidence, response window: Duration }`.
+`Dispute { id, kind: claim|chargeback|appeal|contract, parties [{party, role: claimant|respondent|operator}], subject refs, reason code (network/category), amount?: Money, status, deadlines [{name, at: TimePoint}], evidence [DocumentRef], decision {outcome, reasons, decidedBy, at: TimePoint}, remedies [{command, target, result}] }` · `Appeal` (dispute kind `appeal` with `appealedDecision` ref) · `ReasonCode { network/category, code, required evidence, responseDuration: Duration }`.
 
 ## 3. Lifecycle
 `opened → awaiting_response → under_review → decided → (appealed → under_review → decided) → closed`. Chargebacks: `received → evidence → submitted → won|lost` (pre-arbitration/arbitration as extra states).

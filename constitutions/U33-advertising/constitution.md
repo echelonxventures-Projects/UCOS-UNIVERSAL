@@ -23,7 +23,7 @@
 | ADV-L4 | Spend never exceeds budget beyond declared tolerance; invalid traffic is filtered and credited. | Pacing controller; IVT filters (U69). |
 
 ## 2. Objects
-`AdvertiserAccount { organization, billing (prepaid wallet U84 / invoice U30), status }` · `Campaign { advertiser, objective, flight: TimeRange, budget {daily/total: Money}, pacing, status }` · `AdGroup { campaign, placements (search-top, PDP, home, recs, display), targeting {keywords, categories, audiences (consented), geo (U12), daypart (Temporal)}, bid {strategy, amount: Money} }` · `Creative { kind: sponsored-product|banner|video, assets (U43), review status }` · `AuctionLog { placement, request ctx (non-PII), candidates, winner, price, at: TimePoint }` · `AttributionResult { campaign, window: Duration, impressions, clicks, orders, revenue: Money }`.
+`AdvertiserAccount { organization, billing (prepaid wallet U84 / invoice U30), status }` · `Campaign { advertiser, objective, flight: TimeRange, budget {daily/total: Money}, pacing, status }` · `AdGroup { campaign, placements (search-top, PDP, home, recs, display), targeting {keywords, categories, audiences (consented), geo (U12), daypart (Temporal)}, bid {strategy, amount: Money} }` · `Creative { kind: sponsored-product|banner|video, assets (U43), review status }` · `AuctionLog { placement, request ctx (non-PII), candidates, winner, price, at: TimePoint }` · `AttributionResult { campaign, lookback: Duration, impressions, clicks, orders, revenue: Money }`.
 
 ## 3. Commands, Events, APIs
 Commands: `CreateCampaign`, `CreateAdGroup`, `SubmitCreative`, `ReviewCreative`, `ServeAd(placement, ctx)` (≤ 20 ms), `RecordImpression|Click`, `Attribute`, `PauseCampaign`, `BillSpend`.

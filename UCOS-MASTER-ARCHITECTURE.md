@@ -4,7 +4,7 @@
 | Field | Value |
 |---|---|
 | Document ID | `UCOS-MASTER-ARCH` |
-| Version | 1.2.0 (71 amendments applied, A-01…A-71; see §35) |
+| Version | 1.2.0 (72 amendments applied, A-01…A-72; see §35) |
 | Status | Canonical — supersedes every architecture fragment in `Chat.txt` |
 | Date | 2026-10-03 |
 | Audience | Platform architects, engineers, designers, SRE, security, compliance, and AI coding agents |
@@ -4269,6 +4269,7 @@ When those four properties hold, any new team or agent can read this document, g
 | A-69 | Gate catalogue (55 gates, 11 families, profiles), error registry, 613 object-type schemas, and derived manifests for every universe; the checker enforces gate references and registry sync | §28.2, §34, spec/ |
 | A-70 | ADR files 001–020; STRIDE threat models with enforced manifest links | §20, §34, docs/ |
 | A-71 | Wireframes W17–W40 for the new universes | §25 |
+| A-72 | Business pack: cost model, commercial model, team/budget/roadmap plan | §32, companion docs |
 
 ---
 *End of UCOS-MASTER-ARCHITECTURE v1.2.0*

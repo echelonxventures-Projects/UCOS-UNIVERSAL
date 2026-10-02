@@ -9,6 +9,7 @@ A platform factory: platforms (commerce, marketplaces, mobility, media, fintech,
 | [`engineering/`](engineering/) | Kernel design and Phase 1 readiness |
 | [`docs/adr/`](docs/adr/README.md) | Architecture Decision Records (ADR-001…020) |
 | [`docs/threat-models/`](docs/threat-models/README.md) | STRIDE threat models for Phase 0–1 surfaces |
+| [`business/`](business/) | Cost model and unit economics, commercial model, team, budget and roadmap plan |
 | [`spec/`](spec/README.md) | Machine-readable schemas, capability manifests, object-type schemas, gate catalogue, error registry, rule facts, policies, decisions, reference platform definitions |
 | [`tools/`](tools/) | `ucos_check.py` consistency checker (CI gate) · `gen_manifests.py` manifest source · `gen_registries.py` error registry and object-type schemas |
 | `Chat.txt` | Original source material that the master document consolidates |

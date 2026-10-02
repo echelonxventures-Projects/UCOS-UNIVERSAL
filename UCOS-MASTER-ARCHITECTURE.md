@@ -4,7 +4,7 @@
 | Field | Value |
 |---|---|
 | Document ID | `UCOS-MASTER-ARCH` |
-| Version | 1.1.0 (66 amendments applied, A-01…A-66; see §35) |
+| Version | 1.2.0 (71 amendments applied, A-01…A-71; see §35) |
 | Status | Canonical — supersedes every architecture fragment in `Chat.txt` |
 | Date | 2026-10-03 |
 | Audience | Platform architects, engineers, designers, SRE, security, compliance, and AI coding agents |
@@ -2158,7 +2158,7 @@ PDP (Cedar) at the gateway and command bus. Policies are compiled per blueprint 
 | Supply chain | Dependency compromise | SBOM, vulnerability scanning, pinned digests, reproducible builds |
 | Operations | Misconfiguration, secret leakage | GitOps, OPA admission policies, secret scanning, workload identity |
 
-Every capability pack ships a threat model (`docs/threat-model.md`). Gate `SEC-TM-001` checks that it exists and was reviewed.
+Every capability pack ships a threat model (`docs/threat-model.md`). Gate `SEC-TM-001` checks that it exists and was reviewed. The models live in `docs/threat-models/`.
 
 ### 19.5 Cryptography
 
@@ -3034,6 +3034,494 @@ Behaviour: KPI tiles drill into filtered lists. Gap and approval counts are alwa
 └────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### v1.2 additions — universe screens (W17–W40)
+
+These screens cover the universes specified in v1.2 (A-71). They follow the same conventions as W1–W16. Each one names the universes whose commands and queries it uses, so a screen never invents behaviour that no universe owns.
+
+### W17 — Support · Agent desktop
+
+*Universes: U39 Support, U109 Contact Centre, U40, U26, U51*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Support ▸ Agent desktop    Meera (Available ●)    Queue orders-hi: 4 waiting, EWT 1m 40s    [Break ▾]      │
+├──────────────────────────────┬─────────────────────────────────────────────────────────────────────────────┤
+│ My work (6)                  │ Case #C-88213  Where is my order?  P2   First-response SLA ● 3m 12s left    │
+│                              │ Priya S. (verified ✔) · 14 orders · Gold · hi-IN                            │
+│ ● Chat Priya S. WISMO 00:42  │ Order ORD…8823 · shipped 30 Sep · Shiprocket · NDR: address incomplete      │
+│   Case #C-88213  SLA 3m left │ Promise 03 Oct by 9 pm (at risk)                                            │
+│ ○ Voice +91-98…  Refund 02:10│ ── Conversation (WhatsApp) ──                                               │
+│ ○ Email Ali K.  Damaged  1h  │  Priya 10:02  mera order kab aayega?                                        │
+│ ○ WhatsApp  Return status    │  Bot   10:02  Out for delivery today                                        │
+│ ○ Callback 14:30  Rahul      │  Priya 10:03  talk to human                                                 │
+│                              │  ✦ Suggested reply (AI · grounded: KB-112, NDR status)                      │
+│ [Next interaction]           │    "Hi Priya, the courier needs a landmark…" [Use] [Edit] [Discard]         │
+│                              │ Actions: [Fix address & reattempt] [Reship] [Refund] [Escalate → dispute]   │
+│                              │ Macro [NDR fix ▾]  Reply ▸ ______________  [Send] [Resolve ▾]               │
+└──────────────────────────────┴─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### W18 — Contact centre · Supervisor wallboard
+
+*Universes: U109, U39, U72*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Contact Centre ▸ Wallboard ▸ Bazaar India        Live ●   Business hours ● open (closes 21:00 IST)         │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Queue            Waiting  Longest  SLA(20s)  Agents (avail/busy/wrap)  Abandon  CSAT                       │
+│ orders-hi            4    01:40     88% ⚠      3 / 11 / 2                3.1%    4.5                       │
+│ orders-en            1    00:12     96% ✔      5 /  9 / 1                1.2%    4.6                       │
+│ payments             0    00:00     99% ✔      2 /  3 / 0                0.4%    4.7                       │
+│ voice-ivr            7    03:05     71% ✖      1 /  8 / 3                9.8%    4.1                       │
+├────────────────────────────────────────────────────┬───────────────────────────────────────────────────────┤
+│ Agents                                             │ Alerts & actions ✦                                    │
+│ Meera  Chat ×2 04:12 ● on SLA                      │ ⚠ voice-ivr SLA breach forecast in 6 min              │
+│ Arjun  Voice  07:55 ⚠ long                         │   Suggest: move 2 agents from orders-en (skills ok)   │
+│   [Monitor][Whisper][Barge]                        │   [Apply with approval]  [Ignore]                     │
+│ Sana   Wrap-up 00:45                               │ ℹ Callback backlog 9 (oldest 18m) → [Open callbacks]  │
+│ Dev    Break 12:00 ⚠ over break                    │                                                       │
+└────────────────────────────────────────────────────┴───────────────────────────────────────────────────────┘
+```
+
+### W19 — In-app notification centre (mobile)
+
+*Universes: U40 communication.inapp*
+
+```text
+┌───────────────────────────────────────┐
+│ ←  Notifications              ⚙  ✓ all│
+│ [All] [Orders] [Offers] [Account]     │
+├───────────────────────────────────────┤
+│ ● Your order is out for delivery      │
+│   ORD…8823 · today by 9 pm   [Track]  │
+│   2 min ago                           │
+├───────────────────────────────────────┤
+│ ● Refund of ₹1,299 issued             │
+│   to UPI ****@okhdfc · 3–5 days       │
+│   1 h ago                             │
+├───────────────────────────────────────┤
+│ ○ Diwali offer: 20% on home decor     │
+│   Ends Sun 23:59 IST     [View]       │
+│   (marketing · you opted in) Yesterday│
+├───────────────────────────────────────┤
+│ ○ New sign-in on Chrome · Pune        │
+│   Not you? [Secure account]  2 days   │
+└───────────────────────────────────────┘
+```
+
+### W20 — Ledger · Period close cockpit
+
+*Universes: U30 Ledger & Finance, U13 (fiscal calendar), U31*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Finance ▸ Ledger ▸ Bazaar Retail Pvt Ltd (INR)   Period Sep 2026 (FY26-27 P06)   CLOSING   [Close ▸]       │
+├──────────────────────────────────────────────────────┬─────────────────────────────────────────────────────┤
+│ Close checklist                     Owner  Status    │ Trial balance (as of 30 Sep 23:59 IST)              │
+│ 1 Sub-ledgers posted                sys    ✔         │ Account                     Debit        Credit     │
+│ 2 PSP clearing reconciled (RZP)     Anil   ✔         │ 1100 Bank — HDFC           ₹4.21 Cr                 │
+│ 3 COD remittance reconciled         Anil   ⚠ 3 breaks│ 1210 PSP clearing — RZP    ₹0.18 Cr                 │
+│ 4 Revenue schedules run             sys    ✔         │ 1220 COD clearing          ₹0.06 Cr   ⚠             │
+│ 5 Commissions accrued               sys    ✔         │ 2100 Seller payables                    ₹2.94 Cr    │
+│ 6 GST payable vs GSTR-1 draft       Neha   ● doing   │ 2300 GST payable                        ₹0.41 Cr    │
+│ 7 Accruals, manual journals         Neha   ○         │ 4100 Commission revenue                 ₹0.37 Cr    │
+│ 8 Trial balance review              CFO    ○         │ … 46 more accounts                                  │
+│                                                      │ Σ  ₹9.84 Cr      ₹9.84 Cr   balanced ✔              │
+├──────────────────────────────────────────────────────┴─────────────────────────────────────────────────────┤
+│ Journal JE-2026-09-118220   source payment.payment-intent.captured (evt 01J…)   rule psp-capture@3         │
+│   Dr 1210 PSP clearing ₹1,299.00   Cr 2050 Customer advances ₹1,299.00   [Open source event] [Reverse…]    │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### W21 — Marketplace operator · Payout run
+
+*Universes: U25 Marketplace, U29, U30, U13*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Marketplace ▸ Payouts ▸ Run 2026-10-08 (settlement calendar T+7 after delivery)     Status: DRAFT          │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Sellers 1,284   Gross ₹3.12 Cr   Commissions ₹0.34 Cr   Fees ₹0.06 Cr   TCS ₹0.03 Cr   Holds ₹0.11 Cr      │
+│ Net payable ₹2.58 Cr   Bank file: HDFC H2H   Approval: 2 of 2 required (SoD: maker ≠ checker)              │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Seller            Delivered   Returns   Commission   Holds (reason)            Net         Status          │
+│ TechMart          ₹14.9L      ₹0.3L     ₹1.6L        —                         ₹12.6L      ✔ ready         │
+│ Kala Crafts       ₹2.1L       ₹0.0L     ₹0.2L        ₹0.4L (open dispute D-77) ₹1.5L       ⚠ partial       │
+│ Urban Shoes       ₹6.3L       ₹1.1L     ₹0.7L        ₹4.5L (risk review)       ₹0.0L       ⛔ held          │
+│ [Export statement] [Simulate] [Submit for approval]   Next run: Thu 15 Oct 10:00 IST                       │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### W22 — Subscription · Manage my plan (customer)
+
+*Universes: U27 Subscription, U28, U23, U29*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Account ▸ Subscription ▸ Bazaar Plus (annual)         Renews 12 Mar 2027 · UPI AutoPay mandate ✔           │
+├────────────────────────────────────────────────────┬───────────────────────────────────────────────────────┤
+│ Change plan                                        │ Preview: switch to Plus Family today                  │
+│ ( ) Plus Monthly   ₹149 / month                    │ Unused Annual credit (148 of 365 days)   −₹607.84     │
+│ (●) Plus Annual    ₹1,499 / year  ← current        │ Family annual, prorated to 12 Mar       ₹891.04       │
+│ ( ) Plus Family    ₹2,199 / year (4 members)       │ GST 18%                                   ₹160.39     │
+│                                                    │ Due today                                 ₹443.59     │
+│ [Pause up to 3 months]   [Cancel subscription]     │ Next renewal 12 Mar 2027                ₹2,199.00     │
+│ Cancel is one step; no call needed (SUB-L2).       │ Pre-debit notice will be sent 24 h before.            │
+│                                                    │ [Confirm change]                                      │
+└────────────────────────────────────────────────────┴───────────────────────────────────────────────────────┘
+```
+
+### W23 — Logistics · NDR action queue
+
+*Universes: U36 Logistics, U35, U40*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Logistics ▸ Delivery exceptions (NDR)    Open 142 · Due today 38 · Auto-resolved by buyer link 61%         │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ AWB       Carrier     Reason                 Tries  Buyer action           Deadline  Action                │
+│ 1Z…4471   Shiprocket  Address incomplete     1      Landmark added ✔       14:00     [Reattempt]           │
+│ DL…0921   Delhivery   Customer unavailable   2      Reschedule → Sat 10–1  Sat       [Confirm]             │
+│ BD…7310   BlueDart    Refused (COD)          1      —                      18:00     [Call] [RTO]          │
+│ XB…5512   Xpressbees  Not serviceable        1      —                      today     [Switch carrier]      │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ ✦ 9 refusals match a COD-abuse pattern (same device, 3 pincodes) → [Open risk review]   RTO rate 7d: 4.8%  │
+│   (target 5%)                                                                                              │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### W24 — Risk · Review queue
+
+*Universes: U69 Risk, U53, U26, U29*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Risk ▸ Reviews ▸ checkout   Waiting 23   SLA 15 min (● 2 near breach)   Model checkout-gbm v7 + rules      │
+├────────────────────────────────────────────┬───────────────────────────────────────────────────────────────┤
+│ Queue                                      │ ORD…9012  iPhone 17 · Card (new) · Ship to Bengaluru · Bill to│
+│ ● ORD…9012  score 86  ₹42,999  2m          │   Pune                                                        │
+│ ● ORD…9020  score 79  ₹8,450   6m          │ Top reasons (explainable, RSK-L1)                             │
+│ ○ ORD…9031  score 71  ₹3,999   9m          │   +31 card first seen, 3 attempts in 10 min (velocity)        │
+│                                            │   +22 device linked to 2 chargebacks (graph)                  │
+│ Filters: [score ≥70] [method: card]        │   +14 shipping ≠ billing city, new account (<1 day)           │
+│                                            │   −8  verified phone, passkey login                           │
+│                                            │ Evidence graph: device ── card ── 2 accounts ── chargeback    │
+│                                            │ [Approve] [Decline] [Ask for verification] [Escalate]  Reason │
+│                                            │   code [▾]                                                    │
+└────────────────────────────────────────────┴───────────────────────────────────────────────────────────────┘
+```
+
+### W25 — Product page · Reviews and Q&A
+
+*Universes: U70 Trust, U21, U49 (summary)*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ PDP ▸ Ratings & reviews     ★★★★☆ 4.3 (2,184 ratings · 612 reviews)   How ratings are calculated ⓘ         │
+├────────────────────────────────────────┬───────────────────────────────────────────────────────────────────┤
+│ 5 ★ ████████████████  58%              │ ✦ Customers say (AI summary, from 612 reviews)                    │
+│ 4 ★ ███████           24%              │   Battery lasts 2 days; camera good in daylight; some report      │
+│ 3 ★ ███                9%              │   heating while gaming.   [See reviews mentioning heating]        │
+│ 2 ★ █                  3%              │ Filters: [Verified purchase ✔] [With photos] [Language: all ▾]    │
+│ 1 ★ ██                 6%              │   [Sort: Most helpful ▾]                                          │
+│                                        │ ★★★★★ "Great value"  — Ankit · Verified purchase · Bengaluru · 2  │
+│ [Write a review] (verified buyers)     │   Oct                                                             │
+│                                        │   Photos ▢▢   Helpful (41)  Report                                │
+│                                        │   Seller response: Thanks Ankit! …                                │
+└────────────────────────────────────────┴───────────────────────────────────────────────────────────────────┘
+```
+
+### W26 — AI · Use-case registry and release gate
+
+*Universes: U49 AI/Model, U50 Prompt, U74*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Intelligence ▸ AI use cases ▸ support.reply-suggestion   Risk: limited (EU AI Act Art. 50)   Owner: Support│
+├────────────────────────────────────────────────────┬───────────────────────────────────────────────────────┤
+│ Purpose: draft agent replies grounded in KB + order│ Release gate for prompt v12 → production              │
+│ Data classes allowed: PII (masked), ORDER          │ AI-UC-01   use case registered           ✔            │
+│ Human oversight: agent must accept/edit (L1)       │ AI-PROMPT-01 golden tests 48/48           ✔           │
+│ Routes                                             │ AI-EVAL-01  groundedness 0.94 (≥0.92)    ✔            │
+│   primary  claude-sonnet-5-5   (IN residency ✔)    │             helpfulness  4.4 (≥4.2)      ✔            │
+│   fallback claude-haiku-4-5-20251001               │             bias slices: hi/en/ta Δ<0.03 ✔            │
+│ Budget: $40/day · used $12.10                      │ AI-REDTEAM-01 injection suite 212/212     ✔           │
+│ Guardrails: PII-out filter, prompt-injection, tone │ AI-CARD-01  model card present            ✔           │
+│                                                    │ [Promote to 10% canary]  [Compare v11 ↔ v12]          │
+└────────────────────────────────────────────────────┴───────────────────────────────────────────────────────┘
+```
+
+### W27 — CRM · Pipeline board
+
+*Universes: U38 CRM, U23 (CPQ), U89*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ CRM ▸ Pipeline: B2B distribution   Owner: me ▾   FY27 Q3 (fiscal)   Commit ₹1.9 Cr of quota ₹2.4 Cr        │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Qualify (12) ₹0.8 Cr   │ Proposal (7) ₹1.1 Cr   │ Negotiation (4) ₹0.9 Cr │ Won (9) ₹1.2 Cr                │
+│ ──────────────────────┼────────────────────────┼─────────────────────────┼──────────────────────           │
+│ Sharma Traders ₹12L   │ Apex Hotels ₹38L       │ Metro Mart ₹55L          │ City Pharma ₹22L ✔             │
+│   next: demo Tue      │  quote Q-118 sent      │  discount 14% ⚠ approval │  → order ORD…7731              │
+│ Green Foods ₹6L       │ Nova Clinics ₹21L      │ ✦ risk: no contact 12d   │                                │
+│   ✦ score 72          │  expires 10 Oct        │                          │                                │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ [+ Opportunity]  [Log call]  [Create quote]   Forecast: commit ₹1.9 Cr · best case ₹2.6 Cr · pipeline      │
+│   coverage 2.8×                                                                                            │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### W28 — Loyalty · Member wallet (mobile)
+
+*Universes: U32 Loyalty, U84 Stored Value*
+
+```text
+┌───────────────────────────────────────┐
+│ ←  Bazaar Rewards                     │
+├───────────────────────────────────────┤
+│  GOLD member                          │
+│  4,820 points  ≈ ₹482                 │
+│  1,200 pending (after return window)  │
+│  ████████████░░░░ 3,180 to Platinum   │
+│  Tier year ends 31 Mar 2027           │
+├───────────────────────────────────────┤
+│ ⚠ 600 points expire 31 Oct  [Use now] │
+├───────────────────────────────────────┤
+│ Challenges                            │
+│  Review 3 purchases   ●●○  +150 pts   │
+│  Refer a friend       code PRIYA50    │
+├───────────────────────────────────────┤
+│ History                               │
+│  +129  Order ORD…8823      pending    │
+│  −500  Redeemed at checkout  28 Sep   │
+└───────────────────────────────────────┘
+```
+
+### W29 — Frame registry
+
+*Universes: U77 Existence, Reality & Frame*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Platform ▸ Frames of reference     Default: earth-physical (UTC, Gregorian, ISO 4217, SI, BCP 47)          │
+├────────────────────────────────────────┬───────────────────────────────────────────────────────────────────┤
+│ Realities                              │ Frame: mars-surface-ops   Status: proposed → review               │
+│ ● physical (production)                │ Body: Mars   Spatial: Mars 2000 (IAU)  Time scale: MTC            │
+│ ● simulated (sandbox cells)            │ Calendar system: Darian (synthetic test ✔)                        │
+│ ● hypothetical (what-if)               │ Monetary system: inherited (ISO 4217)                             │
+│ ○ virtual: metaverse-X (proposed)      │ Unit system: SI   Language system: BCP 47                         │
+│                                        │ Conversions: UTC↔MTC (pack mars-time@1, certified ✔)              │
+│ Bodies                                 │ Light-time facts: Earth↔Mars 3–22 min (TemporalRef)               │
+│ ● Earth   ○ Moon   ○ Mars (registered) │ Gates: ARCH-FRM-01 ✔  ARCH-FRM-02 ✔  ARCH-TMP-04 ✔                │
+│                                        │ [Submit to Architecture Board]                                    │
+└────────────────────────────────────────┴───────────────────────────────────────────────────────────────────┘
+```
+
+### W30 — Coverage dashboard (`ucos coverage`)
+
+*Universes: COVERAGE-REGISTER, INDUSTRY-PRODUCT-DOMAIN-CATALOGUE, U48*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Platform ▸ Coverage    Universes 109/109 specified ✔   Manifests 165 (56 experimental)   Checker ● 0 errors│
+├────────────────────────────────────────────────────┬───────────────────────────────────────────────────────┤
+│ Standards coverage                                 │ By phase           specified  manifests  certified    │
+│ ISIC Rev.4 divisions     88 / 88  ██████████ 100%  │ P0 foundations       23         ✔ hand     ○          │
+│ UN CPC 2.1 divisions     71 / 71  ██████████ 100%  │ P1 commerce          30         ✔ hand     ○          │
+│ APQC PCF categories      13 / 13  ██████████ 100%  │ P2 marketplace/fin    8         ◐ derived  ○          │
+│ Industry packs (GA)       2 / 10  ██░░░░░░░░  20%  │ P3 builders/AI       14         ◐ derived  ○          │
+│ Gates defined             55  (33 referenced) ✔    │ P4–P6 verticals      34         ◐ derived  ○          │
+│                                                    │ [Open gaps] [Export register]                         │
+└────────────────────────────────────────────────────┴───────────────────────────────────────────────────────┘
+```
+
+### W31 — Dispute workbench
+
+*Universes: U71 Dispute, U29, U25, U42*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Disputes ▸ CB-2026-4471  Chargeback (Visa 13.1 not received)  ₹8,450   Respond by 06 Oct 23:59 IST ⚠ 3d    │
+├──────────────────────────────────────────────────────┬─────────────────────────────────────────────────────┤
+│ Timeline                                             │ Evidence (auto-collected)                           │
+│ 28 Sep  Order placed ORD…7790 (card, 3DS ✔)          │ ✔ Order snapshot & invoice (U42, hash ok)           │
+│ 30 Sep  Shipped · Delhivery AWB DL…221               │ ✔ Proof of delivery: OTP + photo                    │
+│ 01 Oct  Delivered · OTP verified ✔ · geo-stamp       │ ✔ Customer chat 01 Oct "received, thanks"           │
+│ 02 Oct  Chargeback received (PSP webhook)            │ ✔ 3DS authentication result                         │
+│ 03 Oct  ✦ Evidence pack assembled (5 items)          │ ✦ Win likelihood 82% → recommend represent          │
+│                                                      │ [Represent] [Accept] [Ask seller for more]          │
+└──────────────────────────────────────────────────────┴─────────────────────────────────────────────────────┘
+```
+
+### W32 — Product configurator
+
+*Universes: U78 Product Configuration, U23, U20*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Configure: Modular Sofa "Kali"                          Price updates live · Delivery est. 18–21 Oct       │
+├────────────────────────────────────────────────────────┬───────────────────────────────────────────────────┤
+│ [ 3D / image preview of current configuration ]        │ Summary                                           │
+│                                                        │ Base 3-seater                ₹54,000              │
+│ Shape     ( ) 2-seater  (●) 3-seater  ( ) L-shape      │ Linen grey                       ₹0               │
+│ Fabric    (●) Linen grey  ( ) Velvet green (+₹6,000)   │ Teak legs                        ₹0               │
+│ Legs      (●) Teak  ( ) Black metal                    │ Lumbar ×2                    ₹1,800               │
+│ Cushions  [x] Extra lumbar ×2 (+₹1,800)                │ GST 18%                     ₹10,044               │
+│ ✖ Velvet green unavailable with teak legs (rule R-12)  │ Total                       ₹65,844               │
+│                                                        │ BOM: 14 parts · all in stock ✔                    │
+│                                                        │ [Add to cart]  [Save design]  [Share]             │
+└────────────────────────────────────────────────────────┴───────────────────────────────────────────────────┘
+```
+
+### W33 — Warranty claim
+
+*Universes: U80 Warranty & After-sales, U79, U82*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ My products ▸ Washing machine WM-8K (WM8K-22091…)   Warranty ● active until 14 Feb 2028 (+1y extended)     │
+├────────────────────────────────────────────────────┬───────────────────────────────────────────────────────┤
+│ Raise a claim                                      │ Coverage check                                        │
+│ Problem   [Not spinning ▾]                         │ ✔ Within warranty (purchase 15 Feb 2025, invoice)     │
+│ Since     [02 Oct 2026]                            │ ✔ Part: motor & drum (covered)                        │
+│ Photos/video  ▢ ▢  [+ Upload]                      │ ○ Labour: covered by extended plan                    │
+│ Error code  E21                                    │ Next step: technician visit                           │
+│ ✦ Troubleshoot first: "Clean drain filter" (3      │ Slots: [Sat 10–12] [Sat 14–16] [Mon 10–12]            │
+│   steps)                                           │ [Book visit]   Case → work order (U82)                │
+│   [Tried it, still failing]                        │                                                       │
+└────────────────────────────────────────────────────┴───────────────────────────────────────────────────────┘
+```
+
+### W34 — Ticketing · Seat selection
+
+*Universes: U81 Ticketing & Events, U13 reservations, U91*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Indie Nights · NSCI Dome Mumbai · Sat 15 Nov 19:30 IST     Seats held for you: 09:42 left (reservation TTL)│
+├──────────────────────────────────────────────────────────────┬─────────────────────────────────────────────┤
+│                     [ STAGE ]                                │ Your seats                                  │
+│   A  ○ ○ ○ ● ● ○ ○ ○ ○ ○ ○ ○   ₹4,500                        │ C5, C6       2 × ₹2,500                     │
+│   B  ○ ○ ● ● ● ● ○ ○ ○ ○ ○ ○   ₹3,500                        │ Convenience fee      ₹236                   │
+│   C  ○ ○ ○ ○ ◆ ◆ ○ ○ ● ○ ○ ○   ₹2,500                        │ GST                  ₹42                    │
+│   D  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ♿ ♿   ₹2,500                        │ Total             ₹5,278                    │
+│   ○ available  ● sold  ◆ your selection  ♿ accessible        │ Limit 4 per buyer · ID check at gate        │
+│                                                              │ Resale: allowed at face value only          │
+│                                                              │ [Continue to payment]                       │
+└──────────────────────────────────────────────────────────────┴─────────────────────────────────────────────┘
+```
+
+### W35 — Strategy · OKR tree
+
+*Universes: U102 Strategy & Performance, U72 metrics*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Strategy ▸ OKRs ▸ FY27 H2          Company → Teams → Individuals           Check-in due Fri 09 Oct         │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ O1 Become the most trusted marketplace in South India                         Progress ███████░░░ 68%      │
+│   ├ KR1 Order defect rate ≤ 1.0% (now 1.3%, metric: order_defect_rate)       ██████░░░░ 60%  ⚠ at risk     │
+│   │   └ Team Ops: O "Fix NDR loop" → KR NDR resolution ≤ 24h (now 31h)      █████░░░░░ 50%                 │
+│   ├ KR2 CSAT ≥ 4.6 (now 4.5)                                                 ████████░░ 80%                │
+│   └ KR3 Seller rating ≥ 4.4 for 90% of GMV (now 86%)                          ███████░░░ 70%               │
+│ O2 Profitable growth                                                            ████████░░ 77%             │
+│   ├ KR1 Contribution margin ≥ 8% (ledger metric, now 7.1%)                    ███████░░░ 72%               │
+│   └ KR2 Ads revenue ₹4 Cr / half (now ₹3.2 Cr)                               ████████░░ 80%                │
+│ [Check in] [Add KR] [Align to parent]   KRs bind to governed metrics (U72) — no manual numbers             │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### W36 — Board portal
+
+*Universes: U103 Corporate Governance, U42, U09 e-sign*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Board ▸ Bazaar Retail Pvt Ltd ▸ Meeting #42 · Thu 22 Oct 2026 11:00 IST (hybrid)   Quorum: 3 of 5 needed   │
+├──────────────────────────────────────────────────┬─────────────────────────────────────────────────────────┤
+│ Agenda                                           │ Board pack (watermarked, view-only)                     │
+│ 1 Minutes of meeting #41 (approve)               │ ▢ Q2-financials.pdf      v3  signed ✔                   │
+│ 2 Q2 financial statements (U30)                  │ ▢ ESOP-pool-2026.pdf     v2                             │
+│ 3 ESOP grant pool 2026 (resolution)              │ ▢ RPT-logistics-JV.pdf   v1                             │
+│ 4 Related-party transaction: logistics JV        │ Resolutions to vote: 2   Circular: 0                    │
+│   ⚠ Director R. Mehta: conflict declared         │ Attendance: 4 confirmed · 1 pending                     │
+│ 5 Risk register review (U69)                     │ [Join meeting] [Annotate] [Vote]                        │
+└──────────────────────────────────────────────────┴─────────────────────────────────────────────────────────┘
+```
+
+### W37 — Shop-floor terminal
+
+*Universes: U47 Manufacturing, U92 IoT, U101 QHSE*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ LINE 2 · Work centre CNC-04    Operator S. Patil    Shift B (14:00–22:00)    Online ● (offline-capable)    │
+├────────────────────────────────────────────────────┬───────────────────────────────────────────────────────┤
+│ PRODUCTION ORDER  PO-2026-1182                     │                                                       │
+│ Part: Bracket BR-220  Rev C   BOM v7 ✔             │   [ START ]      [ PAUSE ]                            │
+│ Operation 20: Milling   Routing v4                 │                                                       │
+│ Target 400   Done 236   Scrap 4                    │   [ REPORT GOOD ]  [ REPORT SCRAP ]                   │
+│ Cycle time 41 s (std 40 s)                         │                                                       │
+│ Machine: spindle temp 61°C ● ok                    │   [ QUALITY CHECK ]  next due in 14 pcs               │
+│                                                    │   [ CALL MAINTENANCE ]                                │
+└────────────────────────────────────────────────────┴───────────────────────────────────────────────────────┘
+```
+
+### W38 — Learning · Course player
+
+*Universes: U56 Learning, U41, U51 (tutor)*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Course: Food Safety Level 2 (FSSAI)   Module 3 of 6   Progress ████████░░░░ 58%   Certificate valid 2 yrs  │
+├──────────────────────────────────────────────────────────────────┬─────────────────────────────────────────┤
+│ [ Video 3.2  Cross-contamination  07:42 / 12:10  CC hi/en ]      │ ✦ AI tutor (course scope only)          │
+│                                                                  │ Q: Why separate cutting boards?         │
+│ Notes   Transcript   Resources                                   │ A: To stop raw-meat bacteria from       │
+│                                                                  │    reaching ready-to-eat food (3.2,     │
+│ Quiz 3 (graded, 3 attempts, 15 min)  [Start]                     │    02:15).  [Jump to clip]              │
+│                                                                  │ Grading is not done by AI.              │
+└──────────────────────────────────────────────────────────────────┴─────────────────────────────────────────┘
+```
+
+### W39 — Mobility · Dispatcher live map
+
+*Universes: U37 Mobility & Dispatch, U12, U17*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Dispatch ▸ Pune zone    Online 412 · on-trip 318 · idle 94    Open requests 37    Surge zone 2 (×1.3)      │
+├──────────────────────────────────────────────────────────────────────┬─────────────────────────────────────┤
+│ [ live map: heat layer of requests · driver dots · surge polygons ]  │ Selected trip TR-88120              │
+│                                                                      │ Pickup Hinjewadi Ph 2 · 3 offers    │
+│   Kothrud ●●●○○   Hinjewadi ●●●●●● (surge ×1.3)   Viman Nagar ●●○    │   declined                          │
+│                                                                      │ Candidates (ETA, rating)            │
+│ Unassigned > 2 min: 5   [Auto-dispatch: batched, nearest ETA]        │   D-1182  4 min  4.9  [Assign]      │
+│                                                                      │   D-2041  6 min  4.7  [Assign]      │
+│                                                                      │ SOS: none ●   Masked call [Rider]   │
+│                                                                      │   [Driver]                          │
+└──────────────────────────────────────────────────────────────────────┴─────────────────────────────────────┘
+```
+
+### W40 — Evolution · Rollout cockpit
+
+*Universes: U76 Evolution, U02, U72, U54*
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Evolution ▸ Rollout R-311 "checkout.express-pay v2"   Proposal EP-88 (level 2 ✔)   Simulation ✔ +1.8% conv.│
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Cohort           Tenants   Started          Status     Gates (SLO, cert, errors)        Action             │
+│ canary 1%        12        01 Oct 10:00     ● healthy  ✔ ✔ ✔                          —                    │
+│ wave 10%         140       02 Oct 10:00     ● healthy  ✔ ✔ ✔                          —                    │
+│ wave 50%         700       03 Oct 10:00     ◐ paused   ⚠ payment p95 +11% (AE cell)   [Resume] [Rollback]  │
+│ all              1,402     —                ○ pending                                                      │
+│ Auto-halt rule: any SLO burn-rate > 2× for 15 min (EVO-L4)   Rollback window: 14 days   [View diff] [Open  │
+│   incident]                                                                                                │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
 ---
 
 # PART VI — OPERATE & EVOLVE
@@ -3558,6 +4046,16 @@ gantt
 | ADR-010 | AI via gateway with policy-based routing; agents are identities with bounded authority | Vendor agnosticism + safety (§21) |
 | ADR-011 | Bitemporal canonical objects | Audit, regulation, simulation (§14.6) |
 | ADR-012 | Kafka-API event backbone with CloudEvents envelope | Ecosystem, portability (§15.4) |
+| ADR-013 | CEL is the single expression language | Safe tenant-authored expressions (A-22) |
+| ADR-014 | Frames of reference (U77) make every foundation frame-aware | Future regions, planets, realities as data (A-23…A-28) |
+| ADR-015 | Communication in every platform's base set | Legal and transactional notices from day one (A-60) |
+| ADR-016 | Durable workflow engine for long-running processes | Retries, timers, compensation, visibility |
+| ADR-017 | Go kernel; Go and TypeScript SDKs | Latency, simple deployment, hiring |
+| ADR-018 | Reference checker before the production composer | Continuous spec consistency; golden blueprints as acceptance tests |
+| ADR-019 | Derived manifests for later-phase universes | Platform-wide ownership checks now |
+| ADR-020 | Postgres row-level security as the tenancy guard | Defence in depth for shared-schema tenancy |
+
+Full records (context, alternatives, consequences, enforcement): `docs/adr/`.
 
 ---
 
@@ -3698,19 +4196,22 @@ When those four properties hold, any new team or agent can read this document, g
 
 ---
 
-## 35. Amendment Log & Companion Documents (v1.1)
+## 35. Amendment Log & Companion Documents (v1.2)
 
 ### 35.1 Companion documents
 | Document | Purpose |
 |---|---|
-| `constitutions/README.md` | Status of all 109 universes (82 specified), the amendments register and open decisions |
+| `constitutions/README.md` | Status of all 109 universes (all specified), the amendments register and open decisions |
 | `constitutions/U<NN>-*/constitution.md` | Universe specifications (12 sections each) |
 | `constitutions/COVERAGE-REGISTER.md` | Every domain → one owner; extensibility protocol for anything new (any region, planet, reality, language, currency, time system, units) |
 | `constitutions/TEMPORAL-BINDING-MATRIX.md` | Every universe's calendar, scheduling, trigger and range needs → Temporal mechanisms |
 | `constitutions/INDUSTRY-PRODUCT-DOMAIN-CATALOGUE.md` | Completeness against ISIC (industries), UN CPC (goods and services) and APQC (business domains) |
 | `engineering/KERNEL-DESIGN.md` | Core engine designs (interfaces, storage layouts, failure modes, budgets) |
 | `engineering/PHASE1-READINESS.md` | Seed content, external setup, screen inventory, spikes, Phase 1 exit test |
-| `spec/` + `tools/ucos_check.py` | Machine-readable definitions and the consistency checker (CI gate) |
+| `spec/` + `tools/` | Machine-readable definitions: 165 manifests, 613 object-type schemas, the gate catalogue (`spec/certification/gates.yaml`) and the error registry (`spec/registries/errors.yaml`). `tools/ucos_check.py` is the consistency checker (CI gate); `gen_manifests.py` and `gen_registries.py` produce the generated files |
+| `docs/adr/` | Architecture Decision Records ADR-001…020 (§34 table expanded) |
+| `docs/threat-models/` | STRIDE threat models for the Phase 0–1 surfaces (gate `SEC-TM-001`) |
+| `business/` | Cost model and unit economics, commercial model, team, budget and roadmap plan |
 
 ### 35.2 Amendments applied in v1.1
 | # | Amendment | Applied in |
@@ -3760,5 +4261,14 @@ When those four properties hold, any new team or agent can read this document, g
 | A-65 | Real-time Communications & Contact Centre (U109) | §6.2 U109, §22 |
 | A-66 | 23 communication manifests; recording-consent and bot-disclosure controls; `targetPhase`; omnichannel reference platform | §8.3, §11.2, §11.3 |
 
+### 35.3 Amendments applied in v1.2
+| # | Amendment | Applied in |
+|---|---|---|
+| A-67 | AI & Agents (U49 gateway, U50 prompts as code, U51 agent run loop) and the Phase 2 core (U17, U25, U27, U30, U36, U59, U69, U70) specified | §6.2 rows, §21, constitutions |
+| A-68 | Remaining 16 universes specified (U32, U33, U37–U39, U41, U45–U48, U52, U54–U56, U71, U76); all 109 now have constitutions | §6.2 rows, constitutions |
+| A-69 | Gate catalogue (55 gates, 11 families, profiles), error registry, 613 object-type schemas, and derived manifests for every universe; the checker enforces gate references and registry sync | §28.2, §34, spec/ |
+| A-70 | ADR files 001–020; STRIDE threat models with enforced manifest links | §20, §34, docs/ |
+| A-71 | Wireframes W17–W40 for the new universes | §25 |
+
 ---
-*End of UCOS-MASTER-ARCHITECTURE v1.1.0*
+*End of UCOS-MASTER-ARCHITECTURE v1.2.0*

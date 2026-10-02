@@ -1,0 +1,10 @@
+{
+  "blueprintCandidate": "ucos:blueprint:sha256:f6ec538beaf43caa96ebad76c5c8bc99164cde40fe3c3e13dbe8915a0ba15037",
+  "gaps": [],
+  "kind": "GapReport",
+  "summary": {
+    "MANDATORY": 0,
+    "OPTIONAL": 0,
+    "RECOMMENDED": 0
+  }
+}

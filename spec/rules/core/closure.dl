@@ -1,0 +1,54 @@
+// UCOS composition core rules (Datalog, Soufflé-style). Generic: no country, industry or vendor names (CMP-L3).
+// Facts (EDB) are generated from spec/capabilities/packs/*.yaml and spec/rules/facts/*.yaml.
+.decl requested(c: symbol)                    // PD include + base + channel capabilities
+.decl requires(c: symbol, d: symbol)
+.decl excluded(c: symbol)
+.decl in_scope(j: symbol)                     // ucos:jur:XX from PD countries
+.decl pd_business_model(m: symbol)
+.decl pd_channel(ch: symbol)
+.decl pd_framework(f: symbol)
+.decl regulation(r: symbol, j: symbol)        // j may be "*"
+.decl reg_when_always(r: symbol)
+.decl reg_when_capability(r: symbol, c: symbol)
+.decl reg_when_business_model(r: symbol, m: symbol)
+.decl reg_when_channel(r: symbol, ch: symbol)
+.decl reg_when_framework(r: symbol, f: symbol)
+.decl requires_control(r: symbol, k: symbol)
+.decl control_implemented_by(k: symbol, c: symbol)
+.decl abstract(c: symbol)
+.decl implements(a: symbol, abs: symbol)
+.decl adapter_jur(a: symbol, j: symbol)       // j may be "*"
+.decl adapter_method(a: symbol, m: symbol)    // m may be "*"; no fact = method-agnostic
+.decl needed_method(abs: symbol, j: symbol, m: symbol)
+.decl provider_capability(c: symbol)          // exists in registry
+.decl io_abstract(abs: symbol)
+.decl simulator_for(s: symbol, abs: symbol)
+
+.decl required(c: symbol)
+.decl applies(r: symbol)
+.decl required_control(k: symbol)
+.decl selected_adapter(abs: symbol, j: symbol, m: symbol, a: symbol)
+.decl gap(kind: symbol, a: symbol, b: symbol)
+
+required(c) :- requested(c).
+required(d) :- required(c), requires(c, d).
+
+applies(r) :- regulation(r, j), in_scope(j), reg_when_always(r).
+applies(r) :- regulation(r, "*"), reg_when_always(r).
+applies(r) :- regulation(r, j), (in_scope(j) ; j = "*"), reg_when_capability(r, c), required(c).
+applies(r) :- regulation(r, j), (in_scope(j) ; j = "*"), reg_when_business_model(r, m), pd_business_model(m).
+applies(r) :- regulation(r, j), (in_scope(j) ; j = "*"), reg_when_channel(r, ch), pd_channel(ch).
+applies(r) :- regulation(r, j), (in_scope(j) ; j = "*"), reg_when_framework(r, f), pd_framework(f).
+required_control(k) :- applies(r), requires_control(r, k).
+required(c) :- required_control(k), control_implemented_by(k, c).
+
+// Adapter selection: specific jurisdiction beats "*"; method must match or be "*" or adapter is method-agnostic.
+selected_adapter(abs, j, m, a) :- required(abs), abstract(abs), needed_method(abs, j, m),
+                                  implements(a, abs), (adapter_jur(a, j) ; adapter_jur(a, "*")),
+                                  (adapter_method(a, m) ; adapter_method(a, "*") ; m = "-").
+required(a) :- selected_adapter(_, _, _, a).        // tie-break (lowest specificity, then lexical) applied by engine choice()
+
+gap("MISSING_CAPABILITY", c, "-")        :- required(c), !provider_capability(c).
+gap("MISSING_ADAPTER", abs, j)           :- required(abs), abstract(abs), needed_method(abs, j, m), !selected_adapter(abs, j, m, _).
+gap("CONFLICT_EXCLUDED", c, "-")         :- required(c), excluded(c).
+gap("MISSING_SIMULATOR", abs, "-")       :- required(abs), io_abstract(abs), !simulator_for(_, abs).

@@ -1,0 +1,248 @@
+# UCOS Universe Constitutions
+
+This folder holds one detailed specification per universe. They are the second level of the UCOS documentation, below `../UCOS-MASTER-ARCHITECTURE.md`. Each spec follows `_TEMPLATE.md` (12 sections, per master §12.5) and MUST NOT contradict the master. Where a spec needs the master to change, it lists the change in its Appendix B. Those changes are collected below for a governed update.
+
+## Shared conventions (apply to every spec)
+
+| Item | Convention | Example |
+|---|---|---|
+| Universe id | `U<NN>-<slug>` | `U13-temporal` |
+| Object type id | `<universe-slug>.<area>.<PascalName>` or `ucos.<slug>.<PascalName>` | `ucos.temporal.Reservation` |
+| Object id | `ucos:<kind>:<ULID>`; reference data `ucos:<kind>:<ns>/<key>` | `ucos:tmp:01J…`, `ucos:jur:IN-KA` |
+| Command | PascalCase verb phrase | `HoldReservation` |
+| Permission / action | `<slug>:<Command>` | `temporal:HoldReservation` |
+| Event type | `<slug>.<object-kebab>.<past-tense>` | `temporal.reservation.held` |
+| REST | `/v1/<slug>/<collection>[/{id}][:command]` | `POST /v1/temporal/reservations/{id}:confirm` |
+| Error code | `<SLUG-UPPER>_<REASON>` | `TMP_CAPACITY_EXHAUSTED` |
+| Universe law | `<SLUG-UPPER>-L<n>` | `TMP-L4` |
+| Lint rule | `<SLUG-UPPER>-LINT-<nnn>` | `META-LINT-001` |
+| Certification gate | `<GATE>-<SLUG>-<nn>` | `ARCH-TMP-02` |
+| Gap rules | Datalog, same predicate vocabulary as master §11.3 | `gap(kind, …) :- …` |
+| Policies | Cedar | |
+| Decision tables | `<slug>.<name>`, tenant-configurable, with defaults | `identity.required-aal` |
+
+## Status of all universes
+
+Legend: ✅ specified (v0.1 draft) · ⬜ planned (phase per master §32). Next batch: Phase 2.
+
+### Phase 0 — Foundations & kernel (23 universes)
+
+| ID | Universe | Status | Spec |
+|---|---|---|---|
+| U04 | Meta | ✅ | [U04-meta](U04-meta/constitution.md) |
+| U08 | Reference Data | ✅ | [U08-reference-data](U08-reference-data/constitution.md) |
+| U09 | Identity | ✅ | [U09-identity](U09-identity/constitution.md) |
+| U10 | Organization & Tenant | ✅ | [U10-organization-tenant](U10-organization-tenant/constitution.md) |
+| U11 | Person & Party | ✅ | [U11-person-party](U11-person-party/constitution.md) |
+| U12 | Geography | ✅ | [U12-geography](U12-geography/constitution.md) |
+| U13 | Temporal | ✅ | [U13-temporal](U13-temporal/constitution.md) |
+| U14 | Currency & Unit | ✅ | [U14-currency-unit](U14-currency-unit/constitution.md) |
+| U15 | Language & Localization | ✅ | [U15-localization](U15-localization/constitution.md) |
+| U16 | Context | ✅ | [U16-context](U16-context/constitution.md) |
+| U01 | Authority| ✅ | [U01-authority](U01-authority/constitution.md) |
+| U02 | Governance| ✅ | [U02-governance](U02-governance/constitution.md) |
+| U03 | Policy| ✅ | [U03-policy](U03-policy/constitution.md) |
+| U05 | Ontology| ✅ | [U05-ontology](U05-ontology/constitution.md) |
+| U06 | Taxonomy| ✅ | [U06-taxonomy](U06-taxonomy/constitution.md) |
+| U57 | Capability| ✅ | [U57-capability](U57-capability/constitution.md) |
+| U58 | Composition| ✅ | [U58-composition](U58-composition/constitution.md) |
+| U61 | Event| ✅ | [U61-event](U61-event/constitution.md) |
+| U65 | Security| ✅ | [U65-security](U65-security/constitution.md) |
+| U68 | Audit & Evidence| ✅ | [U68-audit-evidence](U68-audit-evidence/constitution.md) |
+| U73 | Infrastructure & Deployment| ✅ | [U73-infrastructure-deployment](U73-infrastructure-deployment/constitution.md) |
+| U74 | Certification| ✅ | [U74-certification](U74-certification/constitution.md) |
+| U75 | Discovery & Gap| ✅ | [U75-discovery-gap](U75-discovery-gap/constitution.md) |
+
+### Phase 1 — Composer + commerce core (23 universes)
+
+| ID | Universe | Status | Spec |
+|---|---|---|---|
+| U07 | Knowledge Graph | ✅ | [U07-knowledge-graph](U07-knowledge-graph/constitution.md) |
+| U18 | Product Intelligence | ✅ | [U18-product-intelligence](U18-product-intelligence/constitution.md) |
+| U19 | Service Intelligence | ✅ | [U19-service-intelligence](U19-service-intelligence/constitution.md) |
+| U20 | Industry | ✅ | [U20-industry](U20-industry/constitution.md) |
+| U21 | Catalog | ✅ | [U21-catalog](U21-catalog/constitution.md) |
+| U22 | Offer | ✅ | [U22-offer](U22-offer/constitution.md) |
+| U23 | Pricing | ✅ | [U23-pricing](U23-pricing/constitution.md) |
+| U24 | Commerce (Cart & Checkout) | ✅ | [U24-commerce-cart-checkout](U24-commerce-cart-checkout/constitution.md) |
+| U26 | Order | ✅ | [U26-order](U26-order/constitution.md) |
+| U29 | Payment | ✅ | [U29-payment](U29-payment/constitution.md) |
+| U31 | Tax | ✅ | [U31-tax](U31-tax/constitution.md) |
+| U34 | Inventory | ✅ | [U34-inventory](U34-inventory/constitution.md) |
+| U35 | Fulfillment | ✅ | [U35-fulfillment](U35-fulfillment/constitution.md) |
+| U40 | Communication | ✅ | [U40-communication](U40-communication/constitution.md) |
+| U43 | Asset | ✅ | [U43-asset](U43-asset/constitution.md) |
+| U44 | Search | ✅ | [U44-search](U44-search/constitution.md) |
+| U53 | Decision | ✅ | [U53-decision](U53-decision/constitution.md) |
+| U60 | Workflow | ✅ | [U60-workflow](U60-workflow/constitution.md) |
+| U63 | API | ✅ | [U63-api](U63-api/constitution.md) |
+| U64 | UI, App & Channel | ✅ | [U64-ui-app-channel](U64-ui-app-channel/constitution.md) |
+| U66 | Privacy & Consent | ✅ | [U66-privacy-consent](U66-privacy-consent/constitution.md) |
+| U67 | Compliance | ✅ | [U67-compliance](U67-compliance/constitution.md) |
+| U72 | Observability & Analytics | ✅ | [U72-observability-analytics](U72-observability-analytics/constitution.md) |
+
+### Coverage expansion — every domain, any frame (24 universes, from the completeness review)
+
+See [COVERAGE-REGISTER.md](COVERAGE-REGISTER.md) for the full map of domains to owners and the extensibility protocol, and [TEMPORAL-BINDING-MATRIX.md](TEMPORAL-BINDING-MATRIX.md) for how every universe uses calendars, scheduling, triggers and time ranges.
+
+| ID | Universe | Phase | Status | Spec |
+|---|---|---|---|---|
+| U77 | Existence & Reality Frame | P0 | ✅ | [U77-existence-reality-frame](U77-existence-reality-frame/constitution.md) |
+| U78 | Product Configuration | P2 | ✅ | [U78-product-configuration](U78-product-configuration/constitution.md) |
+| U79 | Physical Asset & Installed Base | P3 | ✅ | [U79-physical-asset-installed-base](U79-physical-asset-installed-base/constitution.md) |
+| U80 | Warranty & After-sales | P3 | ✅ | [U80-warranty-after-sales](U80-warranty-after-sales/constitution.md) |
+| U81 | Ticketing & Events | P6 | ✅ | [U81-ticketing-events](U81-ticketing-events/constitution.md) |
+| U82 | Field Service & Work Management | P5 | ✅ | [U82-field-service-work](U82-field-service-work/constitution.md) |
+| U83 | Rental & Leasing | P5 | ✅ | [U83-rental-leasing](U83-rental-leasing/constitution.md) |
+| U84 | Stored Value & Wallet | P2 | ✅ | [U84-stored-value-wallet](U84-stored-value-wallet/constitution.md) |
+| U85 | Customer Data & Segmentation (CDP) | P3 | ✅ | [U85-customer-data-segmentation](U85-customer-data-segmentation/constitution.md) |
+| U86 | Marketing Automation | P4 | ✅ | [U86-marketing-automation](U86-marketing-automation/constitution.md) |
+| U87 | Web Presence & SEO | P1 | ✅ | [U87-web-presence-seo](U87-web-presence-seo/constitution.md) |
+| U88 | Social & Community | P5 | ✅ | [U88-social-community](U88-social-community/constitution.md) |
+| U89 | Contract & Agreement | P2 | ✅ | [U89-contract-agreement](U89-contract-agreement/constitution.md) |
+| U90 | Global Trade & Customs | P2 | ✅ | [U90-global-trade-customs](U90-global-trade-customs/constitution.md) |
+| U91 | Auction, Bidding & Negotiation | P5 | ✅ | [U91-auction-bidding-negotiation](U91-auction-bidding-negotiation/constitution.md) |
+| U92 | IoT & Devices | P5 | ✅ | [U92-iot-devices](U92-iot-devices/constitution.md) |
+| U93 | Data Governance & Data Products | P2 | ✅ | [U93-data-governance-products](U93-data-governance-products/constitution.md) |
+| U94 | ML Platform | P2 | ✅ | [U94-ml-platform](U94-ml-platform/constitution.md) |
+| U95 | Software Delivery & Source Control (Git) | P0 | ✅ | [U95-software-delivery-source-control](U95-software-delivery-source-control/constitution.md) |
+| U96 | Work & Collaboration | P5 | ✅ | [U96-work-collaboration](U96-work-collaboration/constitution.md) |
+| U97 | Forms, Surveys & Feedback | P3 | ✅ | [U97-forms-surveys-feedback](U97-forms-surveys-feedback/constitution.md) |
+| U98 | Sustainability & ESG | P6 | ✅ | [U98-sustainability-esg](U98-sustainability-esg/constitution.md) |
+| U99 | Digital Assets & Distributed Ledger | P6 | ✅ | [U99-digital-assets-ledger-tech](U99-digital-assets-ledger-tech/constitution.md) |
+| U100 | Financial Products | P6 | ✅ | [U100-financial-products](U100-financial-products/constitution.md) |
+
+### Standards-based completeness (8 universes; ISIC, CPC and APQC mapped)
+
+See [INDUSTRY-PRODUCT-DOMAIN-CATALOGUE.md](INDUSTRY-PRODUCT-DOMAIN-CATALOGUE.md): 88/88 ISIC divisions, 71/71 CPC divisions and 13/13 APQC categories each have an owner.
+
+| ID | Universe | Phase | Status | Spec |
+|---|---|---|---|---|
+| U101 | Quality, Health, Safety & Environment (QHSE) | P5 | ✅ | [U101-quality-ehs](U101-quality-ehs/constitution.md) |
+| U102 | Strategy & Performance Management | P5 | ✅ | [U102-strategy-performance](U102-strategy-performance/constitution.md) |
+| U103 | Corporate Governance & Equity | P6 | ✅ | [U103-corporate-governance-equity](U103-corporate-governance-equity/constitution.md) |
+| U104 | Legal Matters, Ethics & IP | P6 | ✅ | [U104-legal-ethics-ip](U104-legal-ethics-ip/constitution.md) |
+| U105 | Workplace & Facilities | P6 | ✅ | [U105-workplace-facilities](U105-workplace-facilities/constitution.md) |
+| U106 | Travel & Expense | P6 | ✅ | [U106-travel-expense](U106-travel-expense/constitution.md) |
+| U107 | Partner, Channel & Franchise | P4 | ✅ | [U107-partner-channel-franchise](U107-partner-channel-franchise/constitution.md) |
+| U108 | Product Development, R&D & Innovation | P6 | ✅ | [U108-product-development-rnd](U108-product-development-rnd/constitution.md) |
+
+### Phase 1 blockers closed (3 universes)
+
+| ID | Universe | Phase | Status | Spec |
+|---|---|---|---|---|
+| U28 | Entitlement | P0/P1 | ✅ | [U28-entitlement](U28-entitlement/constitution.md) |
+| U42 | Document | P1 | ✅ | [U42-document](U42-document/constitution.md) |
+| U62 | Integration | P1 | ✅ | [U62-integration](U62-integration/constitution.md) |
+
+Engineering companions: [../engineering/KERNEL-DESIGN.md](../engineering/KERNEL-DESIGN.md) (core engines), [../engineering/PHASE1-READINESS.md](../engineering/PHASE1-READINESS.md) (seed content, external setup, screens, spikes, exit test), and [../spec/README.md](../spec/README.md) (machine-readable definitions, validated by `tools/ucos_check.py`).
+
+### Communication completeness (1 universe + U40 extension)
+
+| ID | Universe | Phase | Status | Spec |
+|---|---|---|---|---|
+| U109 | Real-time Communications & Contact Centre | P3 | ✅ | [U109-realtime-comms-contact-center](U109-realtime-comms-contact-center/constitution.md) |
+
+### Phase 2 — Marketplace, finance, logistics
+⬜ U17 Resource · U25 Marketplace · U27 Subscription · U30 Ledger & Finance · U36 Logistics · U59 Generation · U69 Risk · U70 Trust & Reputation
+
+### Phase 3 — Builders, CRM/support, AI v1
+⬜ U32 Loyalty & Incentive · U38 CRM · U39 Support & Case · U49 AI/Model · U50 Prompt · U51 Agent · U71 Dispute & Resolution · U76 Evolution
+
+### Phase 4–6 — Intelligence, verticals
+⬜ U33 Advertising · U41 Content & Media · U45 ERP/Procurement · U46 Workforce/HRMS · U52 Recommendation (P4) · U37 Mobility & Dispatch · U54 Simulation · U55 Digital Twin · U56 Learning (P5) · U47 Manufacturing · U48 Industry packs (P6)
+
+**Progress:** 82 of 109 universes specified (75%). Phases 0 and 1 are fully specified. Communication is complete (U40 + U109). `spec/` checks clean: 109 manifests, 0 errors, and three reference platform definitions (D2C IN+AE, B2B IN, omnichannel IN) compose with 0 gaps. Remaining: 27 planned universes in Phases 2–6.
+
+## Amendments register (to fold into the master via a governed change)
+
+| # | From | Amendment |
+|---|---|---|
+| A-01 | U04 | Register `Classification` as a ValueType owned by U65 Security. |
+| A-02 | U11 | Rename U11 to "Person & Party". It owns `Party`, `PartyRole`, `PartyRelationship` and `PartyRoleType`. Master §7.2: CID = PartyRole. |
+| A-03 | U13 | Add `LocalDate`, `LocalTime`, `LocalTimeWindow` and `BusinessDuration` value types to master §9.1. Add `SLADefinition` and `Schedule` to U13 "owns". |
+| A-04 | U12 | Add `AddressFormat` and `GeocodeResult` to U12 "owns". |
+| A-05 | U14 | Add `RoundingRule`, `RatePolicy`, `RateSource`, `Dimension` and `PackagingUnit` to U14 "owns". |
+| A-06 | U09 | Add `RoleGrant`, `Delegation`, `FederatedProvider` and `VerificationRecord` to U09 "owns". |
+| A-07 | U10 | Add `TenantLink` to U10 "owns". |
+| A-08 | U16 | Master §7.6: `ContextEnvelope.jurisdiction` becomes a role-keyed map (actor, buyer-delivery, seller, data-storage, store). |
+| A-09 | U01 | Authority object gains `quorum`. `Ratification` and `Annulment` become DecisionRecord types. |
+| A-10 | U02 | Add `ChangeTemplate` and `ChangeWindow` to U02 "owns". |
+| A-11 | U03 | Master §18.5 gains layered policy precedence (platform → emergency → universe-default/tenant/org) and `PartialEvaluate` for list queries. |
+| A-12 | U61 | Master §15.5 gains event categories (domain, integration, system, signal, audit) and the claim-check rule for large payloads. |
+| A-13 | U57 | Master §8.3 gains capability kinds `data-pack` and `ui-pack`, and the formal `PackRuntime` gRPC contract. |
+| A-14 | U58 | Master §11.4 Blueprint gains `config`, `decisions`, `placement` and `adapters`. PlatformDefinition gains `overrides`. |
+| A-15 | U65 | Master §19.7 gains ordered security profiles (standard < high < regulated < sovereign) and the data handling matrix. |
+| A-16 | U73 | Master §27 gains `Placement` (sharding by jurisdiction) and `Activation` as first-class objects. |
+| A-17 | U74 | Master §28.3 Certification gains `profile`, `subjectDigest` and a DSSE attestation. Invalidation of an active blueprint opens a grace period and never shuts it down automatically. |
+| A-18 | U75 | Master §11.6 gains discovery gap kinds and `INSIGHT` severity. The fix catalog becomes a first-class object. |
+| A-19 | U26 | Master §32 P1: the Ledger (U30) is absent in P1. Order and payment events are kept and replayed into it when U30 activates in P2. |
+| A-20 | U72 | U72 explicitly owns `MetricDefinition`, `AlertRule`, `Experiment` and `FeatureFlag`. |
+| A-21 | U66 | Every universe holding personal data implements the `privacy.dsr-handler` extension point (export, rectify, erase). Checked by gate `CMP-PRV-01`. |
+| A-22 | U53/U04 | CEL is the single expression language for decisions, constraints and guards (FEEL is not used). |
+| A-23 | U77→U12 | Geography becomes frame-aware: places belong to Bodies; jurisdictions can be governed by treaty, station, virtual-world or DAO authorities; address formats are keyed by (body, authority). |
+| A-24 | U77→U13 | Temporal becomes frame-aware: time scales (TAI/MTC/LTC/world clocks), calendar systems, light-time facts, plus a synthetic-calendar golden test. |
+| A-25 | U77→U14 | Currencies belong to monetary systems (`X-<system>-<code>` for non-ISO currencies); units belong to unit systems; 18-decimal precision for digital assets. |
+| A-26 | U77→U15 | Locales belong to language systems; private-use tags for unregistered languages; sign and machine-protocol languages. |
+| A-27 | U77→U16 | New Context dimension `frame`. The simulation flag is now derived from the reality kind. |
+| A-28 | U77→U03 | Platform policy P-004 generalised to reality isolation with bridging. |
+| A-29 | Review | Products and services completed: U78–U84 and U100 added; U18, U19, U21 and U22 extended (relationships, fitment, documents, product natures, listing-type delegation). |
+| A-30 | U85 | `SegmentRef` now has an owner (CDP). |
+| A-31 | U86 | Marketing campaign orchestration moves from U40 to U86; U40 delivers messages only. |
+| A-32 | U87 | SEO and web presence added as a Phase 1 universe (needed by any public storefront). |
+| A-33 | U88, U09 | Social & Community universe; social login added to Identity. |
+| A-34 | U89 | Contract & Agreement gets a universe number (it was in the master mindmap without one). |
+| A-35 | U90 | Global Trade & Customs gets an owner. |
+| A-36 | U91 | Auctions, tenders and negotiation (including agent-to-agent) get an owner. |
+| A-37 | U96 | Collaboration, projects and the universal comment thread capability. |
+| A-38 | U97 | Forms, surveys and feedback. |
+| A-39 | U98 | Sustainability and ESG, with anti-greenwashing rules. |
+| A-40 | U95 | Git, CI/CD and definitions-as-code as a Phase 0 universe; Studio and Git kept in two-way sync. |
+| A-41 | U93 | Data governance becomes a first-class universe (catalogue, contracts, lineage, quality, master data, sharing). |
+| A-42 | U94 | Classical ML platform separated from LLMs and agents; one shared model registry with U49. |
+| A-43 | U92 | IoT and devices (including robots and edge) get an owner. |
+| A-44 | U99 | Digital assets and distributed ledgers (optional, jurisdiction-gated). |
+| A-45 | U13 | Calendar and scheduling completeness: ICS calendar feeds, Google/Microsoft/CalDAV sync, invitations, multi-party availability search, waitlists, walk-in queue tokens, reminders, time off; canonical names for time fields; value-type vs service dependency kinds; gate `ARCH-TMP-05`. |
+| A-46 | All | `TEMPORAL-BINDING-MATRIX.md` binds every universe's time needs to Temporal mechanisms. 27 specs gained the `U13 Temporal` dependency; planned universes must follow their matrix rows. |
+| A-47 | All | Time-field cleanup: 108 informal time fields across 50 specs and the master document now have explicit Temporal types. Non-time fields that collided with the reserved names were renamed (`compareAt` → `compareAtPrice`, `offset` → `additiveOffset`, SLA `at` → `atElapsedPercent`, SLO `window` → `rollingWindow`/`lookback`, master `freshness` → `freshnessObjective`, `deadline` → `deadlineOffset`, model `retention` → `providerRetention`). The naming rule in U13 Appendix E.3 was corrected so `validUntil` and `effectiveFrom` are TimePoints, and it now lists reserved names. A re-scan finds 0 untyped time fields. |
+| A-48 | U101 | Quality, Health, Safety & Environment universe (quality management, CAPA, audits, incidents, permits to work, environmental permits). |
+| A-49 | U102 | Strategy & Performance (OKRs, scorecards, planning cycles). |
+| A-50 | U103 | Corporate Governance & Equity (board, resolutions, cap table, ESOP, statutory filings). Board resolutions are evidence for U01 authorities. |
+| A-51 | U104 | Legal Matters, Ethics & IP (matters, legal holds, whistleblowing, IP portfolio, brand protection and takedowns). |
+| A-52 | U105 | Workplace & Facilities (spaces, desk and room booking, visitors, occupancy). |
+| A-53 | U106 | Travel & Expense. |
+| A-54 | U107 | Partner, Channel & Franchise (one owner for partner programs, deal registration, MDF, rebates, affiliates, franchise royalties). |
+| A-55 | U08 | Reference vocabularies added for measuring completeness: ISIC Rev.4, NAICS, NACE, NIC, UN CPC 2.1, SAC, APQC PCF, BIAN, eTOM, ISCO-08, ISCED, WIPO classes, clinical code systems (licensed), plus crosswalks. |
+| A-56 | U18 | Complete product-nature registry (21 natures, incl. living, perishable/cold chain, energy, real property, data, IP licences, environmental credits, permits/spectrum, labour time) and the `RegulatedGoodsProfile` model with enforcement points. |
+| A-57 | U108 | Product Development, R&D & Innovation (stage-gate, design items and revisions, engineering BOM, engineering change, lab notebook / LIMS-lite, launch). |
+| A-58 | U86 | Public relations added to Marketing Automation scope (`pr` campaigns, media monitoring via U88). |
+| A-59 | All | `INDUSTRY-PRODUCT-DOMAIN-CATALOGUE.md` maps every ISIC division, CPC division and APQC category to owners, with an explicit out-of-scope register, completeness gap rules and the `ucos coverage` report. Temporal Binding Matrix extended to U101–U108. |
+| A-60 | U40 / defaults | `communication.core` joins the base capability set, because transactional messages (OTP, order confirmations) are mandatory for every platform. Found by the checker: the D2C blueprint had no messaging capability. |
+| A-61 | U28 | Entitlement platform plans and limits move to Phase 0, because tenant provisioning (U10, Phase 0) needs them. Found by the checker's phase-ordering rule. |
+| A-62 | U01, U03, U07, U61, U29 | Pack manifests now require `temporal.core` wherever Temporal services are used (ARCH-TMP-05). Simulators were added for the FX and e-invoice ports (INT-L5). New abstract port `identity.federation-provider`. |
+| A-63 | All Phase 1 specs | Phase 1 fallback appendices for dependencies on later-phase universes (U17, U30, U36, U41, U49, U54, U69). |
+| A-64 | U40 | Communication completeness: channel registry (email, SMS, WhatsApp, web and mobile push, in-app, RCS, Telegram, LINE, WeChat, Viber, Messenger, Instagram, voice, video, live chat, postal, broadcast, agent-protocol); in-app notification centre; inbound routing with opt-out first; real-time conversations; broadcast and emergency alerts with dual approval; agent-to-agent protocol. `communication.inapp` and `communication.inbound` join the base capability set. |
+| A-65 | U109 | Real-time Communications & Contact Centre universe: voice, IVR, masked calling, video sessions, live chat, bot hand-off, routing, call-backs, recordings with consent, supervision. |
+| A-66 | spec/ | 23 new manifests (5 capabilities, 12 messaging adapters, the `rtc.provider` port, voice and video adapters, a simulator, contact centre, video sessions). New controls for recording consent and bot disclosure. `targetPhase` added to platform definitions. New reference platform `omnichannel-in` (Phase 4). A negative test confirms the checker blocks mobile, voice and video at Phase 1. |
+
+## Open decisions raised by the specs
+
+| From | Decision needed | Recommendation |
+|---|---|---|
+| U04 | Expression language for constraints and rules | CEL |
+| U08 | Licensing for GS1 GPC and UNSPSC redistribution | Legal review before P1 |
+| U09 | Reference IdP: Keycloak or Ory | Load spike in P0, then decide |
+| U10 | One tenant spanning several residency regions | Supported via multiple cells; spike in P2 |
+| U12 | Boundary data source: OSM (ODbL) or commercial | Legal and cost review |
+| U13 | Reservation counters at extreme peak: Postgres sharded sub-slots or Redis | Postgres first, then measure |
+| U01 | Membership of the root authority (Architecture Board, at least 3 members with hardware keys) | Name members before the P0 genesis |
+| U03 | OpenFGA for relationship-heavy (social graph) cases | Evaluate in P6 |
+| U57 | gVisor sandbox for all third-party packs | Cost/benefit spike in P2 |
+| U58 | Datalog engine: Soufflé or an embeddable Rust engine | P0 spike, weighing incremental evaluation |
+| U65 | Scope of format-preserving tokenisation (non-PSP flows) | Confirm in P2 |
+| U73 | Crossplane or plain OpenTofu for cell provisioning | OpenTofu modules wrapped by Crossplane |
+| U18 | Global product data sourcing and licences (GS1 data pools, manufacturer syndication, licensed providers) | Commercial and legal workstream before P4 |
+| U31 | Build or buy tax engines per regime | In-house packs for India and UAE in P1; engine adapters for US and EU |
+| U60 | Workflow engine: Temporal.io or Camunda 8 | Temporal.io, with a BPMN import converter |
+| U64 | Mobile renderer: React Native or Flutter | React Native; consider Flutter only if POS/kiosk performance requires it |
+| U67 | Who owns legal interpretations in each jurisdiction | Organisational decision: in-house counsel plus external firms |

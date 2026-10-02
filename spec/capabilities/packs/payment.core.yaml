@@ -65,7 +65,7 @@ spec:
   security:
     dataClasses:
     - FINANCIAL
-    threatModel: docs/threat-model.md
+    threatModel: docs/threat-models/payment.md
   compliance:
     controls:
     - ucos.ctrl.pci-hosted-fields

@@ -44,7 +44,7 @@ spec:
   security:
     dataClasses:
     - PII
-    threatModel: docs/threat-model.md
+    threatModel: docs/threat-models/party-and-privacy.md
   compliance:
     controls:
     - ucos.ctrl.consent-notice

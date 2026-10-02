@@ -260,12 +260,13 @@ Engineering companions: [../engineering/KERNEL-DESIGN.md](../engineering/KERNEL-
 | A-67 | U49–U51, U17, U25, U27, U30, U36, U59, U69, U70 | AI & Agents specs (gateway, prompts as code, agent run loop with autonomy levels and kill switch) and the Phase 2 core. Ledger posting rules are idempotent by `(sourceEventId, ruleId)`, which makes the P1 replay (A-19) deterministic. Marketplace payouts respect Temporal return-window holds. Subscription mandates follow RBI e-mandate and SCA MIT rules. Risk falls back to `unknown` and never to `low`. U59 registers `gen.schema.object-types` for `spec/object-types/`. |
 | A-68 | U32, U33, U37–U39, U41, U45–U48, U52, U54–U56, U71, U76 | The remaining 16 universes are specified, so all 109 now have constitutions. Points are U84 stored value with U30 liability postings. Support owns cases while U109 owns routing. Every appeal goes to an independent human reviewer. Sponsored items are always labelled. Simulations run only in the `simulation` reality frame. Industry packs add composition but never fork a universe. |
 | A-69 | spec/, tools/ | Machine-readable registries. `spec/certification/gates.yaml` holds 55 gates in 11 families with U74 profiles; every gate referenced anywhere is defined. `spec/registries/errors.yaml` holds 219 codes. `spec/object-types/` holds 613 schemas. The manifest generator moved into the repo as `tools/gen_manifests.py` and now derives `<slug>.core` manifests for the 56 universes without hand-authored ones. The checker enforces gates and registry sync. Naming-rule fixes in the new specs: `window` renamed to `rollingWindow`, `lookback`, `licenceRange`, `arrivalRange`, `biddingRange` and `responseDuration`. |
+| A-70 | docs/ | `docs/adr/` holds ADR-001…020: the master's 001–012 plus CEL, U77 frames, communication base set, durable workflows, Go kernel, reference checker, derived manifests and RLS tenancy. Six open decisions are listed as Proposed. `docs/threat-models/` holds ten STRIDE models covering Phases 0–1 plus a P3 communication addendum. Manifests point at their model, and the checker enforces that the file exists (`SEC-TM-001`). |
 
 ## Open decisions raised by the specs
 
 | From | Decision needed | Recommendation |
 |---|---|---|
-| U04 | Expression language for constraints and rules | CEL |
+| U04 | Expression language for constraints and rules | **Decided:** CEL (A-22, ADR-013) |
 | U08 | Licensing for GS1 GPC and UNSPSC redistribution | Legal review before P1 |
 | U09 | Reference IdP: Keycloak or Ory | Load spike in P0, then decide |
 | U10 | One tenant spanning several residency regions | Supported via multiple cells; spike in P2 |

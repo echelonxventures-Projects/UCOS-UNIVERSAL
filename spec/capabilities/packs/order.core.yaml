@@ -80,7 +80,7 @@ spec:
     dataClasses:
     - PII
     - FINANCIAL
-    threatModel: docs/threat-model.md
+    threatModel: docs/threat-models/commerce-checkout-order.md
   ui:
     views:
     - order.list

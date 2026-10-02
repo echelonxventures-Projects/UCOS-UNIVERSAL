@@ -45,7 +45,7 @@ spec:
     dataClasses:
     - PII
     - BIOMETRIC
-    threatModel: docs/threat-model.md
+    threatModel: docs/threat-models/communication.md
   compliance:
     controls:
     - ucos.ctrl.recording-consent

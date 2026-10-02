@@ -152,6 +152,12 @@ for prof, gs in gcat.get('profiles', {}).items():
         if (g.endswith('-*') and g[:-2] not in families) or (not g.endswith('-*') and g not in gate_ids):
             err(f'gate profile {prof}: unknown gate {g}')
 
+# threat models referenced by manifests exist (automatable part of SEC-TM-001)
+for c in packs:
+    tm = spec_of(packs[c]).get('security', {}).get('threatModel')
+    if tm and not os.path.exists(os.path.join(ROOT, tm)):
+        err(f'{c}: threat model {tm} does not exist (SEC-TM-001)')
+
 # generated registries (errors.yaml, object-types/) must match the specs and manifests
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import gen_registries

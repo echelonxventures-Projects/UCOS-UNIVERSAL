@@ -74,7 +74,7 @@ spec:
   security:
     dataClasses:
     - PII
-    threatModel: docs/threat-model.md
+    threatModel: docs/threat-models/commerce-checkout-order.md
   compliance:
     controls:
     - ucos.ctrl.honest-design

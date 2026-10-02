@@ -55,7 +55,7 @@ spec:
     dataClasses:
     - PII
     - SPI
-    threatModel: docs/threat-model.md
+    threatModel: docs/threat-models/party-and-privacy.md
   certification:
     gates:
     - ARCH-*

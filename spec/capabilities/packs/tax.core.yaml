@@ -60,7 +60,7 @@ spec:
   security:
     dataClasses:
     - FINANCIAL
-    threatModel: docs/threat-model.md
+    threatModel: docs/threat-models/tax-and-documents.md
   compliance:
     controls:
     - ucos.ctrl.tax-invoice

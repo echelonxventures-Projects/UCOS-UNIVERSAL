@@ -47,7 +47,7 @@ spec:
   security:
     dataClasses:
     - PII
-    threatModel: docs/threat-model.md
+    threatModel: docs/threat-models/communication.md
   ui:
     views:
     - chat.thread

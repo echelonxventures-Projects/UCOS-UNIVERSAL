@@ -68,7 +68,7 @@ spec:
     dataClasses:
     - PII
     - CREDENTIAL
-    threatModel: docs/threat-model.md
+    threatModel: docs/threat-models/identity.md
   compliance:
     controls:
     - ucos.ctrl.mfa-business-users

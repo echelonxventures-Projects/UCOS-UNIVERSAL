@@ -19,6 +19,17 @@ def ev(slug, obj, *verbs):
     return [f'{slug}.{obj}.{v}' for v in verbs]
 
 P = []  # list of dicts
+
+TM = {  # universe -> threat model (docs/threat-models/); everything else uses the kernel baseline
+    'U09': 'identity', 'U11': 'party-and-privacy', 'U66': 'party-and-privacy',
+    'U12': 'geo-and-fulfillment', 'U35': 'geo-and-fulfillment', 'U36': 'geo-and-fulfillment',
+    'U20': 'commerce-checkout-order', 'U22': 'commerce-checkout-order', 'U23': 'commerce-checkout-order',
+    'U24': 'commerce-checkout-order', 'U26': 'commerce-checkout-order', 'U29': 'payment',
+    'U31': 'tax-and-documents', 'U42': 'tax-and-documents', 'U40': 'communication', 'U109': 'communication',
+    'U62': 'integration-webhooks', 'U43': 'storefront-and-admin-ui', 'U64': 'storefront-and-admin-ui',
+    'U87': 'storefront-and-admin-ui'}
+def threat_model_for(universe):
+    return f"docs/threat-models/{TM.get(universe.split('-')[0], 'kernel-and-tenancy')}.md"
 def pack(id, universe, kind, phase, purpose, scope='tenant', types=(), commands=(), queries=(), events=(),
          consumes=(), requires=(), optional=(), implements=(), ports=(), decisions=(), selection=None,
          temporal=('S', ['TP']), classes=(), controls=(), views=()):
@@ -43,7 +54,7 @@ def pack(id, universe, kind, phase, purpose, scope='tenant', types=(), commands=
     if optional: s['optional'] = [{'capability': o} for o in optional]
     if selection: s['selection'] = selection
     s['temporal'] = {'kind': temporal[0], 'uses': temporal[1]}
-    if classes: s['security'] = {'dataClasses': list(classes), 'threatModel': 'docs/threat-model.md'}
+    if classes: s['security'] = {'dataClasses': list(classes), 'threatModel': threat_model_for(universe)}
     if controls: s['compliance'] = {'controls': list(controls)}
     if views: s['ui'] = {'views': list(views)}
     s['certification'] = {'gates': ['ARCH-*', 'SEC-*', 'TEST-*', 'DOC-*', 'OBS-*'] + (['A11Y-*'] if views else [])}

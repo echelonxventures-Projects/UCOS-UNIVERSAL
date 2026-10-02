@@ -45,7 +45,7 @@ spec:
   security:
     dataClasses:
     - PII
-    threatModel: docs/threat-model.md
+    threatModel: docs/threat-models/communication.md
   compliance:
     controls:
     - ucos.ctrl.unsubscribe

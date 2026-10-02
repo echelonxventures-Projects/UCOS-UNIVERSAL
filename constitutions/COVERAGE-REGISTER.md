@@ -42,8 +42,8 @@
 | Persons, organisations as parties, party roles (buyer, seller, patient, student, driver…), contact points, preferences | U11 Person & Party | P0 | ✅ |
 | Customer 360 profile and traits, segments, audiences | U85 CDP | P3 | ✅ |
 | Tenants, organisations, org units, brands, stores, workspaces, tenant links | U10 | P0 | ✅ |
-| Employees, positions, payroll, attendance, recruiting, performance | U46 Workforce/HRMS | P4 | ⬜ |
-| Workforce scheduling (shifts) | U46 + U13 | P4 | ⬜ |
+| Employees, positions, payroll, attendance, recruiting, performance | U46 Workforce/HRMS | P4 | ✅ |
+| Workforce scheduling (shifts) | U46 + U13 | P4 | ✅ |
 | Teams, projects, tasks, comments, mentions, wiki, timesheets | U96 Work & Collaboration | P5 | ✅ |
 
 ## C. Geography and space
@@ -72,11 +72,11 @@
 | Money value type, currencies, FX rates and rate policies, rounding, allocation | U14 Currency & Unit | P0 | ✅ |
 | Units, quantities, dimensions, packaging units, conversions | U14 | P0 | ✅ |
 | Ledger, double entry, accounts, journals, settlement, invoices, credit notes, revenue recognition, period close | U30 Ledger & Finance | P2 | ✅ |
-| Accounts payable/receivable, expense management, budgeting/FP&A, treasury, fixed assets | U30 (extension planned) + U79 for asset units | P4 | ⬜ |
+| Accounts payable/receivable, expense management, budgeting/FP&A, treasury, fixed assets | U30 (P4 scope) + U45 (AP) + U102 (budgets/FP&A) + U106 (expenses) + U79 (asset units) | P4 | ✅ |
 | Tax (GST, VAT, sales tax, withholding/TCS, e-invoicing, tax documents) | U31 Tax | P1 | ✅ |
 | Customs duties and landed cost | U90 Global Trade | P2 | ✅ |
 | Stored value: gift cards, store credit, wallets, prepaid, cashback balances | U84 | P2 | ✅ |
-| Loyalty points, rewards, referrals, affiliates, partner commissions | U32 Loyalty & Incentive | P3 | ⬜ |
+| Loyalty points, rewards, referrals, affiliates, partner commissions | U32 Loyalty & Incentive | P3 | ✅ |
 | Lending, BNPL, EMI, insurance, deposits, investments, brokerage | U100 Financial Products | P6 | ✅ |
 | Crypto, stablecoins, CBDC, tokens, NFTs, product passports on-chain | U99 + U77 monetary systems | P6 | ✅ |
 | Economic simulation, pricing experiments | U54 Simulation + U72 experiments | P5 | ⬜ / ✅ |
@@ -98,7 +98,7 @@
 | Product reviews, ratings, Q&A | U70 Trust & Reputation (ratings), U88 Social (Q&A) | P2/P5 | ⬜ / ✅ |
 | Product content (rich descriptions, A+ content), media | U18/U21 + U43 Asset + U41 Content | P1/P4 | ✅ / ⬜ |
 | Product data feeds out (Google Merchant, Meta catalogue, marketplaces) | U62 Integration + U87 SEO feeds | P2 | ⬜ / ✅ |
-| Manufacturing: bill of materials, routings, production orders, product lifecycle (PLM) | U47 Manufacturing | P6 | ⬜ |
+| Manufacturing: bill of materials, routings, production orders, product lifecycle (PLM) | U47 Manufacturing | P6 | ✅ |
 | Product environmental footprint, eco-claims | U98 ESG | P6 | ✅ |
 
 ## G. Services
@@ -111,7 +111,7 @@
 | Resources (people, vehicles, rooms, machines), capacity, skills | U17 Resource | P2 | ✅ |
 | Subscriptions, memberships, plans, usage metering and rating, dunning | U27 Subscription | P2 | ✅ |
 | Entitlements, licences, feature access, quotas, seats | U28 Entitlement | P0–P2 | ✅ |
-| Support cases, tickets, knowledge base, SLAs | U39 Support & Case | P3 | ⬜ |
+| Support cases, tickets, knowledge base, SLAs | U39 Support & Case | P3 | ✅ |
 | Professional services (time & materials), timesheets | U96 + U19 | P5 | ✅ |
 | Transport services (rides, deliveries, seats) | U37 Mobility, U36 Logistics, U81 seats | P2–P6 | ⬜ / ✅ |
 | Public services (permits, licences, certificates) | U48 Government pack | P6 | 📦 |
@@ -147,17 +147,17 @@
 | Fulfilment, sourcing, delivery promises, pickup, digital delivery | U35 | P1 | ✅ |
 | Shipping, carriers, rates, labels, tracking, routing, fleet, last mile | U36 Logistics | P2 | ✅ |
 | Customs, export controls, sanctions screening of goods | U90 | P2 | ✅ |
-| Procurement, suppliers, purchase orders, goods receipt, 3-way match | U45 ERP/Procurement | P4 | ⬜ |
+| Procurement, suppliers, purchase orders, goods receipt, 3-way match | U45 ERP/Procurement | P4 | ✅ |
 | Demand planning, replenishment | U34 + U94 | P4 | ✅ |
-| Manufacturing, quality management, production scheduling | U47 | P6 | ⬜ |
+| Manufacturing, quality management, production scheduling | U47 | P6 | ✅ |
 | Maintenance (enterprise asset management), predictive maintenance | U79 + U82 + U94 | P5 | ✅ |
-| Mobility, dispatch, ride matching | U37 | P5 | ⬜ |
+| Mobility, dispatch, ride matching | U37 | P5 | ✅ |
 | IoT devices, telemetry, firmware updates, edge, robots | U92 | P5/P6 | ✅ |
 
 ## K. Customers, marketing and growth
 | Concept | Home | Phase | Status |
 |---|---|---|---|
-| CRM (leads, opportunities, accounts, pipelines, activities) | U38 CRM | P3 | ⬜ |
+| CRM (leads, opportunities, accounts, pipelines, activities) | U38 CRM | P3 | ✅ |
 | Customer data platform (CDP), identity stitching, traits, segments | U85 | P3 | ✅ |
 | Marketing automation, journeys, campaigns, attribution | U86 | P4 | ✅ |
 | Email, SMS, push (FCM, APNs, web push), WhatsApp, RCS, Telegram, LINE, WeChat, Viber, Messenger, Instagram, postal, voice notifications, in-app notification centre | U40 Communication (+ adapter packs) | P1–P4 | ✅ |
@@ -167,12 +167,12 @@
 | Agent-to-agent messaging protocol | U40 Appendix E.6 (+ U51) | P3 | ✅ |
 | Contact centre: voice, IVR, masked calling, live chat, chatbot hand-off, queues and skills routing, call-backs, recordings with consent, supervision | U109 | P3 | ✅ |
 | Video sessions (telehealth, classes, sales, video KYC, support) | U109 (`rtc.sessions`) | P3 | ✅ |
-| Advertising, sponsored listings, ad auctions | U33 Advertising | P4 | ⬜ |
+| Advertising, sponsored listings, ad auctions | U33 Advertising | P4 | ✅ |
 | SEO, URLs, sitemaps, structured data, redirects, hreflang, AI-crawler policy | U87 Web Presence & SEO | P1 | ✅ |
 | Social media: social graph, posts, comments, communities, moderation, publishing to and listening on external networks | U88 Social & Community | P5 | ✅ |
 | Reviews, ratings, reputation, seller and customer trust scores | U70 | P2 | ✅ |
 | Surveys, NPS, CSAT, forms, feedback | U97 | P3 | ✅ |
-| Personalisation, recommendations, cross-sell, upsell | U52 Recommendation | P4 | ⬜ |
+| Personalisation, recommendations, cross-sell, upsell | U52 Recommendation | P4 | ✅ |
 | Search (keyword, semantic, hybrid), merchandising | U44 | P1 | ✅ |
 | Experiments, A/B tests, feature flags | U72 | P1 | ✅ |
 
@@ -180,8 +180,8 @@
 | Concept | Home | Phase | Status |
 |---|---|---|---|
 | Files, images, video, renditions, rights | U43 Asset | P1 | ✅ |
-| CMS pages, blogs, articles, editorial workflow | U41 Content & Media (+ U87 routes) | P4 | ⬜ |
-| Video and audio streaming, live streaming, DRM, playlists, OTT | U41 | P4 | ⬜ |
+| CMS pages, blogs, articles, editorial workflow | U41 Content & Media (+ U87 routes) | P4 | ✅ |
+| Video and audio streaming, live streaming, DRM, playlists, OTT | U41 | P4 | ✅ |
 | Documents, templates, generation (invoices, contracts, certificates, labels), versioning | U42 Document | P1 | ✅ |
 | E-signature | U42 + U89 (esign port) | P2 | ⬜ / ✅ |
 | Contracts, agreements, terms acceptance, obligations, renewals | U89 Contract & Agreement | P2/P4 | ✅ |
@@ -194,11 +194,11 @@
 | Prompts | U50 | P3 | ✅ |
 | AI agents, tools (MCP), memory, authority, multi-agent | U51 Agent | P3 | ✅ |
 | Classical ML: features, training, serving, drift, fairness | U94 ML Platform | P2/P4 | ✅ |
-| Recommendation | U52 | P4 | ⬜ |
+| Recommendation | U52 | P4 | ✅ |
 | Decisions and rules (decision tables, decision models) | U53 Decision | P1 | ✅ |
-| Simulation, what-if | U54 | P5 | ⬜ |
-| Digital twins | U55 | P5 | ⬜ |
-| Learning signals, insights | U56 | P5 | ⬜ |
+| Simulation, what-if | U54 | P5 | ✅ |
+| Digital twins | U55 | P5 | ✅ |
+| Learning signals, insights | U56 | P5 | ✅ |
 | Retrieval over company knowledge (RAG), grounding | U07 + U51 | P1/P3 | ✅ / ⬜ |
 
 ## N. Platform and engineering
@@ -228,9 +228,9 @@
 | Compliance (regulations, controls, posture, regulatory change) | U67 | P1 | ✅ |
 | Risk, fraud, AML transaction monitoring, credit risk signals | U69 Risk | P2 | ✅ |
 | Trust and safety, content moderation | U88 (UGC) + U43 (media) + U69 | P5 | ✅ / ⬜ |
-| Disputes, claims, arbitration, chargebacks, appeals | U71 | P3 | ⬜ |
+| Disputes, claims, arbitration, chargebacks, appeals | U71 | P3 | ✅ |
 | Contracts and legal agreements | U89 | P2 | ✅ |
-| Evolution and change over time (proposals, deprecation, migration) | U76 Evolution | P3 | ⬜ |
+| Evolution and change over time (proposals, deprecation, migration) | U76 Evolution | P3 | ✅ |
 
 ## P. Platform operations
 | Concept | Home | Phase | Status |

@@ -23,7 +23,7 @@ This folder holds one detailed specification per universe. They are the second l
 
 ## Status of all universes
 
-Legend: ✅ specified (v0.1 draft) · ⬜ planned (phase per master §32). Next batch: Phase 2.
+Legend: ✅ specified (v0.1 draft) · ⬜ planned (phase per master §32).
 
 ### Phase 0 — Foundations & kernel (23 universes)
 
@@ -160,32 +160,32 @@ Engineering companions: [../engineering/KERNEL-DESIGN.md](../engineering/KERNEL-
 
 | ID | Universe | Phase | Status | Spec |
 |---|---|---|---|---|
-| U32 | Loyalty & Incentive | P3 | ⬜ | — |
-| U38 | CRM | P3 | ⬜ | — |
-| U39 | Support & Case | P3 | ⬜ | — |
+| U32 | Loyalty & Incentive | P3 | ✅ | [U32-loyalty-incentive](U32-loyalty-incentive/constitution.md) |
+| U38 | CRM | P3 | ✅ | [U38-crm](U38-crm/constitution.md) |
+| U39 | Support & Case | P3 | ✅ | [U39-support-case](U39-support-case/constitution.md) |
 | U49 | AI/Model | P3 | ✅ | [U49-ai-model](U49-ai-model/constitution.md) |
 | U50 | Prompt | P3 | ✅ | [U50-prompt](U50-prompt/constitution.md) |
 | U51 | Agent | P3 | ✅ | [U51-agent](U51-agent/constitution.md) |
-| U71 | Dispute & Resolution | P3 | ⬜ | — |
-| U76 | Evolution | P3 | ⬜ | — |
+| U71 | Dispute & Resolution | P3 | ✅ | [U71-dispute-resolution](U71-dispute-resolution/constitution.md) |
+| U76 | Evolution | P3 | ✅ | [U76-evolution](U76-evolution/constitution.md) |
 
 ### Phase 4–6 — Intelligence, verticals
 
 | ID | Universe | Phase | Status | Spec |
 |---|---|---|---|---|
-| U33 | Advertising | P4 | ⬜ | — |
-| U41 | Content & Media | P4 | ⬜ | — |
-| U45 | ERP/Procurement | P4 | ⬜ | — |
-| U46 | Workforce/HRMS | P4 | ⬜ | — |
-| U52 | Recommendation | P4 | ⬜ | — |
-| U37 | Mobility & Dispatch | P5 | ⬜ | — |
-| U54 | Simulation | P5 | ⬜ | — |
-| U55 | Digital Twin | P5 | ⬜ | — |
-| U56 | Learning | P5 | ⬜ | — |
-| U47 | Manufacturing | P6 | ⬜ | — |
-| U48 | Industry Packs | P6 | ⬜ | — |
+| U33 | Advertising | P4 | ✅ | [U33-advertising](U33-advertising/constitution.md) |
+| U41 | Content & Media | P4 | ✅ | [U41-content-media](U41-content-media/constitution.md) |
+| U45 | ERP/Procurement | P4 | ✅ | [U45-erp-procurement](U45-erp-procurement/constitution.md) |
+| U46 | Workforce/HRMS | P4 | ✅ | [U46-workforce-hrms](U46-workforce-hrms/constitution.md) |
+| U52 | Recommendation | P4 | ✅ | [U52-recommendation](U52-recommendation/constitution.md) |
+| U37 | Mobility & Dispatch | P5 | ✅ | [U37-mobility-dispatch](U37-mobility-dispatch/constitution.md) |
+| U54 | Simulation | P5 | ✅ | [U54-simulation](U54-simulation/constitution.md) |
+| U55 | Digital Twin | P5 | ✅ | [U55-digital-twin](U55-digital-twin/constitution.md) |
+| U56 | Learning | P5 | ✅ | [U56-learning](U56-learning/constitution.md) |
+| U47 | Manufacturing | P6 | ✅ | [U47-manufacturing](U47-manufacturing/constitution.md) |
+| U48 | Industry Packs | P6 | ✅ | [U48-industry-packs](U48-industry-packs/constitution.md) |
 
-**Progress:** 93 of 109 universes specified (85%). Phases 0 and 1 are fully specified. Communication is complete (U40 + U109). `spec/` checks clean: 109 manifests, 0 errors, and three reference platform definitions (D2C IN+AE, B2B IN, omnichannel IN) compose with 0 gaps. Remaining: 16 planned universes in Phases 2–6.
+**Progress:** 109 of 109 universes specified (100%). Phases 0 and 1 are specified in depth; Phases 2–6 at v0.1 depth (laws, objects, commands, events, APIs, gap rules, UI). Communication is complete (U40 + U109). `spec/` checks clean: 109 manifests, 0 errors, and three reference platform definitions (D2C IN+AE, B2B IN, omnichannel IN) compose with 0 gaps.
 
 ## Amendments register (to fold into the master via a governed change)
 
@@ -258,6 +258,7 @@ Engineering companions: [../engineering/KERNEL-DESIGN.md](../engineering/KERNEL-
 | A-65 | U109 | Real-time Communications & Contact Centre universe: voice, IVR, masked calling, video sessions, live chat, bot hand-off, routing, call-backs, recordings with consent, supervision. |
 | A-66 | spec/ | 23 new manifests (5 capabilities, 12 messaging adapters, the `rtc.provider` port, voice and video adapters, a simulator, contact centre, video sessions). New controls for recording consent and bot disclosure. `targetPhase` added to platform definitions. New reference platform `omnichannel-in` (Phase 4). A negative test confirms the checker blocks mobile, voice and video at Phase 1. |
 | A-67 | U49–U51, U17, U25, U27, U30, U36, U59, U69, U70 | AI & Agents specs (gateway, prompts as code, agent run loop with autonomy levels and kill switch) and the Phase 2 core. Ledger posting rules are idempotent by `(sourceEventId, ruleId)`, which makes the P1 replay (A-19) deterministic. Marketplace payouts respect Temporal return-window holds. Subscription mandates follow RBI e-mandate and SCA MIT rules. Risk falls back to `unknown` and never to `low`. U59 registers `gen.schema.object-types` for `spec/object-types/`. |
+| A-68 | U32, U33, U37–U39, U41, U45–U48, U52, U54–U56, U71, U76 | The remaining 16 universes are specified, so all 109 now have constitutions. Points are U84 stored value with U30 liability postings. Support owns cases while U109 owns routing. Every appeal goes to an independent human reviewer. Sponsored items are always labelled. Simulations run only in the `simulation` reality frame. Industry packs add composition but never fork a universe. |
 
 ## Open decisions raised by the specs
 

@@ -2,6 +2,7 @@
 
 | Field | Value |
 |---|---|
+| Author | Bipin Kumar |
 | Version | 0.1 (proposal, to be validated with design partners in P1) |
 | Date | 2026-10-03 |
 | Related | [COST-MODEL.md](COST-MODEL.md), [TEAM-AND-ROADMAP-PLAN.md](TEAM-AND-ROADMAP-PLAN.md), U27 Subscription, U28 Entitlement, U23 Pricing, U57 pack marketplace |

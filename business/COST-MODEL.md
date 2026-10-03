@@ -2,6 +2,7 @@
 
 | Field | Value |
 |---|---|
+| Author | Bipin Kumar |
 | Version | 0.1 (planning model) |
 | Date | 2026-10-03 |
 | Currency | INR (₹), with USD at the stated FX assumption. 1 Cr = ₹10,000,000; 1 L (lakh) = ₹100,000 |

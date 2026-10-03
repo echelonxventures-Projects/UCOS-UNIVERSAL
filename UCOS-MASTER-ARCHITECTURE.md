@@ -4,6 +4,7 @@
 | Field | Value |
 |---|---|
 | Document ID | `UCOS-MASTER-ARCH` |
+| Author | Bipin Kumar |
 | Version | 1.3.0 (73 amendments applied, A-01…A-73; see §35) |
 | Status | Canonical — supersedes every architecture fragment in `Chat.txt` |
 | Date | 2026-10-03 |

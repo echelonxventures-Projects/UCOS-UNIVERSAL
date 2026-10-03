@@ -1,5 +1,7 @@
 # UCOS Ω∞ — Universal Capability Operating System
 
+Author: **Bipin Kumar**
+
 A platform factory: platforms (commerce, marketplaces, mobility, media, fintech, ERP, CRM, healthcare, government and future types) are **composed from certified capabilities, context, policies and metadata**, not hand-coded.
 
 | Start here | What it is |

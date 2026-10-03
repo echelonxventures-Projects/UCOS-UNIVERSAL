@@ -2,6 +2,7 @@
 
 | Field | Value |
 |---|---|
+| Author | Bipin Kumar |
 | Version | 0.1 |
 | Date | 2026-10-03 |
 | Related | [COST-MODEL.md](COST-MODEL.md) (assumptions A1–A8), [COMMERCIAL-MODEL.md](COMMERCIAL-MODEL.md), [TEAM-AND-ROADMAP-PLAN.md](TEAM-AND-ROADMAP-PLAN.md) |

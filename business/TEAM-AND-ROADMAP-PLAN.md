@@ -2,6 +2,7 @@
 
 | Field | Value |
 |---|---|
+| Author | Bipin Kumar |
 | Version | 0.1 (planning) |
 | Date | 2026-10-03 |
 | Basis | Master §32 (phases and exit criteria), [COST-MODEL.md](COST-MODEL.md) (assumptions A1–A8), [COMMERCIAL-MODEL.md](COMMERCIAL-MODEL.md) (plans) |

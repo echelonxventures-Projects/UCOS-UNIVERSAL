@@ -4020,7 +4020,7 @@ gantt
 | **P3 Builders & experience** | Builder Studio (W2–W8, W10), UI meta-model renderers (web, mobile), design system, journeys, i18n/RTL, developer portal + SDK generation, AI gateway v1 + Studio assistant | A non-engineer builds a new storefront variant end-to-end in Studio |
 | **P4 Intelligence** | Global Product & Service Intelligence Network (ingestion pipeline, GPID, W9), search/vector, recommendation, agents (catalog enrichment, support triage) with authority & evals | ≥ 1M global products with quality ≥ threshold; agents at L2 with eval ≥ target |
 | **P5 Continuous compliance** | Control library (PCI, DPDP, GDPR, SOC2, ISO27001), evidence collectors, DSR, consent, Governance portal (W11, W16), certification at scale, DR automation | External audit (SOC 2 Type I) passes using UCOS-generated evidence |
-| **P6 Vertical proofs** | Subscription/OTT, Mobility, CRM/ITSM templates; Resource universe; Dispatch | **Three new verticals certified with zero kernel code changes** (only packs + definitions) |
+| **P6 Vertical proofs** | Industry packs (U48) for Subscription/OTT, Mobility (on U37 Mobility & Dispatch, delivered in P5) and CRM/ITSM, composed from existing universes; U17 Resource is delivered in P2 | **Three new verticals certified with zero kernel code changes** (only packs + definitions) |
 | **P7 Evolution & autonomy** | Evolution engine, simulation cells, twins, AIOps auto-remediation (L3), bounded optimisation (L4) | Measured MTTR reduction; ≥ N evolution proposals accepted via governance |
 
 ### 32.2 Team topology (indicative)
@@ -4054,6 +4054,22 @@ gantt
 | ADR-018 | Reference checker before the production composer | Continuous spec consistency; golden blueprints as acceptance tests |
 | ADR-019 | Derived manifests for later-phase universes | Platform-wide ownership checks now |
 | ADR-020 | Postgres row-level security as the tenancy guard | Defence in depth for shared-schema tenancy |
+| ADR-021 | Keycloak as reference IdP (provisional, spike S-02) | Mature OIDC/SAML/WebAuthn behind the U09 port |
+| ADR-022 | Embedded Go Datalog evaluator; Python checker as oracle (provisional, S-01) | Determinism, provenance, one control-plane language |
+| ADR-023 | Reservation counters in Postgres sub-slots | One transactional store |
+| ADR-024 | OpenTofu modules wrapped by Crossplane | Cells as an API with drift reconciliation |
+| ADR-025 | gVisor for third-party packs | Kernel-level isolation for untrusted code |
+| ADR-026 | Cedar only; OpenFGA not adopted | One policy language |
+| ADR-027 | Bundle code lists only when licence allows multi-tenant redistribution | Legal safety; licence as data |
+| ADR-028 | Multi-region tenants via data shards in several cells | Residency per data class |
+| ADR-029 | Format-preserving tokenisation for national IDs and bank accounts | Minimise exposure outside PSP flows |
+| ADR-030 | Global product sourcing order and provenance | Coverage with traceable licences |
+| ADR-031 | In-house IN/UAE tax packs; adapters elsewhere | Precision at launch, breadth later |
+| ADR-032 | Temporal.io as the durable engine | Durability and versioning |
+| ADR-033 | React Native mobile renderer | One renderer language |
+| ADR-034 | Architecture Board composition | Separation of duties |
+| ADR-035 | Ownership of legal interpretations | Accountability for controls |
+| ADR-036 | Deterministic CI with no person or AI in the loop | Reproducible checks; no drift |
 
 Full records (context, alternatives, consequences, enforcement): `docs/adr/`.
 

@@ -24,14 +24,23 @@ Each ADR records one significant decision: its context, the alternatives conside
 | [ADR-018](ADR-018-a-reference-checker-precedes-the-production-composer.md) | A reference checker precedes the production composer | Accepted (A-66, A-69) |
 | [ADR-019](ADR-019-derived-manifests-for-universes-beyond-phase-1.md) | Derived manifests for universes beyond Phase 1 | Accepted (A-69) |
 | [ADR-020](ADR-020-postgres-row-level-security-as-the-tenancy-guard.md) | Postgres row-level security as the tenancy guard | Accepted (KERNEL-DESIGN §4) |
+| [ADR-021](ADR-021-keycloak-is-the-reference-identity-provider.md) | Keycloak is the reference identity provider | Accepted (provisional; confirmed by spike S-02 by 2027-01-15) |
+| [ADR-022](ADR-022-composer-datalog-embedded-go-evaluator-with-the-python-checker.md) | Composer Datalog: embedded Go evaluator with the Python checker as oracle | Accepted (provisional; confirmed by spike S-01 by 2027-01-15) |
+| [ADR-023](ADR-023-reservation-counters-stay-in-postgres-sharded-sub-slots.md) | Reservation counters stay in Postgres (sharded sub-slots) | Accepted |
+| [ADR-024](ADR-024-cells-are-provisioned-with-opentofu-modules-wrapped-by-crosspl.md) | Cells are provisioned with OpenTofu modules wrapped by Crossplane | Accepted |
+| [ADR-025](ADR-025-third-party-packs-run-under-gvisor.md) | Third-party packs run under gVisor | Accepted |
+| [ADR-026](ADR-026-cedar-only-openfga-is-not-adopted.md) | Cedar only; OpenFGA is not adopted | Accepted (revisit at P6) |
+| [ADR-027](ADR-027-standard-code-lists-are-bundled-only-when-their-licence-allows.md) | Standard code lists are bundled only when their licence allows multi-tenant redistribution | Accepted (S-06 records the per-source outcome) |
+| [ADR-028](ADR-028-a-tenant-may-span-several-residency-regions-through-multiple-c.md) | A tenant may span several residency regions through multiple cells | Accepted |
+| [ADR-029](ADR-029-format-preserving-tokenisation-covers-national-ids-and-bank-ac.md) | Format-preserving tokenisation covers national IDs and bank accounts only | Accepted |
+| [ADR-030](ADR-030-global-product-data-comes-from-tenant-contributions-gs1-data-p.md) | Global product data comes from tenant contributions, GS1 data pools and licensed feeds | Accepted (commercial terms before P4) |
+| [ADR-031](ADR-031-in-house-tax-packs-for-india-and-uae-engine-adapters-elsewhere.md) | In-house tax packs for India and UAE; engine adapters elsewhere | Accepted |
+| [ADR-032](ADR-032-temporal-io-is-the-durable-workflow-engine.md) | Temporal.io is the durable workflow engine | Accepted (confirmed by spike S-05) |
+| [ADR-033](ADR-033-react-native-for-the-mobile-renderer.md) | React Native for the mobile renderer | Accepted |
+| [ADR-034](ADR-034-architecture-board-composition.md) | Architecture Board composition | Accepted (structure); members named by the founders before P0 genesis |
+| [ADR-035](ADR-035-legal-interpretations-are-owned-by-in-house-counsel-with-exter.md) | Legal interpretations are owned by in-house counsel with external firms per jurisdiction | Accepted (structure) |
+| [ADR-036](ADR-036-continuous-integration-is-deterministic-and-needs-no-person-or.md) | Continuous integration is deterministic and needs no person or AI to run | Accepted |
 
-## Proposed (open decisions from the specs)
-These stay *Proposed* until their spike or review completes (see `constitutions/README.md` → Open decisions):
-- Reference identity provider, Keycloak or Ory (U09; P0 load spike).
-- Datalog engine, Soufflé or an embeddable Rust engine (U58; P0 spike).
-- Reservation counters at extreme peak, sharded Postgres or Redis (U13).
-- Cell provisioning, Crossplane or plain OpenTofu (U73).
-- gVisor sandbox for all third-party packs (U57; P2 spike).
-- OpenFGA alongside Cedar for relationship-heavy cases (U03; P6).
+All open decisions raised by the specs are recorded above (ADR-021…035). Provisional ADRs name the spike that confirms or reverses them.
 
 Template: copy any ADR and keep the same headings.

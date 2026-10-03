@@ -264,24 +264,24 @@ Engineering companions: [../engineering/KERNEL-DESIGN.md](../engineering/KERNEL-
 | A-71 | Master §25 | Wireframes W17–W40 cover the agent desktop, supervisor wallboard, notification centre, period close, payout run, subscription self-service, NDR queue, risk review, reviews, AI use-case gate, CRM pipeline, loyalty wallet, frame registry, coverage dashboard, dispute workbench, configurator, warranty claim, seat map, OKR tree, board portal, shop-floor terminal, course player, dispatcher map and rollout cockpit. Master bumped to v1.2.0. |
 | A-72 | business/ | Business pack. `COST-MODEL.md` covers assumptions A1–A8, fixed platform costs, per-tenant unit economics, AI cost formula and FinOps. `COMMERCIAL-MODEL.md` covers segments, plans (platform fee plus GMV take rate), pass-through, the pack revenue share, terms, and billing on UCOS itself. `TEAM-AND-ROADMAP-PLAN.md` covers dated phases, headcount by team, the 3-year budget, break-even and funding need. It also flags the master §32.1 vs constitution phase mismatches (U17, U37) for alignment. |
 
-## Open decisions raised by the specs
+## Decisions raised by the specs (all recorded as ADRs)
 
 | From | Decision needed | Recommendation |
 |---|---|---|
 | U04 | Expression language for constraints and rules | **Decided:** CEL (A-22, ADR-013) |
-| U08 | Licensing for GS1 GPC and UNSPSC redistribution | Legal review before P1 |
-| U09 | Reference IdP: Keycloak or Ory | Load spike in P0, then decide |
-| U10 | One tenant spanning several residency regions | Supported via multiple cells; spike in P2 |
-| U12 | Boundary data source: OSM (ODbL) or commercial | Legal and cost review |
-| U13 | Reservation counters at extreme peak: Postgres sharded sub-slots or Redis | Postgres first, then measure |
-| U01 | Membership of the root authority (Architecture Board, at least 3 members with hardware keys) | Name members before the P0 genesis |
-| U03 | OpenFGA for relationship-heavy (social graph) cases | Evaluate in P6 |
-| U57 | gVisor sandbox for all third-party packs | Cost/benefit spike in P2 |
-| U58 | Datalog engine: Soufflé or an embeddable Rust engine | P0 spike, weighing incremental evaluation |
-| U65 | Scope of format-preserving tokenisation (non-PSP flows) | Confirm in P2 |
-| U73 | Crossplane or plain OpenTofu for cell provisioning | OpenTofu modules wrapped by Crossplane |
-| U18 | Global product data sourcing and licences (GS1 data pools, manufacturer syndication, licensed providers) | Commercial and legal workstream before P4 |
-| U31 | Build or buy tax engines per regime | In-house packs for India and UAE in P1; engine adapters for US and EU |
-| U60 | Workflow engine: Temporal.io or Camunda 8 | Temporal.io, with a BPMN import converter |
-| U64 | Mobile renderer: React Native or Flutter | React Native; consider Flutter only if POS/kiosk performance requires it |
-| U67 | Who owns legal interpretations in each jurisdiction | Organisational decision: in-house counsel plus external firms |
+| U08 | Licensing for GS1 GPC and UNSPSC redistribution | **Decided:** Bundle only licences that allow multi-tenant redistribution; otherwise bring-your-own-licence data packs ([ADR-027](../docs/adr/)) |
+| U09 | Reference IdP: Keycloak or Ory | **Decided:** Keycloak, provisional until spike S-02 ([ADR-021](../docs/adr/)) |
+| U10 | One tenant spanning several residency regions | **Decided:** Yes: one tenant, data shards in several cells ([ADR-028](../docs/adr/)) |
+| U12 | Boundary data source: OSM (ODbL) or commercial | **Decided:** OSM (ODbL) with attribution, derived data kept separate ([ADR-027](../docs/adr/)) |
+| U13 | Reservation counters at extreme peak: Postgres sharded sub-slots or Redis | **Decided:** Postgres sharded sub-slots; Redis only if the load test fails ([ADR-023](../docs/adr/)) |
+| U01 | Membership of the root authority (Architecture Board, at least 3 members with hardware keys) | **Decided:** Board of at least 3 (CTO chair, chief architect, CISO); founders name members at genesis ([ADR-034](../docs/adr/)) |
+| U03 | OpenFGA for relationship-heavy (social graph) cases | **Decided:** Cedar only; revisit at P6 against stated triggers ([ADR-026](../docs/adr/)) |
+| U57 | gVisor sandbox for all third-party packs | **Decided:** gVisor for all third-party out-of-process packs ([ADR-025](../docs/adr/)) |
+| U58 | Datalog engine: Soufflé or an embeddable Rust engine | **Decided:** Embedded Go Datalog evaluator with the Python checker as oracle; provisional until spike S-01 ([ADR-022](../docs/adr/)) |
+| U65 | Scope of format-preserving tokenisation (non-PSP flows) | **Decided:** Tokenise national IDs and bank account numbers; encrypt other restricted fields ([ADR-029](../docs/adr/)) |
+| U73 | Crossplane or plain OpenTofu for cell provisioning | **Decided:** OpenTofu modules wrapped by Crossplane ([ADR-024](../docs/adr/)) |
+| U18 | Global product data sourcing and licences (GS1 data pools, manufacturer syndication, licensed providers) | **Decided:** Syndication and licensed feeds first, then tenant contributions with provenance ([ADR-030](../docs/adr/)) |
+| U31 | Build or buy tax engines per regime | **Decided:** In-house packs for India and UAE; engine adapters for US and EU ([ADR-031](../docs/adr/)) |
+| U60 | Workflow engine: Temporal.io or Camunda 8 | **Decided:** Temporal.io with a BPMN import converter ([ADR-032](../docs/adr/)) |
+| U64 | Mobile renderer: React Native or Flutter | **Decided:** React Native (Expo) ([ADR-033](../docs/adr/)) |
+| U67 | Who owns legal interpretations in each jurisdiction | **Decided:** In-house counsel owns each interpretation, with external firms per jurisdiction ([ADR-035](../docs/adr/)) |

@@ -36,7 +36,7 @@ gantt
 | P6 | Feb – Jul 2028 | Three new verticals certified with zero kernel changes | Vertical solution bundles with partners |
 | P7 | Jul – Nov 2028 | Measured MTTR reduction; governed evolution proposals accepted | — |
 
-**Open planning item.** Master §32.1 and the constitutions place a few universes in different phases: U17 Resource is P2 in its constitution but listed with the P6 vertical proofs, and U37 Mobility is P5 in its constitution against P6 in §32.1. The constitution's *Delivery phase* governs scope. §32.1 should be aligned through U02 before P2 planning.
+**Phase alignment (resolved, A-73).** Master §32.1 now matches the constitutions: U17 Resource is delivered in P2 and U37 Mobility & Dispatch in P5. P6 builds industry packs on top of them.
 
 ## 2. Team (product and engineering FTE, end of year)
 | Team | Y1 (Nov 26–Oct 27) | Y2 | Y3 | Mission |

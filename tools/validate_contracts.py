@@ -429,6 +429,66 @@ if len(ids) != len(set(ids)):
     err('tools/spikes/cel-vectors.yaml: duplicate vector ids')
 counts['cel-vectors'] = len(ids)
 
+# ---------------------------------------------------------------- 13. seed data
+import datetime
+seed = os.path.join(ROOT, 'spec', 'seed')
+def load(p): return yaml.safe_load(open(os.path.join(seed, p)))
+for f in sorted(glob.glob(os.path.join(seed, 'refdata', '*.yaml'))):
+    d = yaml.safe_load(open(f))
+    lic = d.get('licence') or {}
+    if d.get('bundled') and lic.get('redistribution') != 'allowed':
+        err(f'{rel(f)}: bundled code list without a licence that allows redistribution (ADR-027)')
+    if d.get('count') != len(d.get('entries', [])):
+        err(f'{rel(f)}: count {d.get("count")} does not match {len(d.get("entries", []))} entries')
+    key = next(iter(d['entries'][0])) if d.get('entries') else None
+    vals = [e[key] for e in d.get('entries', [])]
+    if len(vals) != len(set(vals)):
+        err(f'{rel(f)}: duplicate {key} values')
+iso2 = {e['alpha2'] for e in load('refdata/iso3166-1.yaml')['entries']}
+cur = {e['alpha3']: e['minorUnit'] for e in load('refdata/iso4217.yaml')['entries']}
+zones = {e['zone'] for e in load('refdata/iana-tz.yaml')['entries']}
+subs = {e['code'] for cc in ('IN', 'AE') for e in load(f'refdata/iso3166-2-{cc}.yaml')['entries']}
+for j in load('geo/jurisdictions.yaml')['jurisdictions']:
+    if j['id'].split(':')[-1] not in iso2: err(f'jurisdictions: {j["id"]} is not an ISO 3166-1 code')
+    if j['currency'] not in cur: err(f'jurisdictions: unknown currency {j["currency"]}')
+    for z in j['timezones']:
+        if z not in zones: err(f'jurisdictions: unknown time zone {z}')
+    for c in j['children']:
+        if c['id'].split(':')[-1] not in subs: err(f'jurisdictions: {c["id"]} is not an ISO 3166-2 code')
+for c in load('calendars/holidays-2026-2027.yaml')['calendars']:
+    for h in c['fixed']:
+        try: datetime.date.fromisoformat(h['date'])
+        except ValueError: err(f'holidays: invalid date {h["date"]} in {c["id"]}')
+for b in load('calendars/holidays-2026-2027.yaml')['businessHours']:
+    if b['timezone'] not in zones: err(f'business hours {b["id"]}: unknown time zone {b["timezone"]}')
+for p_ in load('plans/platform-plans.yaml')['plans']:
+    for c_, amt in p_['price']['platformFee'].items():
+        if c_ not in cur: err(f'plans: {p_["id"]} price in unknown currency {c_}')
+        elif not amt.startswith('from ') and len(amt.split('.')[-1]) != cur[c_]:
+            err(f'plans: {p_["id"]} {c_} amount {amt} does not use {cur[c_]} decimals')
+tmpl = {yaml.safe_load(open(f))['id'] for f in glob.glob(os.path.join(seed, 'industry-templates', '*.yaml'))}
+for pdf in glob.glob(os.path.join(ROOT, 'spec', 'composition', 'golden', '*.pd.yaml')):
+    t_ = yaml.safe_load(open(pdf))['spec'].get('template', '').split('@')[0]
+    if t_ and t_ not in tmpl: err(f'{rel(pdf)}: template {t_} has no seed in spec/seed/industry-templates/')
+PH = re.compile(r'\{([a-zA-Z]+)\}')
+for m in load('l10n/messages-core.yaml')['messages']:
+    want = set(PH.findall(m['values']['en']['text']))
+    for loc, v in m['values'].items():
+        if set(PH.findall(v['text'])) != want:
+            err(f'messages: {m["key"]} [{loc}] placeholders {sorted(set(PH.findall(v["text"])))} differ from en {sorted(want)}')
+    if m['category'] == 'legal' and not m.get('requiresHumanReview'):
+        err(f'messages: legal key {m["key"]} must require human review (U15)')
+for f in sorted(glob.glob(os.path.join(seed, 'tax', '*.yaml'))):
+    d = yaml.safe_load(open(f))
+    for c in d.get('categories', []):
+        if c.get('status') not in ('proposed', 'verified'):
+            err(f'{rel(f)}: category {c.get("id")} needs status proposed or verified')
+for f in sorted(glob.glob(os.path.join(seed, 'documents', '*.yaml'))):
+    d = yaml.safe_load(open(f))
+    if not d.get('legalBasis') or not d.get('requiredFields'):
+        err(f'{rel(f)}: document template needs legalBasis and requiredFields')
+counts['seed-files'] = len(glob.glob(os.path.join(seed, '**', '*.yaml'), recursive=True))
+
 # ---------------------------------------------------------------- report
 print('  '.join(f'{k}: {v}' for k, v in counts.items()))
 print(f'errors: {len(errors)}')

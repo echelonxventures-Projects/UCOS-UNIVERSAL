@@ -85,6 +85,7 @@ run "generated registries in sync"  "$PY" tools/gen_registries.py --check
 run "generated contracts in sync"   "$PY" tools/gen_contracts.py --check
 run "spec consistency (ucos_check)" "$PY" tools/ucos_check.py
 run "composition rules agree (closure.dl oracle)" "$PY" tools/datalog.py oracle
+run "golden test data reproducible" "$PY" tools/gen_golden_data.py "${TMPDIR:-/tmp}/ucos-golden-data" --check
 if [[ "$QUICK" == "1" ]]; then
   run "contracts, scenarios, SLOs"  "$PY" tools/validate_contracts.py --quick
 else

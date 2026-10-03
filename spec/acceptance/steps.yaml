@@ -123,3 +123,59 @@ steps:
   pattern: ^the blueprint equals the checked-in expected blueprint for "([^"]*)"$
 - id: compose.no-mandatory-gaps
   pattern: ^the gap report has 0 mandatory gaps$
+- id: cell.empty
+  pattern: ^an empty cell "([^"]*)" in reality "([^"]*)"$
+- id: registry.snapshot-from-repo
+  pattern: ^the registry snapshot is built from the repository at the current commit$
+- id: cert.run
+  pattern: ^the blueprint for "([^"]*)" is certified with profile "([^"]*)"$
+- id: cert.profile-passes
+  pattern: ^every gate in profile "([^"]*)" passes or is waived$
+- id: cert.attestation
+  pattern: ^a signed attestation exists for the blueprint$
+- id: activation.approve
+  pattern: ^the Architecture Board approves activation of the blueprint for tenant "([^"]*)"$
+- id: activation.run
+  pattern: ^the activation agent activates the blueprint in cell "([^"]*)"$
+- id: activation.phase
+  pattern: ^the activation reaches phase "([^"]*)"$
+- id: pack.describe-matches
+  pattern: ^the pack "([^"]*)" describes exactly the operations in its manifest$
+- id: blueprint.active
+  pattern: ^the blueprint for "([^"]*)" is active for tenant "([^"]*)" in cell "([^"]*)"$
+- id: user.with-role
+  pattern: ^a user "([^"]*)" of tenant "([^"]*)" with role "([^"]*)"$
+- id: command.create-note
+  pattern: ^"([^"]*)" sends command "([^"]*)" with title "([^"]*)"$
+- id: command.on-note
+  pattern: ^"([^"]*)" sends command "([^"]*)" for the note$
+- id: object.status
+  pattern: ^the object of type "([^"]*)" exists with status "([^"]*)"$
+- id: audit.record-exists
+  pattern: ^an audit record for "([^"]*)" exists for tenant "([^"]*)"$
+- id: audit.seal
+  pattern: ^the audit appender seals the chain for tenant "([^"]*)" for today$
+- id: audit.verifies
+  pattern: ^the audit chain for tenant "([^"]*)" for today verifies$
+- id: audit.anchored
+  pattern: ^the daily Merkle root is anchored to write-once storage$
+- id: audit.tamper
+  pattern: ^an operator with database access alters an audit record for tenant "([^"]*)"$
+- id: audit.verify-fails
+  pattern: ^the audit chain for tenant "([^"]*)" for today fails verification at that record$
+- id: clock.set
+  pattern: ^the clock is "([^"]*)"$
+- id: clock.advance
+  pattern: ^the clock advances by "([^"]*)"$
+- id: note.reminder
+  pattern: ^"([^"]*)" schedules a reminder on a note for "([^"]*)"$
+- id: trigger.recurring
+  pattern: ^a recurring trigger "([^"]*)" is scheduled in time zone "([^"]*)"$
+- id: trigger.fired-local
+  pattern: ^the trigger fired (\d+) times, each at 09:00 local time in "([^"]*)"$
+- id: calendar.business
+  pattern: ^the business calendar "([^"]*)" has business hours "([^"]*)" on weekdays and holiday "([^"]*)"$
+- id: deadline.business
+  pattern: ^a deadline of "([^"]*)" business time is scheduled on calendar "([^"]*)"$
+- id: deadline.is
+  pattern: ^the deadline is "([^"]*)"$

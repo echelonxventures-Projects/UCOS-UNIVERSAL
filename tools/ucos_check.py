@@ -166,13 +166,13 @@ for p_ in bad + extra:
     err(f'registry out of date: {p_} (run python3 tools/gen_registries.py)')
 
 # ---------------------------------------------------------------- 3. composition
-def adapters_for(abs_, jur, method):
+def adapters_for(abs_, jur, method, reality='physical'):
     cands = []
     for a in packs:
-        if abs_ not in impls(a) or kind(a) == 'simulator': continue
+        if abs_ not in impls(a): continue
         sel = spec_of(packs[a]).get('selection', {})
         js, ms = sel.get('jurisdictions', ['*']), sel.get('methods')
-        if 'physical' not in sel.get('realities', ['physical']): continue
+        if reality not in sel.get('realities', ['physical']): continue   # simulators serve simulated realities only
         if jur not in js and '*' not in js: continue
         if method != '-' and ms is not None and method not in ms and '*' not in ms: continue
         specificity = 0 if jur in js else 1
@@ -185,10 +185,12 @@ def compose(pd, target_phase=1):
     countries = s['geography']['countries']
     channels = s.get('channels', [])
     excluded = set(s.get('capabilities', {}).get('exclude', []))
+    reality = s.get('reality', 'physical')
     trace = {}
     def add(c, why):
         if c not in trace: trace[c] = why
-    for c in defaults['baseCapabilities']: add(c, 'base-capability')
+    for c in defaults['baseCapabilities']:
+        if c not in packs or phase(c) <= target_phase: add(c, 'base-capability')   # base set grows with phases (A-74)
     for c in s.get('capabilities', {}).get('include', []): add(c, 'requested')
     msg_methods = set(defaults['alwaysMessagingMethods'])
     rtc_methods = set()
@@ -209,6 +211,7 @@ def compose(pd, target_phase=1):
             if c in packs:
                 for d in reqs(c): add(d, f'required-by:{c}')
         for r in facts_reg:
+            if reality != 'physical': break                      # regulations protect real people (P-004)
             if r['jurisdiction'] != '*' and r['jurisdiction'] not in jurs: continue
             w = r['when']
             ok = (w.get('always') or (w.get('capability') in trace) or (w.get('businessModel') in s.get('businessModel', []))
@@ -226,7 +229,7 @@ def compose(pd, target_phase=1):
                 cc = countries[i]
                 methods = (pay_methods.get(cc, []) if src == 'paymentMethods' else sorted(msg_methods) if src == 'messagingMethods' else sorted(rtc_methods) if src == 'rtcMethods' else ['-'])
                 for mth in methods:
-                    cands = adapters_for(abs_, j, mth)
+                    cands = adapters_for(abs_, j, mth, reality)
                     if cands:
                         selected[(abs_, j, mth)] = cands[0]
                         add(cands[0], f'adapter:{abs_}[{j},{mth}]')
@@ -260,6 +263,7 @@ def compose(pd, target_phase=1):
         'kind': 'Blueprint',
         'platformDefinition': f"{pd['metadata']['id']}@{pd['metadata']['version']}",
         'targetPhase': target_phase,
+        **({'reality': reality} if reality != 'physical' else {}),
         'capabilities': [{'id': c, 'version': packs[c]['metadata']['version'], 'scope': scope(c), 'why': trace[c]}
                          for c in sorted(required) if c in packs],
         'adapters': [{'abstract': a, 'jurisdiction': j, 'method': m, 'implementation': i} for (a, j, m), i in sorted(selected.items())],

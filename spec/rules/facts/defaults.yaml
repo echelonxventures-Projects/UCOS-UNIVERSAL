@@ -1,4 +1,5 @@
-# Composition defaults (data). Every tenant platform includes the base set; channels and countries add requirements.
+# Composition defaults (data). Every tenant platform includes the base capabilities whose phase is at or below the
+# platform's targetPhase (A-74); channels and countries add requirements.
 baseCapabilities: [identity.core, org.core, party.core, geo.core, temporal.core, currency.core, l10n.core, context.core,
                    entitlement.core, decision.core, workflow.core, integration.core, api.core, ui.core, ui.tenant-admin,
                    observability.core, privacy.consent, privacy.dsr, privacy.retention, compliance.core,

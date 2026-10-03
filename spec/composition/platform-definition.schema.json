@@ -182,6 +182,15 @@
           "maximum": 7,
           "default": 1,
           "description": "Delivery phase the blueprint must be achievable in (capabilities of later phases become PHASE_NOT_AVAILABLE gaps)"
+        },
+        "reality": {
+          "enum": [
+            "physical",
+            "simulated",
+            "hypothetical"
+          ],
+          "default": "physical",
+          "description": "U77 reality kind (P-004). In simulated or hypothetical realities no real personal data exists, so regulations do not apply, and every external port selects its simulator (CTX-L4)."
         }
       }
     }

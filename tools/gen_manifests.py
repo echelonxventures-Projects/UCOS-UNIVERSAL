@@ -435,6 +435,14 @@ pack('rtc.sessions','U109-realtime-comms-contact-center','core',3,'Video session
      temporal=('S',['AV','TP','TR']), classes=['PII','BIOMETRIC'], controls=['ucos.ctrl.recording-consent'], views=['video.room'])
 
 
+# ---------------- Phase 0 exit-test sample pack (A-74; U57 Appendix S) ----------------
+pack('sample.notes','U57-capability','core',0,'Sample pack for the Phase 0 exit test: an object type defined only in spec/, composed, certified, activated and exercised end to end.',
+     types=T('sample.Note'), commands=['CreateNote','EditNote','PublishNote','ArchiveNote','ScheduleNoteReminder'], queries=['GetNote','ListNotes'],
+     events=ev('sample','note','created','published','archived','reminded'), consumes=['temporal.trigger.fired'],
+     requires=['meta.core','temporal.core','policy.core','audit.core','event.core','identity.core'],
+     temporal=('S',['TP','TRG']), classes=['PII'], views=['sample.note.list','sample.note.editor'])
+P[-1]['metadata']['maturity'] = 'experimental'
+
 # ---------------- Phase 2 core (hand-authored, replaces derived manifests; A-73) ----------------
 pack('ledger.core','U30-ledger-finance','core',2,'Double-entry ledger: charts of accounts, posting rules from events, settlements, revenue schedules, period close, reconciliation.',
      types=T('ledger.LedgerEntity','ledger.Account','ledger.JournalEntry','ledger.PostingRule','ledger.Settlement','ledger.RevenueSchedule','ledger.Period','ledger.Reconciliation','ledger.Invoice'),

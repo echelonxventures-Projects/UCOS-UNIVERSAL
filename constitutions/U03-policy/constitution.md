@@ -145,9 +145,9 @@ forbid (principal, action, resource) when { principal has status && principal.st
 // P-003 agents bounded by delegated authority (master §18.5)
 forbid (principal is Agent, action, resource) unless { principal.authority.actions.contains(action) && context.agent.budgetRemaining > 0 };
 // P-004 simulation isolation
-forbid (principal, action, resource) when { context.simulation && action in ActionGroup::"external-side-effect" };
+forbid (principal, action, resource) when { context.simulation && action in Action::"group:external-side-effect" };
 // P-005 asOf reads only
-forbid (principal, action, resource) when { context has asOf && !context.simulation && action in ActionGroup::"write" };
+forbid (principal, action, resource) when { context has asOf && !context.simulation && action in Action::"group:write" };
 ```
 
 ---
@@ -195,7 +195,7 @@ About 1M decisions/s per large cell, served by an embedded PDP in the gateway an
 Platform policy P-004 is generalised:
 ```cedar
 forbid (principal, action, resource)
-when { action in ActionGroup::"external-side-effect"
+when { action in Action::"group:external-side-effect"
        && context.frame.reality.sideEffectPolicy != "full"
        && !(context has realityBridge && context.realityBridge.allows.contains(action)) };
 ```

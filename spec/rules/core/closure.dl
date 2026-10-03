@@ -1,6 +1,11 @@
 // UCOS composition core rules (Datalog, Soufflé-style). Generic: no country, industry or vendor names (CMP-L3).
 // Facts (EDB) are generated from spec/capabilities/packs/*.yaml and spec/rules/facts/*.yaml.
-.decl requested(c: symbol)                    // PD include + base + channel capabilities
+.decl requested(c: symbol)                    // PD include + channel capabilities (facts) + base capabilities (rule below)
+.decl base_capability(c: symbol)              // defaults.yaml baseCapabilities
+.decl phase_of(c: symbol, p: number)          // manifest metadata.phase
+.decl target_phase(p: number)                 // PD spec.targetPhase (default 1)
+.decl pd_reality(x: symbol)                   // PD spec.reality: physical (default) | simulated | hypothetical
+.decl adapter_reality(a: symbol, x: symbol)   // manifest selection.realities (default physical)
 .decl requires(c: symbol, d: symbol)
 .decl excluded(c: symbol)
 .decl in_scope(j: symbol)                     // ucos:jur:XX from PD countries
@@ -30,21 +35,25 @@
 .decl selected_adapter(abs: symbol, j: symbol, m: symbol, a: symbol)
 .decl gap(kind: symbol, a: symbol, b: symbol)
 
+// The base set grows with the phases: a base capability applies once its phase is reached (A-74).
+requested(c) :- base_capability(c), phase_of(c, p), target_phase(t), p <= t.
 required(c) :- requested(c).
 required(d) :- required(c), requires(c, d).
 
-applies(r) :- regulation(r, j), in_scope(j), reg_when_always(r).
-applies(r) :- regulation(r, "*"), reg_when_always(r).
-applies(r) :- regulation(r, j), (in_scope(j) ; j = "*"), reg_when_capability(r, c), required(c).
-applies(r) :- regulation(r, j), (in_scope(j) ; j = "*"), reg_when_business_model(r, m), pd_business_model(m).
-applies(r) :- regulation(r, j), (in_scope(j) ; j = "*"), reg_when_channel(r, ch), pd_channel(ch).
-applies(r) :- regulation(r, j), (in_scope(j) ; j = "*"), reg_when_framework(r, f), pd_framework(f).
+// Regulations protect real people and real transactions: they apply in the physical reality only (P-004).
+applies(r) :- pd_reality("physical"), regulation(r, j), in_scope(j), reg_when_always(r).
+applies(r) :- pd_reality("physical"), regulation(r, "*"), reg_when_always(r).
+applies(r) :- pd_reality("physical"), regulation(r, j), (in_scope(j) ; j = "*"), reg_when_capability(r, c), required(c).
+applies(r) :- pd_reality("physical"), regulation(r, j), (in_scope(j) ; j = "*"), reg_when_business_model(r, m), pd_business_model(m).
+applies(r) :- pd_reality("physical"), regulation(r, j), (in_scope(j) ; j = "*"), reg_when_channel(r, ch), pd_channel(ch).
+applies(r) :- pd_reality("physical"), regulation(r, j), (in_scope(j) ; j = "*"), reg_when_framework(r, f), pd_framework(f).
 required_control(k) :- applies(r), requires_control(r, k).
 required(c) :- required_control(k), control_implemented_by(k, c).
 
 // Adapter selection: specific jurisdiction beats "*"; method must match or be "*" or adapter is method-agnostic.
 selected_adapter(abs, j, m, a) :- required(abs), abstract(abs), needed_method(abs, j, m),
-                                  implements(a, abs), (adapter_jur(a, j) ; adapter_jur(a, "*")),
+                                  implements(a, abs), pd_reality(x), adapter_reality(a, x),
+                                  (adapter_jur(a, j) ; adapter_jur(a, "*")),
                                   (adapter_method(a, m) ; adapter_method(a, "*") ; m = "-").
 required(a) :- selected_adapter(_, _, _, a).        // tie-break (lowest specificity, then lexical) applied by engine choice()
 
@@ -52,3 +61,4 @@ gap("MISSING_CAPABILITY", c, "-")        :- required(c), !provider_capability(c)
 gap("MISSING_ADAPTER", abs, j)           :- required(abs), abstract(abs), needed_method(abs, j, m), !selected_adapter(abs, j, m, _).
 gap("CONFLICT_EXCLUDED", c, "-")         :- required(c), excluded(c).
 gap("MISSING_SIMULATOR", abs, "-")       :- required(abs), io_abstract(abs), !simulator_for(_, abs).
+gap("PHASE_NOT_AVAILABLE", c, "-")       :- required(c), phase_of(c, p), target_phase(t), p > t.

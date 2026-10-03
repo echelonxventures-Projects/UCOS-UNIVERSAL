@@ -2211,6 +2211,20 @@ channels:
         $ref: '#/components/messages/rtc.session.started'
       rtc.session.ended:
         $ref: '#/components/messages/rtc.session.ended'
+  sample.note:
+    address: ucos.{cell}.sample.note.v1
+    parameters:
+      cell:
+        description: Cell id, e.g. in-mum-1
+    messages:
+      sample.note.created:
+        $ref: '#/components/messages/sample.note.created'
+      sample.note.published:
+        $ref: '#/components/messages/sample.note.published'
+      sample.note.archived:
+        $ref: '#/components/messages/sample.note.archived'
+      sample.note.reminded:
+        $ref: '#/components/messages/sample.note.reminded'
   sdlc.artifact:
     address: ucos.{cell}.sdlc.artifact.v1
     parameters:
@@ -4325,6 +4339,15 @@ operations:
     messages:
     - $ref: '#/channels/rtc.session/messages/rtc.session.started'
     - $ref: '#/channels/rtc.session/messages/rtc.session.ended'
+  publish.sample.note:
+    action: send
+    channel:
+      $ref: '#/channels/sample.note'
+    messages:
+    - $ref: '#/channels/sample.note/messages/sample.note.created'
+    - $ref: '#/channels/sample.note/messages/sample.note.published'
+    - $ref: '#/channels/sample.note/messages/sample.note.archived'
+    - $ref: '#/channels/sample.note/messages/sample.note.reminded'
   publish.sdlc.artifact:
     action: send
     channel:
@@ -7251,6 +7274,30 @@ components:
       payload:
         $ref: ../../events/payloads/rtc.session.started.schema.json
       x-ucos-producer: rtc.sessions
+    sample.note.archived:
+      name: sample.note.archived
+      contentType: application/cloudevents+json
+      payload:
+        $ref: ../../events/payloads/sample.note.archived.schema.json
+      x-ucos-producer: sample.notes
+    sample.note.created:
+      name: sample.note.created
+      contentType: application/cloudevents+json
+      payload:
+        $ref: ../../events/payloads/sample.note.created.schema.json
+      x-ucos-producer: sample.notes
+    sample.note.published:
+      name: sample.note.published
+      contentType: application/cloudevents+json
+      payload:
+        $ref: ../../events/payloads/sample.note.published.schema.json
+      x-ucos-producer: sample.notes
+    sample.note.reminded:
+      name: sample.note.reminded
+      contentType: application/cloudevents+json
+      payload:
+        $ref: ../../events/payloads/sample.note.reminded.schema.json
+      x-ucos-producer: sample.notes
     sdlc.artifact.published:
       name: sdlc.artifact.published
       contentType: application/cloudevents+json

@@ -210,6 +210,9 @@ gap(deprecated_in_use, C)         :- in_blueprint(C), deprecated(C), sunset_with
 About 1,000 capabilities and about 20k pack versions. The OCI registry is replicated per region. Pack images are pre-pulled to cells by blueprint usage. Registry T1. Kill-switch path T0.
 
 ## Appendix
-- **A.** gVisor for all third-party packs: cost/benefit spike in P2.
+- **A.** gVisor for all third-party packs: decided in ADR-025.
+- **S. Sample pack for the Phase 0 exit test (A-74).** `sample.notes` exists only to prove the kernel end to end: an object type defined only in `spec/` is composed, certified, activated, written through the command bus, audited, and its reminder fires through the Temporal trigger engine. It has no business purpose and is never offered to tenants (maturity `experimental`, excluded from every industry template).
+  `Note { title: LocalizedText, body: string, status: draft|published|archived, author: UGID, remindAt?: TimePoint, publishedAt?: TimePoint, tags: [string] }`
+  Commands `CreateNote`, `EditNote`, `PublishNote`, `ArchiveNote`, `ScheduleNoteReminder`; queries `GetNote`, `ListNotes`; events `sample.note.created|published|archived|reminded`. Lifecycle `draft → published → archived`. Policy: authors edit their own drafts; publishing needs the `sample-editor` role.
 - **B. Amendments:** master §8.3 gains capability kinds `data-pack` and `ui-pack`, and the formal `PackRuntime` gRPC contract.
 - **C.** 0.1.0.

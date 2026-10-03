@@ -10,6 +10,10 @@ Complements tools/ucos_check.py (registry, composition, gates). Deterministic, o
   5. Gherkin features parse; every step matches the vocabulary (spec/acceptance/steps.yaml);
      @platform, @gate, @universe and @phase tags resolve; quoted error codes exist in the registry
   6. Service levels validate against their schema; every alert's runbook file and section exist
+  7. Cedar policies parse; policy tests (spec/policies/tests/*.yaml) give the expected decisions (SEC-POLICY-01)
+  8. Composition rules (spec/rules/**/*.dl) parse; predicates are declared with consistent arity; negation is
+     stratified; every head variable is bound in the body
+  9. Every decision declared by a hand-authored manifest has a default table in spec/decisions/
 Exit 0 = all pass. Usage: python3 tools/validate_contracts.py [--quick]   (--quick skips OpenAPI validation)
 """
 import glob, json, os, re, subprocess, sys, tempfile
@@ -186,6 +190,171 @@ for f in slo_files:
         elif anchor not in anchors(full):
             err(f'{rel(f)}: runbook {path} has no section #{anchor}')
 counts['slo-files'] = len(slo_files)
+
+# ---------------------------------------------------------------- 7. Cedar policies and tests
+import cedarpy
+ENT = re.compile(r'^([A-Za-z_][A-Za-z0-9_:]*)::"([^"]*)"$')
+def to_cedar(v):
+    """Turn 'Type::"id"' strings into Cedar entity references, recursively."""
+    if isinstance(v, str):
+        m = ENT.match(v)
+        return {'__entity': {'type': m.group(1), 'id': m.group(2)}} if m else v
+    if isinstance(v, list):
+        return [to_cedar(x) for x in v]
+    if isinstance(v, dict):
+        return {k: to_cedar(x) for k, x in v.items()}
+    return v
+cedar_files = sorted(glob.glob(os.path.join(ROOT, 'spec', 'policies', '*.cedar')))
+for f in cedar_files:
+    try:
+        cedarpy.format_policies(open(f).read())
+    except Exception as e:
+        err(f'Cedar does not parse: {rel(f)}: {e}')
+n_cases = 0
+for f in sorted(glob.glob(os.path.join(ROOT, 'spec', 'policies', 'tests', '*.yaml'))):
+    suite = yaml.safe_load(open(f))
+    src = '\n'.join(open(os.path.join(ROOT, p)).read() for p in suite['policies']) + '\n' + suite.get('fixtures', '')
+    entities = []
+    for e in suite.get('entities', []):
+        m = ENT.match(e['uid'])
+        entities.append({'uid': {'__entity': {'type': m.group(1), 'id': m.group(2)}},
+                         'attrs': to_cedar(e.get('attrs', {})),
+                         'parents': [to_cedar(x)['__entity'] for x in e.get('parents', [])]})
+    for c in suite['cases']:
+        n_cases += 1
+        ctx = json.loads(json.dumps(suite.get('defaultContext', {})))
+        ctx.update(c.get('context', {}))
+        r = cedarpy.is_authorized({'principal': c['principal'], 'action': c['action'], 'resource': c['resource'],
+                                   'context': to_cedar(ctx)}, src, entities)
+        got = 'Allow' if r.decision == cedarpy.Decision.Allow else 'Deny'
+        if got != c['expect']:
+            err(f'{rel(f)}: "{c["name"]}" expected {c["expect"]}, got {got} (errors: {r.diagnostics.errors[:1]})')
+counts['policy-tests'] = n_cases
+
+# ---------------------------------------------------------------- 8. Datalog rules
+def parse_datalog(text):
+    """Small parser for the Souffle subset used by spec/rules: .decl lines and rules with conjunction, negation (!),
+    parenthesised disjunction (;), comparisons and string/number constants."""
+    text = re.sub(r'//[^\n]*', '', text)
+    decls, rules = {}, []
+    for m in re.finditer(r'\.decl\s+([a-z_][a-z0-9_]*)\s*\(([^)]*)\)', text):
+        args = [a for a in m.group(2).split(',') if a.strip()]
+        decls[m.group(1)] = len(args)
+    body_text = re.sub(r'\.decl[^\n]*', '', text)
+    for stmt in [s.strip() for s in re.split(r'\.\s*(?:\n|$)', body_text) if s.strip()]:
+        if ':-' not in stmt:
+            raise ValueError(f'not a rule: {stmt[:60]}')
+        head, body = stmt.split(':-', 1)
+        rules.append((head.strip(), body.strip()))
+    return decls, rules
+ATOM = re.compile(r'(!?)\s*([a-z_][a-z0-9_]*)\s*\(([^()]*)\)')
+def atoms(s):
+    return [(neg == '!', name, [a.strip() for a in args.split(',')]) for neg, name, args in ATOM.findall(s)]
+def variables(args):
+    return {a for a in args if re.fullmatch(r'[a-z][a-z0-9_]*', a)}
+dl_files = sorted(glob.glob(os.path.join(ROOT, 'spec', 'rules', '**', '*.dl'), recursive=True))
+n_rules = 0
+for f in dl_files:
+    try:
+        decls, rules = parse_datalog(open(f).read())
+    except ValueError as e:
+        err(f'{rel(f)}: {e}')
+        continue
+    edges = []   # (head, body_pred, negated)
+    for head, body in rules:
+        n_rules += 1
+        h = atoms(head)
+        if len(h) != 1:
+            err(f'{rel(f)}: rule head must be one atom: {head}')
+            continue
+        _, hname, hargs = h[0]
+        bound = set()
+        for neg, name, args in [(False, hname, hargs)] + atoms(body):
+            if name not in decls:
+                err(f'{rel(f)}: predicate {name} is used but not declared')
+            elif decls[name] != len(args):
+                err(f'{rel(f)}: {name} has arity {decls[name]} but is used with {len(args)} arguments')
+        for neg, name, args in atoms(body):
+            if not neg:
+                bound |= variables(args)
+            edges.append((hname, name, neg))
+        for v in variables(hargs) - bound:
+            err(f'{rel(f)}: head variable {v} of {hname} is not bound by a positive body atom (unsafe rule)')
+    # stratification: no cycle through a negated edge
+    graph = {}
+    for h, b, neg in edges:
+        graph.setdefault(h, set()).add(b)
+    def reaches(a, b, seen=None):
+        seen = seen or set()
+        if a == b:
+            return True
+        seen.add(a)
+        return any(reaches(n, b, seen) for n in graph.get(a, ()) if n not in seen)
+    for h, b, neg in edges:
+        if neg and reaches(b, h):
+            err(f'{rel(f)}: negation of {b} inside the recursion of {h} is not stratifiable')
+counts['datalog-rules'] = n_rules
+
+# ---------------------------------------------------------------- 9. decision defaults
+MONEY = re.compile(r'^\{\s*(-?\d+(?:\.\d+)?)\s+([A-Z]{3})\s*\}$')
+CMP = re.compile(r'^(>=|<=|>|<|=)\s*(.+)$')
+def cell_matches(cell, value):
+    """Cell grammar of UCOS decision tables: '*', exact text, path glob 'a/*', and comparisons
+    (>=, >, <=, <, =) against a number or a Money literal '{12.00 INR}' (currencies must match)."""
+    cell = str(cell).strip()
+    if cell == '*':
+        return True
+    m = CMP.match(cell)
+    if m:
+        op, rhs = m.groups()
+        a_m, b_m = MONEY.match(value.strip()), MONEY.match(rhs.strip())
+        if b_m:
+            if not a_m or a_m.group(2) != b_m.group(2):
+                return False
+            a, b = float(a_m.group(1)), float(b_m.group(1))
+        else:
+            try:
+                a, b = float(value), float(rhs)
+            except ValueError:
+                return False
+        return {'>=': a >= b, '>': a > b, '<=': a <= b, '<': a < b, '=': a == b}[op]
+    if cell.endswith('/*'):
+        return value == cell[:-2] or value.startswith(cell[:-1])
+    return cell == value
+def evaluate_decision(dt, inputs):
+    if dt.get('hitPolicy', 'FIRST') != 'FIRST':
+        raise ValueError('only hitPolicy FIRST is supported by the reference evaluator')
+    n = len(dt['inputs'])
+    for row in dt['rules']:
+        if all(cell_matches(c, v) for c, v in zip(row[:n], inputs)):
+            return [str(x) for x in row[n:]]
+    return None
+n_dec_tests = 0
+decision_files = {os.path.basename(p)[:-5] for p in glob.glob(os.path.join(ROOT, 'spec', 'decisions', '*.yaml'))}
+for f in sorted(glob.glob(os.path.join(ROOT, 'spec', 'capabilities', 'packs', '*.yaml'))):
+    m = yaml.safe_load(open(f))
+    if m['metadata'].get('maturity') == 'experimental':
+        continue
+    for d in m['spec'].get('provides', {}).get('decisions', []) or []:
+        if d not in decision_files:
+            err(f'{m["metadata"]["id"]}: decision {d} has no default table spec/decisions/{d}.yaml')
+for f in sorted(glob.glob(os.path.join(ROOT, 'spec', 'decisions', '*.yaml'))):
+    dt = yaml.safe_load(open(f))
+    width = len(dt.get('inputs', [])) + len(dt.get('outputs', []))
+    for i, row in enumerate(dt.get('rules', [])):
+        if len(row) != width:
+            err(f'{rel(f)}: rule {i + 1} has {len(row)} cells, expected {width} (inputs + outputs)')
+    if os.path.basename(f)[:-5] != dt.get('id'):
+        err(f'{rel(f)}: id {dt.get("id")} does not match the file name')
+    n_in = len(dt.get('inputs', []))
+    for tc in dt.get('tests', []):
+        got = evaluate_decision(dt, [str(x) for x in tc['input']])
+        want = [str(x) for x in tc['expect']]
+        n_dec_tests += 1
+        if got != want:
+            err(f'{rel(f)}: test input {tc["input"]} expected {want}, got {got}')
+counts['decision-tables'] = len(decision_files)
+counts['decision-tests'] = n_dec_tests
 
 # ---------------------------------------------------------------- report
 print('  '.join(f'{k}: {v}' for k, v in counts.items()))

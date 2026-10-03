@@ -12,7 +12,7 @@ when { principal.authority.actions.contains(action) && resource.buyer == princip
 permit (principal, action in [Action::"order:GetOrder", Action::"order:RequestReturn", Action::"order:CancelOrder"], resource is Order::Order)
 when { resource.buyer == principal.party };
 
-@id("order.support-read") @obligation("mask:contact") @obligation("purpose:customer-support")
+@id("order.support-read") @obligation("mask:contact,purpose:customer-support")
 permit (principal in Role::"support-agent", action == Action::"order:GetOrder", resource is Order::Order)
 when { context.purpose == "customer-support" };
 
@@ -23,7 +23,7 @@ when { resource.seller == principal.organization && principal.organization.stand
 @id("catalog.operator-moderation")
 permit (principal in Role::"catalog-admin", action in [Action::"catalog:ApproveListing", Action::"catalog:RejectListing", Action::"catalog:SuppressListing", Action::"catalog:PublishListing"], resource is Catalog::Listing);
 
-@id("payment.refund-approval") @obligation("stepUpAuth:AAL2") @obligation("requireReason")
+@id("payment.refund-approval") @obligation("stepUpAuth:AAL2,requireReason")
 permit (principal in Role::"finance-operator", action == Action::"payment:Refund", resource is Payment::PaymentIntent)
 when { context.refund.amountMinor <= principal.limits.refundMinor };
 

@@ -52,6 +52,8 @@ type Bus struct {
 	queries  map[string]pack.QueryHandler
 	caps     map[string]string // operation -> capability id
 	ttl      time.Duration
+	// Active, when set, gates every operation on the tenant's active blueprint (activation, U73).
+	Active func(ctx context.Context, tenant, capability string) (bool, error)
 }
 
 func New(db *store.DB, cell string, clock func() time.Time) *Bus {
@@ -93,6 +95,9 @@ func (b *Bus) Execute(ctx context.Context, req Request) (Response, error) {
 	h, ok := b.commands[req.OperationID]
 	if !ok {
 		return problem(http.StatusNotFound, "OPERATION_UNKNOWN", "unknown operation "+req.OperationID), nil
+	}
+	if r, err := b.activated(ctx, req); err != nil || r != nil {
+		return derefOr(r), err
 	}
 	if len(req.IdempotencyKey) < 8 {
 		return problem(http.StatusBadRequest, "IDEMPOTENCY_KEY_REQUIRED", "an Idempotency-Key of at least 8 characters is required"), nil
@@ -183,6 +188,9 @@ func (b *Bus) Query(ctx context.Context, req Request) (Response, error) {
 	if !ok {
 		return problem(http.StatusNotFound, "OPERATION_UNKNOWN", "unknown operation "+req.OperationID), nil
 	}
+	if r, err := b.activated(ctx, req); err != nil || r != nil {
+		return derefOr(r), err
+	}
 	var resp Response
 	err := b.db.InTenant(ctx, req.Envelope.Tenant, store.RoleApp, func(tx pgx.Tx) error {
 		if _, err := tx.Exec(ctx, `SET TRANSACTION READ ONLY`); err != nil {
@@ -206,6 +214,29 @@ func (b *Bus) Query(ctx context.Context, req Request) (Response, error) {
 		return nil
 	})
 	return resp, err
+}
+
+// activated returns a problem response when the capability is not in the tenant's active blueprint.
+func (b *Bus) activated(ctx context.Context, req Request) (*Response, error) {
+	if b.Active == nil {
+		return nil, nil
+	}
+	ok, err := b.Active(ctx, req.Envelope.Tenant, b.caps[req.OperationID])
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		r := problem(http.StatusForbidden, "ACTIVATION_DENIED", "this capability is not active for the tenant")
+		return &r, nil
+	}
+	return nil, nil
+}
+
+func derefOr(r *Response) Response {
+	if r == nil {
+		return Response{}
+	}
+	return *r
 }
 
 // Operations lists registered command and query ids (the gateway routes only to these).

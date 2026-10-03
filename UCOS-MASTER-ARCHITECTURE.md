@@ -5,7 +5,7 @@
 |---|---|
 | Document ID | `UCOS-MASTER-ARCH` |
 | Author | Bipin Kumar |
-| Version | 1.4.0 (77 amendments applied, A-01…A-77; see §35) |
+| Version | 1.4.0 (78 amendments applied, A-01…A-78; see §35) |
 | Status | Canonical — supersedes every architecture fragment in `Chat.txt` |
 | Date | 2026-10-03 |
 | Audience | Platform architects, engineers, designers, SRE, security, compliance, and AI coding agents |
@@ -4294,6 +4294,7 @@ When those four properties hold, any new team or agent can read this document, g
 | A-71 | Wireframes W17–W40 for the new universes | §25 |
 | A-72 | Business pack: cost model, commercial model, team/budget/roadmap plan | §32, companion docs |
 | A-77 | Runnable kernel: gateway from generated OpenAPI, OIDC verification, Kafka relay, integrated Phase 0 flow in CI | §15.2, §18, companion code |
+| A-78 | Control plane in code: signed snapshots, certification runner with DSSE attestations, decision records, activation gating the command bus, rollback | §8, §20, §32.1, companion code |
 | A-76 | Rules define composition fully; blueprint ids exclude provenance; Go composer accepted (S-01 passed) | §11.3, §12, ADR-022 |
 | A-75 | Kernel data path implemented and tested end to end (bus, objects, audit, relay, triggers, sample pack); migrations 0011–0013 | §13, companion code |
 | A-74 | Phase 0–1 readiness: exit test, phase-aware base set and PD reality, rules oracle, policy and decision tests, workflows, seeds S1–S15, kernel schema, Go kernel skeleton, deploy baseline, signed releases; ADR-037 proposed | §11.3, §16.1, §27, §32, companion docs |

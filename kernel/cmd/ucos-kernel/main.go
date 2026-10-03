@@ -9,10 +9,15 @@
 //	UCOS_HTTP_ADDR      listen address (default ":8080")
 //	UCOS_TENANTS        JSON array of auth.TenantConfig (issuer, jwksUrl, tenant, locale, currency, tz, reality)
 //	UCOS_KAFKA_BROKERS  comma-separated brokers; empty means events are logged instead of published
+//	UCOS_SIGNING_SEED   hex Ed25519 seed (32 bytes) for snapshots and attestations; enables the control plane
+//	UCOS_ADMIN_ADDR     control-plane listen address (default "127.0.0.1:8081"); operator-only
+//	UCOS_ADMIN_TOKEN    bearer token for the control plane (required with UCOS_SIGNING_SEED)
+//	UCOS_ENFORCE_ACTIVATION  "true": tenants may run only capabilities in their active blueprint (default "true")
 package main
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"log/slog"
@@ -28,10 +33,12 @@ import (
 	"ucos.io/kernel/internal/audit"
 	"ucos.io/kernel/internal/auth"
 	"ucos.io/kernel/internal/bus"
+	"ucos.io/kernel/internal/controlplane"
 	"ucos.io/kernel/internal/gateway"
 	"ucos.io/kernel/internal/relay"
 	"ucos.io/kernel/internal/store"
 	"ucos.io/kernel/internal/triggers"
+	"ucos.io/kernel/internal/trust"
 	"ucos.io/kernel/packs/sample"
 )
 
@@ -71,6 +78,39 @@ func run(log *slog.Logger) error {
 	}
 	b := bus.New(db, env("UCOS_CELL", "dev-1"), nil)
 	b.Register(sample.Pack{})
+	if env("UCOS_ENFORCE_ACTIVATION", "true") == "true" {
+		b.Active = (&controlplane.Active{DB: db, TTL: 2 * time.Second}).Check
+	}
+	if seed := os.Getenv("UCOS_SIGNING_SEED"); seed != "" {
+		raw, err := hex.DecodeString(seed)
+		if err != nil {
+			return errors.New("UCOS_SIGNING_SEED must be hex")
+		}
+		signer, err := trust.NewSigner(raw)
+		if err != nil {
+			return err
+		}
+		token := os.Getenv("UCOS_ADMIN_TOKEN")
+		if len(token) < 16 {
+			return errors.New("UCOS_ADMIN_TOKEN must be at least 16 characters when the control plane is enabled")
+		}
+		cp, err := controlplane.New(db, env("UCOS_REPO_ROOT", "."), signer)
+		if err != nil {
+			return err
+		}
+		admin := &http.Server{Addr: env("UCOS_ADMIN_ADDR", "127.0.0.1:8081"), Handler: cp.Handler(token), ReadHeaderTimeout: 5 * time.Second}
+		go func() {
+			<-ctx.Done()
+			_ = admin.Close()
+		}()
+		go func() {
+			log.Info("control plane listening", "addr", admin.Addr, "key", signer.KeyID)
+			if err := admin.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+				log.Error("control plane stopped", "error", err)
+				stop()
+			}
+		}()
+	}
 	gw, err := gateway.New(env("UCOS_REPO_ROOT", "."), b, auth.NewVerifier(tenants, nil, nil), nil)
 	if err != nil {
 		return err

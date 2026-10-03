@@ -375,6 +375,8 @@ type Tx interface {
   5. reports health;
   6. after the hold, runs the contract migrations.
 - **Rollback:** flip routing back, then unload. Contract migrations never run before the hold expires.
+- **Phase 0 implementation (A-78, `kernel/internal/controlplane`, migration 0014):** packs run in-process, so deploying and expand migrations are no-ops and activation is the routing flip: one transaction sets `tenants.active_blueprint`, marks the blueprint `active` (the previous one `superseded`) and records the activation through `DEPLOYING` to `COMPLETE`. Activation requires (a) a certification for exactly this blueprint that passed, is still valid and whose DSSE attestation verifies against the trusted key, and (b) an `approve-activation` decision record for the blueprint whose approvers exclude the requester (enforced by a table check). The command bus asks before every command and query whether the operation's capability is in the tenant's active blueprint and otherwise returns error `ACTIVATION_DENIED` (capability not in the tenant's active blueprint); answers are cached for 2 s. Rollback re-activates the previous blueprint, or none.
+- **Control-plane API (A-78):** `ucos-kernel` serves `POST /control/v1/{snapshots,blueprints,certifications,decisions,activations,rollbacks}` on a separate operator-only listener (`UCOS_ADMIN_ADDR`, loopback by default) when `UCOS_SIGNING_SEED` is set. Each request needs the operator bearer token. Control-plane error codes: error `CONTROL_UNAUTHENTICATED` (missing or wrong operator token), `CONTROL_SOD_VIOLATION` (the requester approves their own request), `CONTROL_CERT_GATE_FAILED` (no passing, valid, trusted certification for this blueprint), `CONTROL_APPROVAL_MISSING` (no approving decision record), `CONTROL_PRECONDITION_NOT_MET` (any other refusal, for example a blueprint composed for another tenant).
 
 ---
 
@@ -382,6 +384,7 @@ type Tx interface {
 - Runs a CertificationProfile over a subject digest. Criteria execute as Kubernetes jobs or queries.
 - Results are written as Evidence (U68) and a DSSE-signed attestation is issued.
 - CI calls `ucos certify` (with `--gates`), which submits a run and polls it.
+- **Phase 0 runner (A-78):** a profile from `spec/certification/gates.yaml` is expanded (`CMP-*` means every CMP gate that applies to blueprints). GAP-000 (no mandatory gaps), TEST-COMP-01 (composing twice gives the same id), ARCH-CAP-02 (no missing, phase-unavailable or excluded capability) and CMP-MAP-01 (every required control is implemented) are computed from the composition. Every other gate needs evidence `{gate, ref, collectedAt}` collected in the last 30 days, or a waiver with a reason and an approver. The attestation is an in-toto v1 statement (subject: the blueprint id and its sha256; predicate type `https://ucos.io/certification/v1`) in a DSSE envelope signed with Ed25519, valid for 90 days.
 
 ---
 

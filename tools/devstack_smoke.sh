@@ -47,6 +47,7 @@ if command -v go >/dev/null 2>&1; then
   ISS=http://localhost:8180/realms/ucos-dev-sample
   UCOS_DATABASE_URL="postgres://postgres:postgres@localhost:5433/ucos?sslmode=disable" \
   UCOS_REPO_ROOT="$ROOT" UCOS_CELL=dev-1 UCOS_HTTP_ADDR=127.0.0.1:18080 UCOS_KAFKA_BROKERS=localhost:19092 \
+  UCOS_SIGNING_SEED=$(printf '%064d' 0) UCOS_ADMIN_ADDR=127.0.0.1:18081 UCOS_ADMIN_TOKEN=dev-only-operator-token \
   UCOS_TENANTS="[{\"issuer\":\"$ISS\",\"jwksUrl\":\"$ISS/protocol/openid-connect/certs\",\"tenant\":\"ucos:tenant:sample\",\"locale\":\"en\",\"currency\":\"INR\",\"tz\":\"Asia/Kolkata\",\"reality\":\"simulated\",\"jurisdiction\":\"ucos:jur:IN\"}]" \
     "$ROOT/generated/ucos-kernel" > "$ROOT/generated/ucos-kernel.log" 2>&1 &
   KPID=$!
@@ -62,6 +63,40 @@ if command -v go >/dev/null 2>&1; then
     [[ -n "${4:-}" ]] && args+=(-d "$4")
     curl "${args[@]}"
   }
+  out=$(api POST /sample/notes smoke-create-0000 '{"title":{"en":"too early"}}'); code=${out##*$'\n'}
+  [[ "$code" == "403" && "$out" == *ACTIVATION_DENIED* ]] || { echo "before activation the sample pack must be refused: $out"; exit 1; }
+  echo "kernel: commands refused before the tenant's blueprint is activated"
+
+  # Compose -> certify -> activate through the operator-only control plane (A-78).
+  python3 - "$ROOT" "$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || printf '%040d' 0)" <<'PY' || { cat "$ROOT/generated/ucos-kernel.log"; exit 1; }
+import json, sys, urllib.request, urllib.error, datetime
+root, commit = sys.argv[1], sys.argv[2]
+def post(path, body):
+    req = urllib.request.Request('http://127.0.0.1:18081/control/v1/' + path, json.dumps(body).encode(), method='POST',
+                                 headers={'Authorization': 'Bearer dev-only-operator-token', 'Content-Type': 'application/json'})
+    try:
+        return json.load(urllib.request.urlopen(req))
+    except urllib.error.HTTPError as e:
+        sys.exit(f'control plane {path}: {e.code} {e.read().decode()}')
+tenant = 'ucos:tenant:sample'
+snap = post('snapshots', {'gitCommit': commit})['id']
+pd = open(f'{root}/spec/composition/golden/sample-p0.pd.yaml').read()
+bp = post('blueprints', {'tenant': tenant, 'snapshot': snap, 'pd': pd})
+assert not bp['gaps'], bp['gaps']
+first = post('certifications', {'blueprint': bp['id'], 'profile': 'blueprint'})
+assert not first['passed']
+now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+ev = [{'gate': r['gate'], 'ref': 'devstack-smoke#' + r['gate'], 'collectedAt': now} for r in first['results'] if r['result'] == 'fail']
+cert = post('certifications', {'blueprint': bp['id'], 'profile': 'blueprint', 'evidence': ev})
+assert cert['passed'], cert['results']
+dec = 'ucos:decision:devstack-' + bp['id'][-12:] + '-' + now
+post('decisions', {'id': dec, 'authority': 'ucos:authority:release', 'subject': bp['id'], 'decision': 'approve-activation',
+                   'requestedBy': 'ucos:identity:asha', 'approvedBy': ['ucos:identity:ravi'], 'rationale': 'devstack smoke'})
+post('activations', {'tenant': tenant, 'cell': 'dev-1', 'blueprint': bp['id'], 'decision': dec, 'certification': cert['id']})
+print(f'kernel: blueprint {bp["id"]} composed, certified ({cert["id"]}) and activated')
+PY
+  sleep 3 # activation answers are cached for 2 s
+
   out=$(api POST /sample/notes smoke-create-0001 '{"title":{"en":"Phase 0 exit"}}'); code=${out##*$'\n'}; body=${out%$'\n'*}
   [[ "$code" == "201" ]] || { echo "create failed: $code $body"; cat "$ROOT/generated/ucos-kernel.log"; exit 1; }
   NOTE=$(python3 -c 'import sys,json;print(json.loads(sys.argv[1])["id"])' "$body")

@@ -29,11 +29,15 @@
 .decl provider_capability(c: symbol)          // exists in registry
 .decl io_abstract(abs: symbol)
 .decl simulator_for(s: symbol, abs: symbol)
+.decl provides_event(c: symbol, e: symbol)    // manifest provides.events
+.decl consumes_event(c: symbol, e: symbol)    // manifest consumes.events
+.decl chosen_adapter(abs: symbol, j: symbol, m: symbol, a: symbol)  // engine choice() over selected_adapter (see below)
 
 .decl required(c: symbol)
 .decl applies(r: symbol)
 .decl required_control(k: symbol)
 .decl selected_adapter(abs: symbol, j: symbol, m: symbol, a: symbol)
+.decl produced(e: symbol)
 .decl gap(kind: symbol, a: symbol, b: symbol)
 
 // The base set grows with the phases: a base capability applies once its phase is reached (A-74).
@@ -58,10 +62,16 @@ selected_adapter(abs, j, m, a) :- required(abs), abstract(abs), needed_method(ab
                                   implements(a, abs), pd_reality(x), adapter_reality(a, x),
                                   (adapter_jur(a, j) ; adapter_jur(a, "*")),
                                   (adapter_method(a, m) ; adapter_method(a, "*") ; m = "-").
-required(a) :- selected_adapter(_, _, _, a).        // tie-break (lowest specificity, then lexical) applied by engine choice()
+// One adapter per (port, jurisdiction, method) joins the platform. The engine provides chosen_adapter by choice() over
+// selected_adapter: an adapter listing the jurisdiction beats a "*" adapter, then the lexically smallest id wins.
+// Engines evaluate to a fixpoint, choose, add chosen_adapter facts and evaluate again until nothing changes.
+required(a) :- chosen_adapter(_, _, _, a).
 
 gap("MISSING_CAPABILITY", c, "-")        :- required(c), !provider_capability(c).
 gap("MISSING_ADAPTER", abs, j)           :- required(abs), abstract(abs), needed_method(abs, j, m), !selected_adapter(abs, j, m, _).
 gap("CONFLICT_EXCLUDED", c, "-")         :- required(c), excluded(c).
 gap("MISSING_SIMULATOR", abs, "-")       :- required(abs), io_abstract(abs), !simulator_for(_, abs).
 gap("PHASE_NOT_AVAILABLE", c, "-")       :- required(c), phase_of(c, p), target_phase(t), p > t.
+produced(e) :- required(c), provides_event(c, e).
+gap("EVENT_WITHOUT_PRODUCER_IN_BLUEPRINT", c, e) :- required(c), consumes_event(c, e), !produced(e).
+gap("CONTROL_NOT_IMPLEMENTED", k, c)     :- required_control(k), control_implemented_by(k, c), !required(c).

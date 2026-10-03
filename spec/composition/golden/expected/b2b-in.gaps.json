@@ -1,5 +1,5 @@
 {
-  "blueprintCandidate": "ucos:blueprint:sha256:02a0635095355b8c8f6616a6d6e4d6d0b6dd3680b8c52de1cd94bff66ac6e883",
+  "blueprintCandidate": "ucos:blueprint:sha256:57beaef73306194e82ec2121aa05876b488b6538063e59c41f47b62b31ebe942",
   "gaps": [],
   "kind": "GapReport",
   "summary": {

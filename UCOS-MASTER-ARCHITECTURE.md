@@ -5,7 +5,7 @@
 |---|---|
 | Document ID | `UCOS-MASTER-ARCH` |
 | Author | Bipin Kumar |
-| Version | 1.4.0 (75 amendments applied, A-01…A-75; see §35) |
+| Version | 1.4.0 (76 amendments applied, A-01…A-76; see §35) |
 | Status | Canonical — supersedes every architecture fragment in `Chat.txt` |
 | Date | 2026-10-03 |
 | Audience | Platform architects, engineers, designers, SRE, security, compliance, and AI coding agents |
@@ -4058,7 +4058,7 @@ gantt
 | ADR-019 | Derived manifests for later-phase universes | Platform-wide ownership checks now |
 | ADR-020 | Postgres row-level security as the tenancy guard | Defence in depth for shared-schema tenancy |
 | ADR-021 | Keycloak as reference IdP (provisional, spike S-02) | Mature OIDC/SAML/WebAuthn behind the U09 port |
-| ADR-022 | Embedded Go Datalog evaluator; Python checker as oracle (provisional, S-01) | Determinism, provenance, one control-plane language |
+| ADR-022 | Embedded Go Datalog evaluator; Python checker as oracle (accepted; S-01 passed) | Determinism, provenance, one control-plane language |
 | ADR-023 | Reservation counters in Postgres sub-slots | One transactional store |
 | ADR-024 | OpenTofu modules wrapped by Crossplane | Cells as an API with drift reconciliation |
 | ADR-025 | gVisor for third-party packs | Kernel-level isolation for untrusted code |
@@ -4293,6 +4293,7 @@ When those four properties hold, any new team or agent can read this document, g
 | A-70 | ADR files 001–020; STRIDE threat models with enforced manifest links | §20, §34, docs/ |
 | A-71 | Wireframes W17–W40 for the new universes | §25 |
 | A-72 | Business pack: cost model, commercial model, team/budget/roadmap plan | §32, companion docs |
+| A-76 | Rules define composition fully; blueprint ids exclude provenance; Go composer accepted (S-01 passed) | §11.3, §12, ADR-022 |
 | A-75 | Kernel data path implemented and tested end to end (bus, objects, audit, relay, triggers, sample pack); migrations 0011–0013 | §13, companion code |
 | A-74 | Phase 0–1 readiness: exit test, phase-aware base set and PD reality, rules oracle, policy and decision tests, workflows, seeds S1–S15, kernel schema, Go kernel skeleton, deploy baseline, signed releases; ADR-037 proposed | §11.3, §16.1, §27, §32, companion docs |
 | A-73 | Deterministic CI (ADR-036); kernel and generated API/event contracts; acceptance scenarios; SLOs and runbooks; Phase 2 manifests and golden marketplace platform; ADR-021…036; §32.1 phase alignment; legal templates | §15, §26, §28, §32, companion docs |

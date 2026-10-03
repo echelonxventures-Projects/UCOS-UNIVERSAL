@@ -119,452 +119,377 @@
     {
       "id": "api.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "asset.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:catalog.listing"
+      "version": "1.0.0"
     },
     {
       "id": "audit.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:compliance.core"
+      "version": "1.0.0"
     },
     {
       "id": "authority.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:identity.core"
+      "version": "1.0.0"
     },
     {
       "id": "carrier.shiprocket",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:logistics.carrier[ucos:jur:IN,-]"
+      "version": "1.0.0"
     },
     {
       "id": "catalog.listing",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "requested"
+      "version": "1.0.0"
     },
     {
       "id": "commerce.cart",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:commerce.checkout"
+      "version": "1.0.0"
     },
     {
       "id": "commerce.checkout",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "requested"
+      "version": "1.0.0"
     },
     {
       "id": "communication.agent-protocol",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "requested"
+      "version": "1.0.0"
     },
     {
       "id": "communication.broadcast",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "requested"
+      "version": "1.0.0"
     },
     {
       "id": "communication.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "communication.inapp",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "communication.inbound",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "communication.realtime",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "channel:live-chat"
+      "version": "1.0.0"
     },
     {
       "id": "compliance.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "contactcenter.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "channel:live-chat"
+      "version": "1.0.0"
     },
     {
       "id": "context.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "currency.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "decision.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "document.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "control:ucos.ctrl.tax-invoice<-in-gst"
+      "version": "1.0.0"
     },
     {
       "id": "entitlement.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "frame.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:geo.core"
+      "version": "1.0.0"
     },
     {
       "id": "fulfillment.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:commerce.checkout"
+      "version": "1.0.0"
     },
     {
       "id": "geo.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "identity.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "integration.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "inventory.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:commerce.checkout"
+      "version": "1.0.0"
     },
     {
       "id": "l10n.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "logistics.carrier",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:fulfillment.core"
+      "version": "1.0.0"
     },
     {
       "id": "maps.google",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:maps.provider[ucos:jur:IN,-]"
+      "version": "1.0.0"
     },
     {
       "id": "maps.provider",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:geo.core"
+      "version": "1.0.0"
     },
     {
       "id": "messaging.email",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:messaging.provider[ucos:jur:IN,email]"
+      "version": "1.0.0"
     },
     {
       "id": "messaging.provider",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:communication.core"
+      "version": "1.0.0"
     },
     {
       "id": "messaging.push-apns",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:messaging.provider[ucos:jur:IN,push-ios]"
+      "version": "1.0.0"
     },
     {
       "id": "messaging.push-fcm",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:messaging.provider[ucos:jur:IN,push-android]"
+      "version": "1.0.0"
     },
     {
       "id": "messaging.rcs",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:messaging.provider[ucos:jur:IN,rcs]"
+      "version": "1.0.0"
     },
     {
       "id": "messaging.sms-in-dlt",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "control:ucos.ctrl.in-trai-dlt<-in-trai-tcccpr"
+      "version": "1.0.0"
     },
     {
       "id": "messaging.telegram",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:messaging.provider[ucos:jur:IN,telegram]"
+      "version": "1.0.0"
     },
     {
       "id": "messaging.voice-tts",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:messaging.provider[ucos:jur:IN,voice]"
+      "version": "1.0.0"
     },
     {
       "id": "messaging.web-push",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:messaging.provider[ucos:jur:IN,web-push]"
+      "version": "1.0.0"
     },
     {
       "id": "messaging.whatsapp",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:messaging.provider[ucos:jur:IN,whatsapp]"
+      "version": "1.0.0"
     },
     {
       "id": "meta.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:party.core"
+      "version": "1.0.0"
     },
     {
       "id": "observability.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "offer.engine",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "requested"
+      "version": "1.0.0"
     },
     {
       "id": "ontology.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:taxonomy.core"
+      "version": "1.0.0"
     },
     {
       "id": "order.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:commerce.checkout"
+      "version": "1.0.0"
     },
     {
       "id": "org.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "party.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "payment.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:commerce.checkout"
+      "version": "1.0.0"
     },
     {
       "id": "payment.provider",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:payment.core"
+      "version": "1.0.0"
     },
     {
       "id": "payment.provider.cod",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:payment.provider[ucos:jur:IN,cod]"
+      "version": "1.0.0"
     },
     {
       "id": "payment.provider.razorpay",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:payment.provider[ucos:jur:IN,upi]"
+      "version": "1.0.0"
     },
     {
       "id": "policy.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:identity.core"
+      "version": "1.0.0"
     },
     {
       "id": "pricing.engine",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:commerce.checkout"
+      "version": "1.0.0"
     },
     {
       "id": "privacy.consent",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "privacy.dsr",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "privacy.retention",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "product.intelligence",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:catalog.listing"
+      "version": "1.0.0"
     },
     {
       "id": "refdata.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:geo.core"
+      "version": "1.0.0"
     },
     {
       "id": "rtc.provider",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:contactcenter.core"
+      "version": "1.0.0"
     },
     {
       "id": "rtc.sessions",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "channel:video"
+      "version": "1.0.0"
     },
     {
       "id": "rtc.video-sfu",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:rtc.provider[ucos:jur:IN,video]"
+      "version": "1.0.0"
     },
     {
       "id": "rtc.voice-cpaas",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:rtc.provider[ucos:jur:IN,voice]"
+      "version": "1.0.0"
     },
     {
       "id": "search.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "requested"
+      "version": "1.0.0"
     },
     {
       "id": "security.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "control:ucos.ctrl.breach-notification<-in-dpdp-2023"
+      "version": "1.0.0"
     },
     {
       "id": "seo.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "channel:web"
+      "version": "1.0.0"
     },
     {
       "id": "tax.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:commerce.checkout"
+      "version": "1.0.0"
     },
     {
       "id": "tax.determination",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:tax.core"
+      "version": "1.0.0"
     },
     {
       "id": "tax.gst-india",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:tax.determination[ucos:jur:IN,-]"
+      "version": "1.0.0"
     },
     {
       "id": "taxonomy.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:catalog.listing"
+      "version": "1.0.0"
     },
     {
       "id": "temporal.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "ui.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "ui.storefront-web",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "channel:web"
+      "version": "1.0.0"
     },
     {
       "id": "ui.tenant-admin",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "workflow.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     }
   ],
   "controls": [
@@ -1022,7 +947,7 @@
     "workflow.task.created",
     "workflow.task.escalated"
   ],
-  "id": "ucos:blueprint:sha256:f6ec538beaf43caa96ebad76c5c8bc99164cde40fe3c3e13dbe8915a0ba15037",
+  "id": "ucos:blueprint:sha256:62ae4751d4578568981582eca26160f0bd842a4aa04d9575d27c6a095774ff44",
   "kind": "Blueprint",
   "objectTypes": [
     "ucos.api.APIClient",

@@ -11,122 +11,102 @@
     {
       "id": "audit.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:sample.notes"
+      "version": "1.0.0"
     },
     {
       "id": "authority.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:identity.core"
+      "version": "1.0.0"
     },
     {
       "id": "context.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "currency.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "entitlement.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "event.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:sample.notes"
+      "version": "1.0.0"
     },
     {
       "id": "frame.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:geo.core"
+      "version": "1.0.0"
     },
     {
       "id": "geo.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "identity.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "l10n.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "maps.provider",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "required-by:geo.core"
+      "version": "1.0.0"
     },
     {
       "id": "maps.simulator",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "adapter:maps.provider[ucos:jur:IN,-]"
+      "version": "1.0.0"
     },
     {
       "id": "meta.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:party.core"
+      "version": "1.0.0"
     },
     {
       "id": "org.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "party.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     },
     {
       "id": "policy.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:identity.core"
+      "version": "1.0.0"
     },
     {
       "id": "refdata.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:geo.core"
+      "version": "1.0.0"
     },
     {
       "id": "sample.notes",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "requested"
+      "version": "1.0.0"
     },
     {
       "id": "security.core",
       "scope": "platform",
-      "version": "1.0.0",
-      "why": "required-by:audit.core"
+      "version": "1.0.0"
     },
     {
       "id": "temporal.core",
       "scope": "tenant",
-      "version": "1.0.0",
-      "why": "base-capability"
+      "version": "1.0.0"
     }
   ],
   "controls": [],
@@ -206,7 +186,7 @@
     "temporal.tz.upgraded",
     "temporal.waitlist.promoted"
   ],
-  "id": "ucos:blueprint:sha256:4bdc1d8d672606763d31568ebd2be1d31dfa475e23e4d872d77ae6d888f4495e",
+  "id": "ucos:blueprint:sha256:7efd104c95a7d2736c96aaa89439ec5fc43e2a8b424a1126a71a58c9ae1e85b9",
   "kind": "Blueprint",
   "objectTypes": [
     "ucos.audit.AuditRecord",

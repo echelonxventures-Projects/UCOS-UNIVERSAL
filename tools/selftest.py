@@ -57,7 +57,7 @@ CASES = [
     ('decision table test fails',
      replace('spec/decisions/risk.checkout-thresholds.yaml', "- ['*', '>=90', decline]", "- ['*', '>=90', allow]"), VALIDATE, 'expected [\'decline\']'),
     ('composition rules drift from the checker',
-     replace('spec/rules/core/closure.dl', 'required(abs) :- required(a), adapter_kind(a), implements(a, abs).', ''), [PY, 'tools/datalog.py', 'oracle'], 'that closure.dl does not'),
+     replace('spec/rules/core/closure.dl', 'required(abs) :- required(a), adapter_kind(a), implements(a, abs).', ''), [PY, 'tools/datalog.py', 'oracle'], 'differs between closure.dl and the checker'),
     ('stale generated contract',
      replace('spec/api/asyncapi/ucos-events.yaml', "asyncapi: 3.0.0", "asyncapi: 3.0.0\n# edited"), [PY, 'tools/gen_contracts.py', '--check'], 'out of date'),
     ('stale generated manifest',

@@ -9,8 +9,11 @@ import (
 	"strings"
 	"time"
 
-	_ "time/tzdata" // embed the IANA database so the scratch image can resolve time zones
+	_ "time/tzdata"
 
+	"go.yaml.in/yaml/v3" // embed the IANA database so the scratch image can resolve time zones
+
+	"ucos.io/kernel/internal/composer"
 	"ucos.io/kernel/pkg/money"
 	"ucos.io/kernel/pkg/temporal"
 	"ucos.io/kernel/pkg/ugid"
@@ -23,7 +26,9 @@ const usage = `usage:
   ucos ugid <kind>                                  new identifier, e.g. ucos ugid order
   ucos allocate <amount> <currency> <w1,w2,...>     split money exactly by weights
   ucos business-add <RFC3339 start> <hours> <IANA zone> [holiday YYYY-MM-DD ...]
-                                                    add business hours (Mon-Fri 09:00-18:00)`
+                                                    add business hours (Mon-Fri 09:00-18:00)
+  ucos compose <repo-root> <platform-definition.yaml> [--why <fact>]
+                                                    compose a blueprint (ADR-022 engine); prints id, gaps`
 
 func main() {
 	if err := run(os.Args[1:]); err != nil {
@@ -99,6 +104,41 @@ func run(args []string) error {
 			return err
 		}
 		fmt.Println(end.Format(time.RFC3339))
+	case "compose":
+		if len(args) < 3 {
+			return fmt.Errorf("compose needs the repository root and a platform definition\n%s", usage)
+		}
+		reg, err := composer.LoadRegistry(args[1])
+		if err != nil {
+			return err
+		}
+		b, err := os.ReadFile(args[2])
+		if err != nil {
+			return err
+		}
+		var pd composer.PD
+		if err := yaml.Unmarshal(b, &pd); err != nil {
+			return err
+		}
+		res, err := reg.Compose(&pd)
+		if err != nil {
+			return err
+		}
+		if len(args) == 5 && args[3] == "--why" {
+			fmt.Println(res.Proof[args[4]])
+			return nil
+		}
+		fmt.Println(res.ID)
+		mandatory := 0
+		for _, g := range res.Gaps {
+			fmt.Printf("%s %s %s\n", g.Severity, g.Kind, g.Subject)
+			if g.Severity == "MANDATORY" {
+				mandatory++
+			}
+		}
+		if mandatory > 0 {
+			return fmt.Errorf("%d mandatory gaps", mandatory)
+		}
 	default:
 		return fmt.Errorf("unknown command %q\n%s", args[0], usage)
 	}

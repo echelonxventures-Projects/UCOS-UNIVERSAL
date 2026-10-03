@@ -236,10 +236,10 @@ def compose(pd, target_phase=1):
         if set(trace) == before: break
 
     required = set(trace)
-    for c in sorted(required):
-        if c not in packs: gaps.append(('MANDATORY', 'MISSING_CAPABILITY', c, trace[c]))
-        elif c in excluded: gaps.append(('MANDATORY', 'CONFLICT_EXCLUDED', c, trace[c]))
-        elif phase(c) > target_phase: gaps.append(('MANDATORY', 'PHASE_NOT_AVAILABLE', c, f'P{phase(c)} > target P{target_phase}'))
+    for c in sorted(required):   # each condition is its own gap, as in spec/rules/core/closure.dl
+        if c not in packs: gaps.append(('MANDATORY', 'MISSING_CAPABILITY', c, trace[c])); continue
+        if c in excluded: gaps.append(('MANDATORY', 'CONFLICT_EXCLUDED', c, trace[c]))
+        if phase(c) > target_phase: gaps.append(('MANDATORY', 'PHASE_NOT_AVAILABLE', c, f'P{phase(c)} > target P{target_phase}'))
     for abs_ in [c for c in required if c in packs and kind(c) == 'abstract']:
         src = defaults['abstractMethodSource'].get(abs_, 'none')
         for i, j in enumerate(jurs):
@@ -264,7 +264,7 @@ def compose(pd, target_phase=1):
         'platformDefinition': f"{pd['metadata']['id']}@{pd['metadata']['version']}",
         'targetPhase': target_phase,
         **({'reality': reality} if reality != 'physical' else {}),
-        'capabilities': [{'id': c, 'version': packs[c]['metadata']['version'], 'scope': scope(c), 'why': trace[c]}
+        'capabilities': [{'id': c, 'version': packs[c]['metadata']['version'], 'scope': scope(c)}
                          for c in sorted(required) if c in packs],
         'adapters': [{'abstract': a, 'jurisdiction': j, 'method': m, 'implementation': i} for (a, j, m), i in sorted(selected.items())],
         'controls': [{'control': k, 'regulations': sorted(v), 'implementedBy': facts_ctl[k]} for k, v in sorted(controls.items())],
@@ -273,26 +273,36 @@ def compose(pd, target_phase=1):
     }
     canon = json.dumps(bp, sort_keys=True, separators=(',', ':')).encode()
     bp['id'] = 'ucos:blueprint:sha256:' + hashlib.sha256(canon).hexdigest()
+    # Provenance is a separate ResolutionTrace (A-76): the blueprint id depends only on what is composed.
+    bp_trace = {'kind': 'ResolutionTrace', 'blueprint': bp['id'], 'why': {c: trace[c] for c in sorted(required)}}
     report = {'kind': 'GapReport', 'blueprintCandidate': bp['id'],
               'summary': {sev: sum(1 for g in gaps if g[0] == sev) for sev in ('MANDATORY', 'RECOMMENDED', 'OPTIONAL')},
               'gaps': [{'severity': a, 'kind': b, 'subject': c, 'because': d} for a, b, c, d in sorted(gaps)]}
-    return bp, report
+    return bp, report, bp_trace
 
 results = []
 for p in sorted(glob.glob(os.path.join(SPEC, 'composition', 'golden', '*.pd.yaml'))):
     pd = load_yaml(p)
     for e in pd_v.iter_errors(pd): err(f'PD schema: {os.path.basename(p)}: {e.message}')
     tp = pd['spec'].get('targetPhase', 1)
-    bp1, gr1 = compose(pd, tp)
-    bp2, _ = compose(pd, tp)
+    bp1, gr1, tr1 = compose(pd, tp)
+    bp2, _, _ = compose(pd, tp)
     if bp1['id'] != bp2['id']: err(f'{os.path.basename(p)}: composition not deterministic (L18)')
     results.append((os.path.basename(p), bp1, gr1))
+    out = os.path.join(SPEC, 'composition', 'golden', 'expected')
+    base = os.path.basename(p).replace('.pd.yaml', '')
+    files = {base + '.blueprint.json': bp1, base + '.gaps.json': gr1, base + '.trace.json': tr1}
     if '--write' in sys.argv:
-        out = os.path.join(SPEC, 'composition', 'golden', 'expected')
         os.makedirs(out, exist_ok=True)
-        base = os.path.basename(p).replace('.pd.yaml', '')
-        json.dump(bp1, open(os.path.join(out, base + '.blueprint.json'), 'w'), indent=2, sort_keys=True)
-        json.dump(gr1, open(os.path.join(out, base + '.gaps.json'), 'w'), indent=2, sort_keys=True)
+        for name, doc in files.items():
+            with open(os.path.join(out, name), 'w') as fh:
+                json.dump(doc, fh, indent=2, sort_keys=True); fh.write('\n')
+    else:   # golden regression: results may change only by a deliberate --write
+        for name, doc in files.items():
+            path = os.path.join(out, name)
+            want = json.load(open(path)) if os.path.exists(path) else None
+            if want != doc:
+                err(f'golden {name} differs from the composed result (review, then run tools/ucos_check.py --write)')
 
 # ---------------------------------------------------------------- report
 print(f'packs: {len(packs)}  gates: {len(gate_ids)} ({len(refs)} referenced)  object types: {sum(1 for k in owners if k[0]=="objectTypes")}  events: {len(event_producers)}  controls: {len(facts_ctl)}  regulations: {len(facts_reg)}')

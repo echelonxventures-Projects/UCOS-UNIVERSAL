@@ -9,8 +9,8 @@ The composer engine (ADR-022) must evaluate spec/rules/core/closure.dl. This mod
   * exports those facts as Souffle .facts files (tab-separated) for candidate engines;
   * cross-checks the rules against the checked-in golden blueprints produced by tools/ucos_check.py.
 
-The oracle compares non-adapter required capabilities and PHASE_NOT_AVAILABLE gaps. Adapter choice is a tie-break
-the engine makes with choice(); the rules derive every eligible candidate, so adapters are not compared.
+The oracle composes every golden platform from the rules alone (with the choice() loop for adapters) and requires
+the same blueprint, byte for byte (same id), and the same gaps as tools/ucos_check.py.
 
 Usage:
   python3 tools/datalog.py oracle                       # exit 1 if rules and golden blueprints disagree
@@ -248,6 +248,10 @@ def encode(pd, packs, regs, ctls, defaults):
                 for mth in ms:
                     fact('needed_method', cid, j, mth)
         sel = sp.get('selection', {})
+        for e in sp.get('provides', {}).get('events', []) or []:
+            fact('provides_event', cid, e)
+        for e in (sp.get('consumes') or {}).get('events', []) or []:
+            fact('consumes_event', cid, e)
         if md['capabilityKind'] in ('adapter', 'simulator'):
             fact('adapter_kind', cid)
         for a in sp.get('implements', []):
@@ -269,32 +273,78 @@ def encode(pd, packs, regs, ctls, defaults):
 def rules_text():
     return '\n'.join(open(p).read() for p in sorted(glob.glob(os.path.join(ROOT, 'spec', 'rules', '**', '*.dl'), recursive=True)))
 
+SEVERITY = {'MISSING_CAPABILITY': 'MANDATORY', 'CONFLICT_EXCLUDED': 'MANDATORY', 'PHASE_NOT_AVAILABLE': 'MANDATORY',
+            'MISSING_ADAPTER': 'MANDATORY', 'CONTROL_NOT_IMPLEMENTED': 'MANDATORY',
+            'MISSING_SIMULATOR': 'RECOMMENDED', 'EVENT_WITHOUT_PRODUCER_IN_BLUEPRINT': 'RECOMMENDED'}
+
+def choose(db, edb):
+    """Engine choice() over selected_adapter: a jurisdiction-specific adapter beats '*', then the smallest id."""
+    best = {}
+    jur = edb.get('adapter_jur', set())
+    for abs_, j, m, a in db.get('selected_adapter', set()):
+        key = (0 if (a, j) in jur else 1, a)
+        if (abs_, j, m) not in best or key < best[(abs_, j, m)]:
+            best[(abs_, j, m)] = key
+    return {(abs_, j, m, k[1]) for (abs_, j, m), k in best.items()}
+
+def compose(pd, packs, regs, ctls, defaults, rules):
+    """Evaluate the rules with the choice() loop and assemble the blueprint exactly as tools/ucos_check.py does."""
+    import hashlib
+    edb = encode(pd, packs, regs, ctls, defaults)
+    chosen = set()
+    for _ in range(50):
+        edb['chosen_adapter'] = set(chosen)
+        db = evaluate(rules, edb)
+        nxt = choose(db, edb)
+        if nxt == chosen:
+            break
+        chosen = nxt
+    s = pd['spec']
+    required = sorted(r[0] for r in db.get('required', set()) if r[0] in packs)
+    applies = {r[0] for r in db.get('applies', set())}
+    controls = {}
+    for r_, k in edb.get('requires_control', set()):
+        if r_ in applies:
+            controls.setdefault(k, set()).add(r_)
+    prov = lambda c, k: packs[c]['spec'].get('provides', {}).get(k, []) or []
+    produced = sorted({e for c in required for e in prov(c, 'events')})
+    reality = s.get('reality', 'physical')
+    bp = {'kind': 'Blueprint', 'platformDefinition': f"{pd['metadata']['id']}@{pd['metadata']['version']}",
+          'targetPhase': s.get('targetPhase', 1), **({'reality': reality} if reality != 'physical' else {}),
+          'capabilities': [{'id': c, 'version': packs[c]['metadata']['version'], 'scope': packs[c]['metadata']['scope']} for c in required],
+          'adapters': [{'abstract': a, 'jurisdiction': j, 'method': m, 'implementation': i} for a, j, m, i in sorted(chosen)],
+          'controls': [{'control': k, 'regulations': sorted(v), 'implementedBy': ctls[k]} for k, v in sorted(controls.items())],
+          'objectTypes': sorted(x for c in required for x in prov(c, 'objectTypes')),
+          'events': produced}
+    bp['id'] = 'ucos:blueprint:sha256:' + hashlib.sha256(json.dumps(bp, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    gaps = {(SEVERITY[k], k, a) for k, a, b in db.get('gap', set())}
+    return bp, gaps
+
 def oracle():
     decls, rules = parse_program(rules_text())
     packs, regs, ctls, defaults = load_registry()
     problems = []
-    adapterish = lambda c: c in packs and packs[c]['metadata']['capabilityKind'] in ('adapter', 'simulator')
     for pdf in sorted(glob.glob(os.path.join(ROOT, 'spec', 'composition', 'golden', '*.pd.yaml'))):
         name = os.path.basename(pdf).replace('.pd.yaml', '')
-        edb = encode(yaml.safe_load(open(pdf)), packs, regs, ctls, defaults)
+        pd = yaml.safe_load(open(pdf))
+        edb = encode(pd, packs, regs, ctls, defaults)
         for p, rows in edb.items():
             if p not in decls:
                 problems.append(f'{name}: encoder emits undeclared predicate {p}')
             elif any(len(r) != decls[p] for r in rows):
                 problems.append(f'{name}: {p} facts do not have arity {decls[p]}')
-        db = evaluate(rules, edb)
-        dl_req = {r[0] for r in db.get('required', set()) if not adapterish(r[0])}
-        dl_phase = {r[1] for r in db.get('gap', set()) if r[0] == 'PHASE_NOT_AVAILABLE' and not adapterish(r[1])}
-        bp = json.load(open(os.path.join(ROOT, 'spec', 'composition', 'golden', 'expected', f'{name}.blueprint.json')))
+        bp, gaps = compose(pd, packs, regs, ctls, defaults, rules)
+        exp = json.load(open(os.path.join(ROOT, 'spec', 'composition', 'golden', 'expected', f'{name}.blueprint.json')))
         gr = json.load(open(os.path.join(ROOT, 'spec', 'composition', 'golden', 'expected', f'{name}.gaps.json')))
-        ck_req = {c['id'] for c in bp['capabilities'] if not adapterish(c['id'])}
-        ck_phase = {g['subject'] for g in gr['gaps'] if g['kind'] == 'PHASE_NOT_AVAILABLE' and not adapterish(g['subject'])}
-        if dl_req != ck_req:
-            problems.append(f'{name}: closure.dl requires {sorted(dl_req - ck_req)} that the checker does not; '
-                            f'checker requires {sorted(ck_req - dl_req)} that closure.dl does not')
-        if dl_phase != ck_phase:
-            problems.append(f'{name}: PHASE_NOT_AVAILABLE differs: rules {sorted(dl_phase)} vs checker {sorted(ck_phase)}')
-        print(f'  {name:<20} rules={len(dl_req):>3} checker={len(ck_req):>3} capabilities  {"agree" if dl_req == ck_req and dl_phase == ck_phase else "DIFFER"}')
+        exp_gaps = {(g['severity'], g['kind'], g['subject']) for g in gr['gaps']}
+        same = bp == exp and gaps == exp_gaps
+        if bp != exp:
+            for k in sorted(set(bp) | set(exp)):
+                if bp.get(k) != exp.get(k):
+                    problems.append(f'{name}: blueprint field {k} differs between closure.dl and the checker')
+        if gaps != exp_gaps:
+            problems.append(f'{name}: gaps differ: rules-only {sorted(gaps - exp_gaps)}, checker-only {sorted(exp_gaps - gaps)}')
+        print(f'  {name:<20} {bp["id"][22:38]}…  {"identical" if same else "DIFFER"}')
     for p in problems:
         print('  ERROR  ', p)
     return problems

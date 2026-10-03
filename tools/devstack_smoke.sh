@@ -17,7 +17,8 @@ got=$("${C[@]}" exec -T postgres psql -U postgres -d ucos -tAc \
 echo "redpanda: cluster healthy and a topic round-trips"
 "${C[@]}" exec -T redpanda rpk topic create ucos.local.sample.note.v1 -p 3 >/dev/null
 echo '{"type":"sample.note.created"}' | "${C[@]}" exec -T redpanda rpk topic produce ucos.local.sample.note.v1 >/dev/null
-"${C[@]}" exec -T redpanda rpk topic consume ucos.local.sample.note.v1 -n 1 | grep -q 'sample.note.created'
+msg=$("${C[@]}" exec -T redpanda rpk topic consume ucos.local.sample.note.v1 -o start -n 1)
+grep -q 'sample.note.created' <<<"$msg" || { echo "message did not round-trip: $msg"; exit 1; }
 
 echo "keycloak: dev realm imported and issues tokens"
 for i in $(seq 1 100); do
@@ -32,7 +33,8 @@ token=$(curl -s -d grant_type=password -d client_id=ucos-gateway -d client_secre
 
 echo "temporal: server serving the default namespace (checked through the UI's API)"
 for i in $(seq 1 80); do
-  curl -s http://localhost:8233/api/v1/namespaces | grep -q '"default"' && ok=1 && break
+  ns=$(curl -s http://localhost:8233/api/v1/namespaces || true)
+  grep -q '"default"' <<<"$ns" && ok=1 && break
   sleep 3
 done
 [[ "${ok:-0}" == "1" ]] || { echo "temporal not serving"; "${C[@]}" logs --tail 30 temporal; exit 1; }

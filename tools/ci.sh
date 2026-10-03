@@ -84,6 +84,13 @@ run "generated manifests in sync"   "$PY" tools/gen_manifests.py --check
 run "generated registries in sync"  "$PY" tools/gen_registries.py --check
 run "generated contracts in sync"   "$PY" tools/gen_contracts.py --check
 run "spec consistency (ucos_check)" "$PY" tools/ucos_check.py
+if [[ "$QUICK" == "0" ]]; then
+  if [[ "$IN_CI" == "true" ]] || command -v initdb >/dev/null 2>&1 || ls /opt/homebrew/opt/postgresql@*/bin/initdb /usr/lib/postgresql/*/bin/initdb >/dev/null 2>&1; then
+    run "database migrations and tests" tools/db_test.sh
+  else
+    echo "   skip  PostgreSQL server binaries not installed (mandatory in CI)"
+  fi
+fi
 run "composition rules agree (closure.dl oracle)" "$PY" tools/datalog.py oracle
 run "golden test data reproducible" "$PY" tools/gen_golden_data.py "${TMPDIR:-/tmp}/ucos-golden-data" --check
 if [[ "$QUICK" == "1" ]]; then
@@ -93,10 +100,44 @@ else
   run "guards fail on defects"      "$PY" tools/selftest.py
 fi
 
+if need go; then
+  export GOTOOLCHAIN=auto GOFLAGS=-mod=readonly
+  GOBIN_DIR="$ROOT/.tools/bin"
+  go_tools() {   # pinned code generators, installed once per version
+    mkdir -p "$GOBIN_DIR"
+    [[ -x "$GOBIN_DIR/protoc-gen-go" ]] && "$GOBIN_DIR/protoc-gen-go" --version | grep -q 'v1.36.12' || GOBIN="$GOBIN_DIR" go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.12
+    [[ -x "$GOBIN_DIR/protoc-gen-go-grpc" ]] && "$GOBIN_DIR/protoc-gen-go-grpc" --version | grep -q '1.6.2' || GOBIN="$GOBIN_DIR" go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.2
+  }
+  go_quality() {
+    local unformatted; unformatted="$(cd kernel && gofmt -l .)"
+    if [[ -n "$unformatted" ]]; then echo "gofmt needed:"; echo "$unformatted"; return 1; fi
+    (cd kernel && go vet ./... && go test -race -count=1 ./...)
+  }
+  run "Go: format, vet, race tests" go_quality
+  if [[ "$QUICK" == "0" ]]; then
+    run "Go: staticcheck" bash -c 'cd kernel && go run honnef.co/go/tools/cmd/staticcheck@v0.8.1 ./...'
+    run "Go: known vulnerabilities (govulncheck)" bash -c 'cd kernel && go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...'
+    run "Go: money allocation 1M cases (ARCH-CUR-02)" bash -c 'cd kernel && UCOS_LONG=1 go test -count=1 -run Conserves ./pkg/money/'
+  fi
+fi
+
 if need buf; then
   run "proto lint (buf)" buf lint spec/api/proto
   if [[ -n "${BUF_BASE_REF:-}" ]] && git cat-file -e "${BUF_BASE_REF}:spec/api/proto/buf.yaml" 2>/dev/null; then
     run "proto breaking changes (buf)" buf breaking spec/api/proto --against ".git#ref=${BUF_BASE_REF},subdir=spec/api/proto"
+  fi
+  if command -v go >/dev/null 2>&1; then
+    gen_go() {
+      go_tools
+      local tmp; tmp="$(mktemp -d)"; cp -R kernel/gen "$tmp/before"
+      (cd spec/api/proto && PATH="$GOBIN_DIR:$PATH" buf generate) || return 1
+      if [[ "$FIX" == "1" ]]; then rm -rf "$tmp"; return 0; fi
+      if ! diff -r "$tmp/before" kernel/gen >/dev/null; then
+        echo "kernel/gen is out of date with spec/api/proto (run tools/ci.sh --fix)"; rm -rf kernel/gen; cp -R "$tmp/before" kernel/gen; rm -rf "$tmp"; return 1
+      fi
+      rm -rf "$tmp"
+    }
+    run "Go code generated from protos in sync" gen_go
   fi
 fi
 

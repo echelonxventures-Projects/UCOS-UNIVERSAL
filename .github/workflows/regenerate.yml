@@ -27,7 +27,7 @@ jobs:
       - name: Commit regenerated files
         run: |
           set -euo pipefail
-          git add -A spec/capabilities/packs spec/registries spec/object-types spec/api/openapi/capabilities spec/api/asyncapi spec/events/payloads
+          git add -A spec/capabilities/packs spec/registries spec/object-types spec/api/openapi/capabilities spec/api/asyncapi spec/events/payloads kernel/gen
           if git diff --cached --quiet; then echo "generated files already in sync"; exit 0; fi
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
             commit -m "Regenerate generated specification files" -m "Automated by .github/workflows/regenerate.yml (tools/ci.sh --fix)."

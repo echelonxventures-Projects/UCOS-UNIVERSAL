@@ -15,6 +15,11 @@ runs:
         node-version-file: .nvmrc
         cache: npm
         cache-dependency-path: tools/site/package-lock.json
+    - name: Go (toolchain from kernel/go.mod)
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+      with:
+        go-version-file: kernel/go.mod
+        cache-dependency-path: kernel/go.sum
     - name: buf v1.72.0 (checksum-verified)
       shell: bash
       env:

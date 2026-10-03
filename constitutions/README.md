@@ -275,7 +275,7 @@ Engineering companions: [../engineering/KERNEL-DESIGN.md](../engineering/KERNEL-
 | U10 | One tenant spanning several residency regions | **Decided:** Yes: one tenant, data shards in several cells ([ADR-028](../docs/adr/)) |
 | U12 | Boundary data source: OSM (ODbL) or commercial | **Decided:** OSM (ODbL) with attribution, derived data kept separate ([ADR-027](../docs/adr/)) |
 | U13 | Reservation counters at extreme peak: Postgres sharded sub-slots or Redis | **Decided:** Postgres sharded sub-slots; Redis only if the load test fails ([ADR-023](../docs/adr/)) |
-| U01 | Membership of the root authority (Architecture Board, at least 3 members with hardware keys) | **Decided:** Board of at least 3 (CTO chair, chief architect, CISO); founders name members at genesis ([ADR-034](../docs/adr/)) |
+| U01 | Membership of the root authority (Architecture Board, at least 3 members with hardware keys) | **Decided:** Board of at least 3 (CTO chair, chief architect, CISO). Chair: Bipin Kumar; two seats open ([ADR-034](../docs/adr/)) |
 | U03 | OpenFGA for relationship-heavy (social graph) cases | **Decided:** Cedar only; revisit at P6 against stated triggers ([ADR-026](../docs/adr/)) |
 | U57 | gVisor sandbox for all third-party packs | **Decided:** gVisor for all third-party out-of-process packs ([ADR-025](../docs/adr/)) |
 | U58 | Datalog engine: Soufflé or an embeddable Rust engine | **Decided:** Embedded Go Datalog evaluator with the Python checker as oracle; provisional until spike S-01 ([ADR-022](../docs/adr/)) |

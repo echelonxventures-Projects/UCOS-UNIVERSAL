@@ -24,3 +24,12 @@ The Architecture Board has **at least three members**: the CTO (chair), the chie
 
 ## Enforcement
 `ARCH-AUTH-01`; genesis checklist.
+
+## Members recorded
+| Seat | Member | Contact | Since |
+|---|---|---|---|
+| Chair (CTO / founder) | Bipin Kumar | bipin.kumar@aol.com, bipin1@gmail.com | 2026-10-03 |
+| Chief architect | *open* | | |
+| CISO | *open* | | |
+
+Until the two open seats are filled, the quorum rule above cannot be met. Level-3 decisions wait, except break-glass, which needs the chair plus a written justification that the full board reviews within 30 days. The genesis DecisionRecord (U01) copies this table.

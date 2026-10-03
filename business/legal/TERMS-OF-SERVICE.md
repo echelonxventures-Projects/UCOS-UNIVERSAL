@@ -39,4 +39,4 @@ UCOS maintains the security measures described in the Data Processing Agreement.
 8.2 Neither party is liable for indirect or consequential loss, to the extent the law allows.
 
 ## 9. General
-Governing law and courts: `[India — courts of [city]]` / `[UAE — DIFC or [emirate] courts]` as stated in the order form. Notices in writing to the addresses in the order form.
+Governing law and courts: `[India — courts of [city]]` / `[UAE — DIFC or [emirate] courts]` as stated in the order form. Notices in writing to the addresses in the order form. Notices to UCOS: Bipin Kumar, bipin.kumar@aol.com (copy bipin1@gmail.com).

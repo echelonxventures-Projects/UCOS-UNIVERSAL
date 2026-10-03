@@ -34,6 +34,9 @@ UCOS uses the sub-processors listed in SUB-PROCESSORS.md. It gives at least 30 d
 - Signed, scanned software supply chain (ADR-009).
 - Backups with tested restores for critical services (`DR-01`).
 
+## 4a. Contact
+Data-protection and security contact for UCOS: Bipin Kumar, bipin.kumar@aol.com (copy bipin1@gmail.com). A grievance officer for India (DPDP) and a UAE contact are named before the first customer contract.
+
 ## 5. Personal data breaches
 UCOS notifies the Customer without undue delay and in any case within `[24]` hours of becoming aware of a breach affecting the Customer's personal data. The notice includes the nature of the breach, categories and approximate numbers affected, likely consequences and measures taken. This lets the Customer meet its own deadlines (for example, India's CERT-In 6-hour reporting and DPDP notification to the Board and affected people).
 

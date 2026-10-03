@@ -997,6 +997,24 @@ channels:
     messages:
       gap.scan.completed:
         $ref: '#/components/messages/gap.scan.completed'
+  generation.artifact:
+    address: ucos.{cell}.generation.artifact.v1
+    parameters:
+      cell:
+        description: Cell id, e.g. in-mum-1
+    messages:
+      generation.artifact.published:
+        $ref: '#/components/messages/generation.artifact.published'
+  generation.run:
+    address: ucos.{cell}.generation.run.v1
+    parameters:
+      cell:
+        description: Cell id, e.g. in-mum-1
+    messages:
+      generation.run.completed:
+        $ref: '#/components/messages/generation.run.completed'
+      generation.run.failed:
+        $ref: '#/components/messages/generation.run.failed'
   geo.address:
     address: ucos.{cell}.geo.address.v1
     parameters:
@@ -3448,6 +3466,19 @@ operations:
       $ref: '#/channels/gap.scan'
     messages:
     - $ref: '#/channels/gap.scan/messages/gap.scan.completed'
+  publish.generation.artifact:
+    action: send
+    channel:
+      $ref: '#/channels/generation.artifact'
+    messages:
+    - $ref: '#/channels/generation.artifact/messages/generation.artifact.published'
+  publish.generation.run:
+    action: send
+    channel:
+      $ref: '#/channels/generation.run'
+    messages:
+    - $ref: '#/channels/generation.run/messages/generation.run.completed'
+    - $ref: '#/channels/generation.run/messages/generation.run.failed'
   publish.geo.address:
     action: send
     channel:
@@ -5846,6 +5877,24 @@ components:
       payload:
         $ref: ../../events/payloads/gap.scan.completed.schema.json
       x-ucos-producer: gap.core
+    generation.artifact.published:
+      name: generation.artifact.published
+      contentType: application/cloudevents+json
+      payload:
+        $ref: ../../events/payloads/generation.artifact.published.schema.json
+      x-ucos-producer: generation.core
+    generation.run.completed:
+      name: generation.run.completed
+      contentType: application/cloudevents+json
+      payload:
+        $ref: ../../events/payloads/generation.run.completed.schema.json
+      x-ucos-producer: generation.core
+    generation.run.failed:
+      name: generation.run.failed
+      contentType: application/cloudevents+json
+      payload:
+        $ref: ../../events/payloads/generation.run.failed.schema.json
+      x-ucos-producer: generation.core
     geo.address.created:
       name: geo.address.created
       contentType: application/cloudevents+json

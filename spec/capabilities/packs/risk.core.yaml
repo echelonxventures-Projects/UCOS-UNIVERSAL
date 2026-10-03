@@ -5,9 +5,9 @@ metadata:
   version: 1.0.0
   universe: U69-risk
   steward: ucos:org:steward-risk
-  purpose: Risk owns scoring and managing risk.
+  purpose: Real-time risk scoring with explainable reasons, velocity checks, review queues and block/allow lists; unknown band on failure.
   capabilityKind: core
-  maturity: experimental
+  maturity: beta
   phase: 2
   scope: tenant
 spec:
@@ -34,9 +34,16 @@ spec:
     - risk.review.decided
     - risk.label.recorded
     - risk.aml.alert-raised
+    decisions:
+    - risk.checkout-thresholds
+    - risk.login-thresholds
+  consumes:
+    events:
+    - order.order.placed
+    - commerce.checkout.started
+    - identity.session.started
+    - payment.refund.issued
   requires:
-  - capability: ml.core
-    version: '>=1 <2'
   - capability: decision.core
     version: '>=1 <2'
   - capability: context.core
@@ -51,12 +58,24 @@ spec:
     version: '>=1 <2'
   - capability: observability.core
     version: '>=1 <2'
-  - capability: compliance.core
-    version: '>=1 <2'
+  optional:
+  - capability: ml.core
   temporal:
     kind: S
     uses:
     - D
+  security:
+    dataClasses:
+    - PII
+    threatModel: docs/threat-models/kernel-and-tenancy.md
+  compliance:
+    controls:
+    - ucos.ctrl.automated-decision-contest
+  ui:
+    views:
+    - risk.cockpit
+    - risk.review-queue
+    - risk.rule-editor
   certification:
     gates:
     - ARCH-*
@@ -64,3 +83,4 @@ spec:
     - TEST-*
     - DOC-*
     - OBS-*
+    - A11Y-*

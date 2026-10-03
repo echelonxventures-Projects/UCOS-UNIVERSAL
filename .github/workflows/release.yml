@@ -1,0 +1,30 @@
+# Tagged releases (vX.Y.Z): verify, build the site and the PDF, publish a GitHub release. No human steps.
+name: Release
+on:
+  push:
+    tags: ["v*.*.*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-toolchain
+      - name: Verify
+        run: tools/ci.sh
+      - name: Build PDF
+        run: tools/build_pdf.sh generated/site generated/UCOS-Master-Architecture.pdf
+      - name: Package and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tar -C generated -czf "generated/ucos-site-${GITHUB_REF_NAME}.tar.gz" site
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "UCOS $GITHUB_REF_NAME" --generate-notes \
+            "generated/ucos-site-${GITHUB_REF_NAME}.tar.gz" "generated/UCOS-Master-Architecture.pdf"

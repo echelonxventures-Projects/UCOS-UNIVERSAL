@@ -5,9 +5,9 @@ metadata:
   version: 1.0.0
   universe: U30-ledger-finance
   steward: ucos:org:steward-ledger-finance
-  purpose: Ledger owns financial truth.
+  purpose: 'Double-entry ledger: charts of accounts, posting rules from events, settlements, revenue schedules, period close, reconciliation.'
   capabilityKind: core
-  maturity: experimental
+  maturity: beta
   phase: 2
   scope: tenant
 spec:
@@ -46,6 +46,19 @@ spec:
     - ledger.period.reopened
     - ledger.settlement.completed
     - ledger.reconciliation.break
+    decisions:
+    - ledger.account-resolution
+    - ledger.revenue-recognition
+  consumes:
+    events:
+    - payment.payment-intent.captured
+    - payment.refund.issued
+    - order.order.confirmed
+    - fulfillment.shipment.delivered
+    - marketplace.commission.accrued
+    - marketplace.payout.paid
+    - stored-value.instrument.issued
+    - stored-value.instrument.redeemed
   requires:
   - capability: currency.core
     version: '>=1 <2'
@@ -55,17 +68,13 @@ spec:
     version: '>=1 <2'
   - capability: tax.core
     version: '>=1 <2'
-  - capability: payment.core
-    version: '>=1 <2'
-  - capability: order.core
-    version: '>=1 <2'
-  - capability: marketplace.core
-    version: '>=1 <2'
   - capability: event.core
     version: '>=1 <2'
   - capability: audit.core
     version: '>=1 <2'
-  - capability: compliance.core
+  - capability: decision.core
+    version: '>=1 <2'
+  - capability: workflow.core
     version: '>=1 <2'
   temporal:
     kind: S
@@ -74,6 +83,20 @@ spec:
     - R
     - D
     - BD
+  security:
+    dataClasses:
+    - FINANCIAL
+    threatModel: docs/threat-models/kernel-and-tenancy.md
+  compliance:
+    controls:
+    - ucos.ctrl.books-retention
+    - ucos.ctrl.manual-journal-sod
+  ui:
+    views:
+    - ledger.journal-explorer
+    - ledger.period-close
+    - ledger.reconciliation
+    - ledger.statements
   certification:
     gates:
     - ARCH-*
@@ -81,5 +104,4 @@ spec:
     - TEST-*
     - DOC-*
     - OBS-*
-  optional:
-  - capability: stored-value.core
+    - A11Y-*

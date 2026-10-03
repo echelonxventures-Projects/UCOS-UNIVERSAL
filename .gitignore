@@ -5,3 +5,4 @@ __pycache__/
 generated/
 .idea/
 .vscode/
+.venv/

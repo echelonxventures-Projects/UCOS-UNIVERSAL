@@ -435,6 +435,87 @@ pack('rtc.sessions','U109-realtime-comms-contact-center','core',3,'Video session
      temporal=('S',['AV','TP','TR']), classes=['PII','BIOMETRIC'], controls=['ucos.ctrl.recording-consent'], views=['video.room'])
 
 
+# ---------------- Phase 2 core (hand-authored, replaces derived manifests; A-73) ----------------
+pack('ledger.core','U30-ledger-finance','core',2,'Double-entry ledger: charts of accounts, posting rules from events, settlements, revenue schedules, period close, reconciliation.',
+     types=T('ledger.LedgerEntity','ledger.Account','ledger.JournalEntry','ledger.PostingRule','ledger.Settlement','ledger.RevenueSchedule','ledger.Period','ledger.Reconciliation','ledger.Invoice'),
+     commands=['CreateLedgerEntity','DefineAccount','PublishPostingRule','PostManualJournal','ReverseEntry','ClosePeriod','ReopenPeriod','ImportStatement','Reconcile','ScheduleRevenue','RunReplay'],
+     queries=['TrialBalance','AccountActivity','Balance','FinancialStatements','Aging'],
+     events=ev('ledger','journal','posted')+ev('ledger','period','closed','reopened')+ev('ledger','settlement','completed')+ev('ledger','reconciliation','break'),
+     consumes=['payment.payment-intent.captured','payment.refund.issued','order.order.confirmed','fulfillment.shipment.delivered',
+               'marketplace.commission.accrued','marketplace.payout.paid','stored-value.instrument.issued','stored-value.instrument.redeemed'],
+     decisions=['ledger.account-resolution','ledger.revenue-recognition'],
+     requires=['currency.core','temporal.core','org.core','tax.core','event.core','audit.core','decision.core','workflow.core'],
+     temporal=('S',['CAL','R','D','BD']), classes=['FINANCIAL'], controls=['ucos.ctrl.books-retention','ucos.ctrl.manual-journal-sod'],
+     views=['ledger.journal-explorer','ledger.period-close','ledger.reconciliation','ledger.statements'])
+pack('marketplace.core','U25-marketplace','core',2,'Multi-sided marketplace: seller onboarding and standing, commission plans, payouts with holds, statements, seller performance.',
+     types=T('marketplace.SellerAccount','marketplace.CommissionPlan','marketplace.PayoutSchedule','marketplace.SellerStatement','marketplace.SellerPerformance','marketplace.MarketplacePolicy'),
+     commands=['ApplyAsSeller','CompleteKYB','ApproveSeller','RejectSeller','SignSellerAgreement','ApproveCategory','SetSellerStanding','DefineCommissionPlan','AccrueCommission','ComputePayout','ReleasePayout','HoldPayout','IssueStatement'],
+     queries=['SellerDashboard','PayableBalance','PerformanceScorecard','NextPayout'],
+     events=ev('marketplace','seller','approved','suspended','reinstated')+ev('marketplace','commission','accrued')+ev('marketplace','payout','scheduled','paid','held')+ev('marketplace','statement','issued'),
+     consumes=['order.order.confirmed','order.return.completed','fulfillment.shipment.delivered','payment.refund.issued'],
+     decisions=['marketplace.commission-plan','marketplace.payout-hold'],
+     requires=['org.core','identity.core','catalog.listing','order.core','payment.core','tax.core','decision.core','temporal.core','entitlement.core','ledger.core','risk.core','document.core'],
+     optional=['trust.core','contract.core'],
+     temporal=('S',['POL','CAL','R','TR','SLA']), classes=['PII','FINANCIAL'],
+     controls=['ucos.ctrl.seller-kyb','ucos.ctrl.in-ecom-seller-disclosure'],
+     views=['marketplace.seller-onboarding','marketplace.seller-hub','marketplace.payout-run','marketplace.commission-plans'])
+pack('subscription.core','U27-subscription','core',2,'Recurring plans, subscriptions, proration, usage rating, billing runs, dunning and recurring payment mandates.',
+     types=T('subscription.SubscriptionPlan','subscription.Subscription','subscription.UsageRecord','subscription.RatedCharge','subscription.BillingRun','subscription.DunningPlan'),
+     commands=['CreatePlan','Subscribe','StartTrial','ChangePlan','UpdateQuantity','Pause','Resume','Cancel','ReportUsage','RunBilling','RetryPayment','ApplyCredit'],
+     queries=['PreviewChange','UpcomingInvoice','UsageSummary'],
+     events=ev('subscription','subscription','created','activated','renewed','past-due','paused','canceled','plan-changed')+ev('subscription','usage','rated')+ev('subscription','invoice','issued')+ev('subscription','dunning','step'),
+     consumes=['payment.payment-intent.captured','payment.payment-intent.failed'],
+     decisions=['subscription.renewal-notice','subscription.dunning-plan'],
+     requires=['temporal.core','pricing.engine','entitlement.core','payment.core','ledger.core','tax.core','document.core','communication.core','decision.core','currency.core'],
+     temporal=('S',['TR','R','TRG','D','BD']), classes=['PII','FINANCIAL'],
+     controls=['ucos.ctrl.renewal-notice','ucos.ctrl.easy-cancellation','ucos.ctrl.in-emandate'],
+     views=['subscription.manage','subscription.plan-builder','subscription.billing-run'])
+pack('logistics.core','U36-logistics','core',2,'Multi-carrier rating and selection, manifests and pickups, normalised tracking, NDR and RTO handling, transport documents.',
+     types=T('logistics.Carrier','logistics.RateQuote','logistics.CarrierSelection','logistics.Manifest','logistics.TrackingEvent','logistics.DeliveryException','logistics.Route','logistics.TransportDocument'),
+     commands=['RegisterCarrier','RateShop','SelectCarrier','CreateManifest','SchedulePickup','IngestTracking','RaiseNDR','ResolveNDR','PlanRoutes','GenerateTransportDocument'],
+     queries=['Rates','TransitTime','CarrierScorecard','RouteStatus'],
+     events=ev('logistics','tracking','updated')+ev('logistics','ndr','raised','resolved')+ev('logistics','pickup','completed','missed')+ev('logistics','route','planned'),
+     consumes=['fulfillment.shipment.created'],
+     decisions=['logistics.carrier-selection'],
+     requires=['fulfillment.core','geo.core','temporal.core','integration.core','currency.core','pricing.engine','decision.core','workflow.core','tax.core'],
+     optional=['resource.core'],
+     temporal=('S',['R','D','AV','CAL']), classes=['PII','LOCATION'], controls=['ucos.ctrl.in-eway-bill'],
+     views=['logistics.rate-shop','logistics.ndr-queue','logistics.carrier-scorecard'])
+pack('risk.core','U69-risk','core',2,'Real-time risk scoring with explainable reasons, velocity checks, review queues and block/allow lists; unknown band on failure.',
+     types=T('risk.RiskModel','risk.RiskAssessment','risk.VelocityCounter','risk.ReviewCase','risk.ListEntry','risk.AMLAlert','risk.RiskRegisterItem'),
+     commands=['Score','RecordOutcome','OpenReview','DecideReview','AddListEntry','PublishRiskModel','RaiseAMLAlert','FileReport'],
+     events=ev('risk','assessment','high')+ev('risk','review','decided')+ev('risk','label','recorded')+ev('risk','aml','alert-raised'),
+     consumes=['order.order.placed','commerce.checkout.started','identity.session.started','payment.refund.issued'],
+     decisions=['risk.checkout-thresholds','risk.login-thresholds'],
+     requires=['decision.core','context.core','event.core','identity.core','temporal.core','workflow.core','observability.core'],
+     optional=['ml.core'],
+     temporal=('S',['D']), classes=['PII'], controls=['ucos.ctrl.automated-decision-contest'],
+     views=['risk.cockpit','risk.review-queue','risk.rule-editor'])
+pack('trust.core','U70-trust-reputation','core',2,'Reviews and ratings with verified-experience badges, moderation, published aggregation method and trust badges.',
+     types=T('trust.Review','trust.ReviewResponse','trust.Aggregate','trust.TrustScore','trust.Badge'),
+     commands=['RequestReview','SubmitReview','ModerateReview','RespondToReview','ReportReview','RecomputeAggregates','AwardBadge','RevokeBadge'],
+     events=ev('trust','review','published','removed')+ev('trust','aggregate','updated')+ev('trust','badge','awarded','revoked'),
+     consumes=['fulfillment.shipment.delivered'],
+     decisions=['trust.review-moderation'],
+     requires=['order.core','party.core','risk.core','temporal.core','privacy.consent','compliance.core','asset.core'],
+     optional=['marketplace.core','product.intelligence'],
+     temporal=('S',['TRG','D']), classes=['PII'], controls=['ucos.ctrl.authentic-reviews'],
+     views=['trust.pdp-reviews','trust.write-review','trust.moderation-queue'])
+pack('resource.core','U17-resource','core',2,'Resources that provide capacity over time (people, vehicles, rooms, machines), skills and credentials, pools and capacity plans.',
+     types=T('resource.ResourceType','resource.Resource','resource.ResourcePool','resource.CapacityPlan'),
+     commands=['DefineResourceType','RegisterResource','AssignSkill','AttachCredential','SetResourceCalendar','DefinePool','RetireResource'],
+     queries=['EligibleResources','PoolCapacity','Utilisation'],
+     events=ev('resource','resource','registered','retired')+ev('resource','skill','expiring'),
+     requires=['temporal.core','geo.core','party.core','identity.core'],
+     optional=['service.intelligence'],
+     temporal=('S',['CAL','AV','R']), classes=['PII'], views=['resource.directory','resource.pool-editor'])
+pack('generation.core','U59-generation','core',2,'Deterministic generators for SDKs, API and event docs, migrations, dashboards, tests and diagrams; AI-assisted drafts as proposals only.','platform',
+     types=T('generation.GeneratorDefinition','generation.GenerationRun'),
+     commands=['RegisterGenerator','RunGenerator','PublishArtifacts','VerifyReproducibility'],
+     events=ev('generation','run','completed','failed')+ev('generation','artifact','published'),
+     requires=['composition.core','capability.registry','meta.core','api.core','event.core','certification.core','temporal.core'],
+     temporal=('S',['R']))
+
 # ================================================================ Part 2: derived core manifests
 def _section(text, title_re):
     m = re.search(r'^#{2,3} [^\n]*' + title_re + r'[^\n]*$', text, re.M)
@@ -562,6 +643,13 @@ for m in P:  # derived manifests must not close a requires-cycle; such edges bec
 wanted = {}
 for m in P:
     wanted[m['metadata']['id'] + '.yaml'] = yaml.safe_dump(m, sort_keys=False, width=140)
+import sys
+stale_files = sorted([n for n, c in wanted.items() if not os.path.exists(os.path.join(OUT, n)) or open(os.path.join(OUT, n)).read() != c]
+                     + [f for f in os.listdir(OUT) if f.endswith('.yaml') and f not in wanted])
+if '--check' in sys.argv:
+    for n in stale_files:
+        print('out of date: spec/capabilities/packs/' + n)
+    sys.exit(1 if stale_files else 0)
 for f in os.listdir(OUT):                 # remove manifests no longer generated
     if f.endswith('.yaml') and f not in wanted:
         os.remove(os.path.join(OUT, f))

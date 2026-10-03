@@ -5,9 +5,9 @@ metadata:
   version: 1.0.0
   universe: U27-subscription
   steward: ucos:org:steward-subscription
-  purpose: Subscription owns recurring commercial relationships and usage billing.
+  purpose: Recurring plans, subscriptions, proration, usage rating, billing runs, dunning and recurring payment mandates.
   capabilityKind: core
-  maturity: experimental
+  maturity: beta
   phase: 2
   scope: tenant
 spec:
@@ -36,8 +36,6 @@ spec:
     - PreviewChange
     - UpcomingInvoice
     - UsageSummary
-    - MRR
-    - ARR
     events:
     - subscription.subscription.created
     - subscription.subscription.activated
@@ -49,6 +47,13 @@ spec:
     - subscription.usage.rated
     - subscription.invoice.issued
     - subscription.dunning.step
+    decisions:
+    - subscription.renewal-notice
+    - subscription.dunning-plan
+  consumes:
+    events:
+    - payment.payment-intent.captured
+    - payment.payment-intent.failed
   requires:
   - capability: temporal.core
     version: '>=1 <2'
@@ -78,6 +83,21 @@ spec:
     - TRG
     - D
     - BD
+  security:
+    dataClasses:
+    - PII
+    - FINANCIAL
+    threatModel: docs/threat-models/kernel-and-tenancy.md
+  compliance:
+    controls:
+    - ucos.ctrl.renewal-notice
+    - ucos.ctrl.easy-cancellation
+    - ucos.ctrl.in-emandate
+  ui:
+    views:
+    - subscription.manage
+    - subscription.plan-builder
+    - subscription.billing-run
   certification:
     gates:
     - ARCH-*
@@ -85,3 +105,4 @@ spec:
     - TEST-*
     - DOC-*
     - OBS-*
+    - A11Y-*

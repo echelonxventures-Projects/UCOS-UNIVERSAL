@@ -13,3 +13,4 @@ Feature: Deterministic composition
       | d2c-in-ae      |
       | b2b-in         |
       | omnichannel-in |
+      | marketplace-in-ae |

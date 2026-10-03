@@ -5,9 +5,9 @@ metadata:
   version: 1.0.0
   universe: U70-trust-reputation
   steward: ucos:org:steward-trust-reputation
-  purpose: Trust owns reputation signals.
+  purpose: Reviews and ratings with verified-experience badges, moderation, published aggregation method and trust badges.
   capabilityKind: core
-  maturity: experimental
+  maturity: beta
   phase: 2
   scope: tenant
 spec:
@@ -33,6 +33,11 @@ spec:
     - trust.aggregate.updated
     - trust.badge.awarded
     - trust.badge.revoked
+    decisions:
+    - trust.review-moderation
+  consumes:
+    events:
+    - fulfillment.shipment.delivered
   requires:
   - capability: order.core
     version: '>=1 <2'
@@ -42,21 +47,32 @@ spec:
     version: '>=1 <2'
   - capability: temporal.core
     version: '>=1 <2'
-  - capability: product.intelligence
-    version: '>=1 <2'
-  - capability: marketplace.core
-    version: '>=1 <2'
   - capability: privacy.consent
     version: '>=1 <2'
   - capability: compliance.core
     version: '>=1 <2'
+  - capability: asset.core
+    version: '>=1 <2'
   optional:
-  - capability: social.core
+  - capability: marketplace.core
+  - capability: product.intelligence
   temporal:
     kind: S
     uses:
     - TRG
     - D
+  security:
+    dataClasses:
+    - PII
+    threatModel: docs/threat-models/kernel-and-tenancy.md
+  compliance:
+    controls:
+    - ucos.ctrl.authentic-reviews
+  ui:
+    views:
+    - trust.pdp-reviews
+    - trust.write-review
+    - trust.moderation-queue
   certification:
     gates:
     - ARCH-*
@@ -64,3 +80,4 @@ spec:
     - TEST-*
     - DOC-*
     - OBS-*
+    - A11Y-*

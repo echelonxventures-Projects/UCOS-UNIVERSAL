@@ -5,9 +5,10 @@ metadata:
   version: 1.0.0
   universe: U59-generation
   steward: ucos:org:steward-generation
-  purpose: Generation owns producing artifacts consumed outside the runtime from definitions and blueprints.
+  purpose: Deterministic generators for SDKs, API and event docs, migrations, dashboards, tests and diagrams; AI-assisted drafts as proposals
+    only.
   capabilityKind: core
-  maturity: experimental
+  maturity: beta
   phase: 2
   scope: platform
 spec:
@@ -20,6 +21,10 @@ spec:
     - RunGenerator
     - PublishArtifacts
     - VerifyReproducibility
+    events:
+    - generation.run.completed
+    - generation.run.failed
+    - generation.artifact.published
   requires:
   - capability: composition.core
     version: '>=1 <2'
@@ -31,18 +36,10 @@ spec:
     version: '>=1 <2'
   - capability: event.core
     version: '>=1 <2'
-  - capability: ui.core
-    version: '>=1 <2'
-  - capability: observability.core
-    version: '>=1 <2'
-  - capability: sdlc.core
-    version: '>=1 <2'
   - capability: certification.core
     version: '>=1 <2'
   - capability: temporal.core
     version: '>=1 <2'
-  optional:
-  - capability: ai.core
   temporal:
     kind: S
     uses:

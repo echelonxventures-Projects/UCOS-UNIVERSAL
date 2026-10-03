@@ -10,7 +10,7 @@ security:
 paths:
   /platform-definitions:compose:
     post:
-      operationId: composition:Compose
+      operationId: controlplane:Compose
       summary: Compose a platform definition into a blueprint and gap report (deterministic)
       parameters:
         - $ref: 'common.yaml#/components/parameters/IdempotencyKey'
@@ -34,7 +34,7 @@ paths:
         default: { $ref: 'common.yaml#/components/responses/Problem' }
   /blueprints/{blueprintId}:
     get:
-      operationId: composition:GetBlueprint
+      operationId: controlplane:GetBlueprint
       parameters:
         - { name: blueprintId, in: path, required: true, schema: { type: string } }
       responses:
@@ -42,7 +42,7 @@ paths:
         default: { $ref: 'common.yaml#/components/responses/Problem' }
   /certification/runs:
     post:
-      operationId: certification:StartRun
+      operationId: controlplane:StartCertificationRun
       parameters:
         - $ref: 'common.yaml#/components/parameters/IdempotencyKey'
       requestBody:
@@ -61,7 +61,7 @@ paths:
         default: { $ref: 'common.yaml#/components/responses/Problem' }
   /certification/runs/{runId}:
     get:
-      operationId: certification:GetRun
+      operationId: controlplane:GetCertificationRun
       parameters:
         - { name: runId, in: path, required: true, schema: { type: string } }
       responses:
@@ -69,7 +69,7 @@ paths:
         default: { $ref: 'common.yaml#/components/responses/Problem' }
   /tenants/{tenantId}/activations:
     post:
-      operationId: infra:Activate
+      operationId: controlplane:Activate
       summary: Activate a certified blueprint for a tenant (requires a U01 DecisionRecord)
       parameters:
         - { name: tenantId, in: path, required: true, schema: { type: string } }

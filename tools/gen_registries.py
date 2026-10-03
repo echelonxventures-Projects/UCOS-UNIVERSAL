@@ -34,7 +34,7 @@ def owner_of(path):
     return m.group(1) if m else 'kernel'
 
 # ------------------------------------------------------------------ errors
-CODE = re.compile(r'`([A-Z][A-Z0-9]{1,7}_[A-Z0-9_]{2,})`')
+CODE = re.compile(r'`([A-Z][A-Z0-9]{1,11}_[A-Z0-9_]{2,})`')
 CATEGORIES = [  # (keyword in code, category, http, grpc, retryable)
     (('NOT_FOUND', 'UNKNOWN_'), 'not-found', 404, 'NOT_FOUND', False),
     (('DUPLICATE', 'CONFLICT', 'ALREADY', 'VERSION_MISMATCH', 'CONCURRENT'), 'conflict', 409, 'ALREADY_EXISTS', False),

@@ -156,8 +156,8 @@ message CommandResponse { int32 status = 1; bytes body = 2; string version = 3; 
 2. Look up the operation in the active blueprint's routing table: owning pack, timeout, idempotency TTL, audit level.
 3. Check the idempotency store (Postgres table `cmd_idempotency`, PK `(tenant, key)`):
    - completed with the same request hash: return the stored response;
-   - same key with a different request hash: 409 `IDEMPOTENCY_KEY_REUSED`;
-   - in progress: 409 `IN_PROGRESS` with `Retry-After`.
+   - same key with a different request hash: 409 error `IDEMPOTENCY_KEY_REUSED`;
+   - in progress: 409 error `IN_PROGRESS` with `Retry-After`.
 4. Insert an `in_progress` row (TTL per command).
 5. Invoke the pack runtime `Handle()` with a deadline (default 2 s).
 6. The pack executes its transaction through the SDK. Audit appends are part of the request path (AUD-L1): the SDK writes the audit record within the same transaction into `audit_pending`, and the appender commits it to the chain asynchronously within 1 s while guaranteeing ordering. If the audit store is unreachable, the transaction fails.

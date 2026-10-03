@@ -5,9 +5,9 @@ metadata:
   version: 1.0.0
   universe: U36-logistics
   steward: ucos:org:steward-logistics
-  purpose: Logistics owns moving parcels and freight.
+  purpose: Multi-carrier rating and selection, manifests and pickups, normalised tracking, NDR and RTO handling, transport documents.
   capabilityKind: core
-  maturity: experimental
+  maturity: beta
   phase: 2
   scope: tenant
 spec:
@@ -44,6 +44,11 @@ spec:
     - logistics.pickup.completed
     - logistics.pickup.missed
     - logistics.route.planned
+    decisions:
+    - logistics.carrier-selection
+  consumes:
+    events:
+    - fulfillment.shipment.created
   requires:
   - capability: fulfillment.core
     version: '>=1 <2'
@@ -53,15 +58,18 @@ spec:
     version: '>=1 <2'
   - capability: integration.core
     version: '>=1 <2'
-  - capability: resource.core
-    version: '>=1 <2'
   - capability: currency.core
     version: '>=1 <2'
   - capability: pricing.engine
     version: '>=1 <2'
+  - capability: decision.core
+    version: '>=1 <2'
+  - capability: workflow.core
+    version: '>=1 <2'
+  - capability: tax.core
+    version: '>=1 <2'
   optional:
-  - capability: iot.core
-  - capability: trade.core
+  - capability: resource.core
   temporal:
     kind: S
     uses:
@@ -69,6 +77,19 @@ spec:
     - D
     - AV
     - CAL
+  security:
+    dataClasses:
+    - PII
+    - LOCATION
+    threatModel: docs/threat-models/geo-and-fulfillment.md
+  compliance:
+    controls:
+    - ucos.ctrl.in-eway-bill
+  ui:
+    views:
+    - logistics.rate-shop
+    - logistics.ndr-queue
+    - logistics.carrier-scorecard
   certification:
     gates:
     - ARCH-*
@@ -76,3 +97,4 @@ spec:
     - TEST-*
     - DOC-*
     - OBS-*
+    - A11Y-*

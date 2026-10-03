@@ -20,11 +20,11 @@ echo '{"type":"sample.note.created"}' | "${C[@]}" exec -T redpanda rpk topic pro
 "${C[@]}" exec -T redpanda rpk topic consume ucos.local.sample.note.v1 -n 1 | grep -q 'sample.note.created'
 
 echo "keycloak: dev realm imported and issues tokens"
-for i in $(seq 1 60); do
+for i in $(seq 1 100); do
   code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8180/realms/ucos-dev-sample/.well-known/openid-configuration || true)
   [[ "$code" == "200" ]] && break; sleep 3
 done
-[[ "$code" == "200" ]] || { echo "realm not served (HTTP $code)"; exit 1; }
+[[ "$code" == "200" ]] || { echo "realm not served (HTTP $code)"; "${C[@]}" ps -a; "${C[@]}" logs --tail 60 keycloak; exit 1; }
 token=$(curl -s -d grant_type=password -d client_id=ucos-gateway -d client_secret=dev-only-not-a-secret \
   -d username=asha -d password=asha-dev-password \
   http://localhost:8180/realms/ucos-dev-sample/protocol/openid-connect/token | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"][:10])')

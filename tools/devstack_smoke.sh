@@ -8,9 +8,11 @@ trap '"${C[@]}" down -v >/dev/null 2>&1 || true' EXIT
 "${C[@]}" up -d --wait --wait-timeout 300
 
 echo "postgres: kernel schema applied with row-level security forced"
-forced=$("${C[@]}" exec -T postgres psql -U postgres -d ucos -tAc \
-  "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname IN ('kernel','packs') AND c.relkind IN ('r','p') AND c.relforcerowsecurity")
-[[ "$forced" -ge 9 ]] || { echo "expected at least 9 tables with forced RLS, found $forced"; exit 1; }
+# Every tenant table has forced RLS (partitions are reached only through their parent).
+want="kernel.audit_pending kernel.audit_records kernel.cmd_idempotency kernel.object_versions kernel.objects kernel.outbox kernel.triggers packs.sample_note"
+got=$("${C[@]}" exec -T postgres psql -U postgres -d ucos -tAc \
+  "SELECT string_agg(n.nspname || '.' || c.relname, ' ' ORDER BY 1) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE c.relforcerowsecurity AND NOT c.relispartition")
+[[ "$got" == "$want" ]] || { echo "forced-RLS tables differ"; echo " want: $want"; echo " got:  $got"; exit 1; }
 
 echo "redpanda: cluster healthy and a topic round-trips"
 "${C[@]}" exec -T redpanda rpk topic create ucos.local.sample.note.v1 -p 3 >/dev/null

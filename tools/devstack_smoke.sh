@@ -11,7 +11,7 @@ echo "postgres: kernel schema applied with row-level security forced"
 # Every tenant table has forced RLS (partitions are reached only through their parent).
 want="kernel.audit_pending kernel.audit_records kernel.cmd_idempotency kernel.object_versions kernel.objects kernel.outbox kernel.triggers packs.sample_note"
 got=$("${C[@]}" exec -T postgres psql -U postgres -d ucos -tAc \
-  "SELECT string_agg(n.nspname || '.' || c.relname, ' ' ORDER BY 1) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE c.relforcerowsecurity AND NOT c.relispartition")
+  "SELECT string_agg(n.nspname || '.' || c.relname, ' ' ORDER BY n.nspname COLLATE "C", c.relname COLLATE "C") FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE c.relforcerowsecurity AND NOT c.relispartition")
 [[ "$got" == "$want" ]] || { echo "forced-RLS tables differ"; echo " want: $want"; echo " got:  $got"; exit 1; }
 
 echo "redpanda: cluster healthy and a topic round-trips"

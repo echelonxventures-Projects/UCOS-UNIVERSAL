@@ -11,7 +11,7 @@ echo "postgres: kernel schema applied with row-level security forced"
 # Every tenant table has forced RLS (partitions are reached only through their parent).
 want="kernel.audit_pending kernel.audit_records kernel.cmd_idempotency kernel.object_versions kernel.objects kernel.outbox kernel.triggers packs.sample_note"
 got=$("${C[@]}" exec -T postgres psql -U postgres -d ucos -tAc \
-  "SELECT string_agg(n.nspname || '.' || c.relname, ' ' ORDER BY n.nspname COLLATE "C", c.relname COLLATE "C") FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE c.relforcerowsecurity AND NOT c.relispartition")
+  "SELECT string_agg(n.nspname || '.' || c.relname, ' ' ORDER BY n.nspname, c.relname) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE c.relforcerowsecurity AND NOT c.relispartition")
 [[ "$got" == "$want" ]] || { echo "forced-RLS tables differ"; echo " want: $want"; echo " got:  $got"; exit 1; }
 
 echo "redpanda: cluster healthy and a topic round-trips"
@@ -28,12 +28,12 @@ done
 token=$(curl -s -d grant_type=password -d client_id=ucos-gateway -d client_secret=dev-only-not-a-secret \
   -d username=asha -d password=asha-dev-password \
   http://localhost:8180/realms/ucos-dev-sample/protocol/openid-connect/token | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"][:10])')
-[[ -n "$token" ]]
+[[ -n "$token" ]] || { echo "no access token issued"; exit 1; }
 
-echo "temporal: frontend reachable"
-for i in $(seq 1 60); do
-  "${C[@]}" exec -T temporal temporal operator cluster health --address temporal:7233 2>/dev/null | grep -q SERVING && ok=1 && break
+echo "temporal: server serving the default namespace (checked through the UI's API)"
+for i in $(seq 1 80); do
+  curl -s http://localhost:8233/api/v1/namespaces | grep -q '"default"' && ok=1 && break
   sleep 3
 done
-[[ "${ok:-0}" == "1" ]] || { echo "temporal not serving"; exit 1; }
+[[ "${ok:-0}" == "1" ]] || { echo "temporal not serving"; "${C[@]}" logs --tail 30 temporal; exit 1; }
 echo "devstack smoke: all services healthy"

@@ -6,7 +6,16 @@
   "registrationAllowed": false,
   "webAuthnPolicyPasswordlessRpEntityName": "UCOS dev",
   "webAuthnPolicyPasswordlessUserVerificationRequirement": "required",
-  "roles": { "realm": [ { "name": "sample-editor" }, { "name": "buyer" } ] },
+  "roles": {
+    "realm": [
+      {
+        "name": "sample-editor"
+      },
+      {
+        "name": "buyer"
+      }
+    ]
+  },
   "clients": [
     {
       "clientId": "ucos-gateway",
@@ -14,8 +23,12 @@
       "secret": "dev-only-not-a-secret",
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
-      "redirectUris": ["http://localhost:8080/*"],
-      "attributes": { "pkce.code.challenge.method": "S256" }
+      "redirectUris": [
+        "http://localhost:8080/*"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
     }
   ],
   "users": [
@@ -24,8 +37,18 @@
       "enabled": true,
       "email": "asha@example.com",
       "emailVerified": true,
-      "credentials": [ { "type": "password", "value": "asha-dev-password", "temporary": false } ],
-      "realmRoles": ["sample-editor"]
+      "credentials": [
+        {
+          "type": "password",
+          "value": "asha-dev-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "sample-editor"
+      ],
+      "firstName": "Asha",
+      "lastName": "Dev"
     }
   ]
 }

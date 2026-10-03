@@ -39,3 +39,49 @@ for i in $(seq 1 80); do
 done
 [[ "${ok:-0}" == "1" ]] || { echo "temporal not serving"; "${C[@]}" logs --tail 30 temporal; exit 1; }
 echo "devstack smoke: all services healthy"
+
+# ---------------------------------------------------------------- Phase 0 flow through the running kernel
+if command -v go >/dev/null 2>&1; then
+  echo "kernel: build and start ucos-kernel against the stack"
+  (cd "$ROOT/kernel" && go build -o "$ROOT/generated/ucos-kernel" ./cmd/ucos-kernel)
+  ISS=http://localhost:8180/realms/ucos-dev-sample
+  UCOS_DATABASE_URL="postgres://postgres:postgres@localhost:5433/ucos?sslmode=disable" \
+  UCOS_REPO_ROOT="$ROOT" UCOS_CELL=dev-1 UCOS_HTTP_ADDR=127.0.0.1:18080 UCOS_KAFKA_BROKERS=localhost:19092 \
+  UCOS_TENANTS="[{\"issuer\":\"$ISS\",\"jwksUrl\":\"$ISS/protocol/openid-connect/certs\",\"tenant\":\"ucos:tenant:sample\",\"locale\":\"en\",\"currency\":\"INR\",\"tz\":\"Asia/Kolkata\",\"reality\":\"simulated\",\"jurisdiction\":\"ucos:jur:IN\"}]" \
+    "$ROOT/generated/ucos-kernel" > "$ROOT/generated/ucos-kernel.log" 2>&1 &
+  KPID=$!
+  trap 'kill $KPID 2>/dev/null || true; "${C[@]}" down -v >/dev/null 2>&1 || true' EXIT
+  for i in $(seq 1 30); do curl -sf http://127.0.0.1:18080/api/v1/health >/dev/null && break; sleep 1; done
+  curl -sf http://127.0.0.1:18080/api/v1/health >/dev/null || { cat "$ROOT/generated/ucos-kernel.log"; exit 1; }
+
+  TOKEN=$(curl -s -d grant_type=password -d client_id=ucos-gateway -d client_secret=dev-only-not-a-secret \
+    -d username=asha -d password=asha-dev-password "$ISS/protocol/openid-connect/token" | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
+  api() {
+    local args=(-s -w '\n%{http_code}' -X "$1" "http://127.0.0.1:18080/api/v1$2" -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json')
+    [[ -n "${3:-}" ]] && args+=(-H "Idempotency-Key: $3")
+    [[ -n "${4:-}" ]] && args+=(-d "$4")
+    curl "${args[@]}"
+  }
+  out=$(api POST /sample/notes smoke-create-0001 '{"title":{"en":"Phase 0 exit"}}'); code=${out##*$'\n'}; body=${out%$'\n'*}
+  [[ "$code" == "201" ]] || { echo "create failed: $code $body"; cat "$ROOT/generated/ucos-kernel.log"; exit 1; }
+  NOTE=$(python3 -c 'import sys,json;print(json.loads(sys.argv[1])["id"])' "$body")
+  out=$(api POST "/sample/notes/$NOTE:publish" smoke-publish-001 '{}'); code=${out##*$'\n'}
+  [[ "$code" == "200" ]] || { echo "publish failed: $out"; exit 1; }
+  echo "kernel: note $NOTE created and published over HTTP with a Keycloak token"
+
+  echo "kernel: events reached Redpanda through the outbox relay"
+  for i in $(seq 1 20); do
+    evs=$("${C[@]}" exec -T redpanda rpk topic consume ucos.dev-1.sample.note.v1 -o start -n 2 2>/dev/null || true)
+    grep -q 'sample.note.published' <<<"$evs" && break; sleep 1
+  done
+  grep -q 'sample.note.created' <<<"$evs" && grep -q 'sample.note.published' <<<"$evs" || { echo "events missing: $evs"; exit 1; }
+
+  echo "kernel: audit records sealed into a chain that verifies"
+  for i in $(seq 1 20); do
+    n=$("${C[@]}" exec -T postgres psql -U postgres -d ucos -tAc "SELECT count(*) FROM kernel.audit_records WHERE tenant_id = 'ucos:tenant:sample'")
+    [[ "$n" -ge 2 ]] && break; sleep 1
+  done
+  broken=$("${C[@]}" exec -T postgres psql -U postgres -d ucos -tAc "SELECT coalesce(kernel.audit_verify('ucos:tenant:sample', (now() AT TIME ZONE 'UTC')::date)::text, 'intact')")
+  [[ "$n" -ge 2 && "$broken" == "intact" ]] || { echo "audit: $n records, verify=$broken"; exit 1; }
+  echo "kernel: Phase 0 flow passed end to end"
+fi

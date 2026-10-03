@@ -34,8 +34,10 @@ func (p Pack) Commands() map[string]pack.CommandHandler {
 		"ScheduleNoteReminder": p.schedule, "RemindNote": p.remind,
 	}
 }
-func (Pack) Queries() map[string]pack.QueryHandler { return map[string]pack.QueryHandler{} }
-func (Pack) Events() map[string]pack.EventHandler  { return map[string]pack.EventHandler{} }
+func (p Pack) Queries() map[string]pack.QueryHandler {
+	return map[string]pack.QueryHandler{"GetNote": p.get, "ListNotes": p.list}
+}
+func (Pack) Events() map[string]pack.EventHandler { return map[string]pack.EventHandler{} }
 
 type input struct {
 	Target string            `json:"_target"`
@@ -189,8 +191,50 @@ func (Pack) schedule(c *pack.CommandCtx, raw json.RawMessage) (pack.Result, erro
 	return pack.Result{Status: http.StatusOK, Body: map[string]any{"id": o.ID, "trigger": trig}}, nil
 }
 
-// remind is fired by the trigger engine (system actor).
+func view(o *pack.Object) map[string]any {
+	var n Note
+	_ = json.Unmarshal(o.Attributes, &n)
+	return map[string]any{"id": o.ID, "type": o.Type, "version": o.Version, "status": o.Status, "attributes": n}
+}
+
+func (Pack) get(c *pack.CommandCtx, raw json.RawMessage) (pack.Result, error) {
+	in, err := parse(raw)
+	if err != nil {
+		return pack.Result{}, err
+	}
+	o, err := c.Tx.Get(noteType, in.Target)
+	if err != nil {
+		return pack.Result{}, err
+	}
+	return pack.Result{Status: http.StatusOK, Body: view(o)}, nil
+}
+
+func (Pack) list(c *pack.CommandCtx, raw json.RawMessage) (pack.Result, error) {
+	var in struct {
+		Size   int    `json:"size"`
+		Cursor string `json:"cursor"`
+	}
+	_ = json.Unmarshal(raw, &in)
+	objs, err := c.Tx.List(noteType, in.Size, in.Cursor)
+	if err != nil {
+		return pack.Result{}, err
+	}
+	items := make([]any, 0, len(objs))
+	for _, o := range objs {
+		items = append(items, view(o))
+	}
+	page := map[string]any{"hasMore": in.Size > 0 && len(objs) == in.Size}
+	if len(objs) > 0 {
+		page["nextCursor"] = objs[len(objs)-1].ID
+	}
+	return pack.Result{Status: http.StatusOK, Body: map[string]any{"items": items, "page": page}}, nil
+}
+
+// remind is fired by the trigger engine (system actor) and refused for anyone else.
 func (Pack) remind(c *pack.CommandCtx, raw json.RawMessage) (pack.Result, error) {
+	if c.Context.Actor.Kind != "service" {
+		return pack.Result{}, pack.NewProblem(http.StatusForbidden, "SAMPLE_FORBIDDEN", "reminders are fired by the trigger engine only", "")
+	}
 	in, err := parse(raw)
 	if err != nil {
 		return pack.Result{}, err

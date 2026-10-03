@@ -27,6 +27,8 @@ type Tx interface {
 	Save(obj *Object, expectedVersion int64) error
 	Emit(eventType, subject string, data any) error
 	NewID(kind string) (string, error)
+	// List returns up to limit objects of typ ordered by id, starting after the cursor id ("" for the first page).
+	List(typ string, limit int, after string) ([]*Object, error)
 }
 
 // Temporal is the only way a pack reads the clock or schedules work (TMP-L4).

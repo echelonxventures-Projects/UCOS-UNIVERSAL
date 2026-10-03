@@ -9,7 +9,7 @@ import glob, os, shutil, subprocess, sys, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PY = sys.executable
-SKIP = shutil.ignore_patterns('.git', 'node_modules', '.venv', 'generated', '__pycache__')
+SKIP = shutil.ignore_patterns('.git', 'node_modules', '.venv', '.tools', 'generated', '__pycache__', '*.pdf')
 
 def append(path, text):
     def f(r):

@@ -173,6 +173,10 @@ CREATE TABLE cmd_idempotency (
   PRIMARY KEY (tenant_id, key)
 ) PARTITION BY HASH (tenant_id);
 ```
+**Paths and UGIDs (A-77):** UGIDs contain colons, and so does the command suffix (`/sample/notes/ucos:note:01J…:publish`). Colons are legal in path segments (RFC 3986), so the gateway matches the id lazily up to the route's literal `:verb` suffix; ids never contain `/`. Clients may percent-encode the id's colons; the gateway decodes before matching.
+
+**Gateway error codes (A-77):** error `AUTH_REQUIRED` (no bearer token), `AUTH_INVALID_TOKEN` (signature, issuer or expiry rejected), `METHOD_NOT_ALLOWED`, `PAYLOAD_TOO_LARGE`, `INVALID_JSON`, `KERNEL_UNAVAILABLE` (infrastructure failure; retry with the same key).
+
 **Kernel error codes (A-75):** the command bus returns error `CTX_MISSING` (no envelope), `CTX_INVALID` (envelope fails validation or expired), `OPERATION_UNKNOWN`, `IDEMPOTENCY_KEY_REQUIRED`, `IDEMPOTENCY_KEY_REUSED`, `IN_PROGRESS`; the object store returns error `OBJECT_NOT_FOUND` and `VERSION_CONFLICT`; the trigger API returns error `TMP_INVALID_TIMEPOINT`. Replays return the stored response byte for byte (migration 0012). Implementation: `kernel/internal/bus`.
 
 **Failure modes:**

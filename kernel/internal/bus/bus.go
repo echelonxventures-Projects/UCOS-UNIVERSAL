@@ -49,6 +49,7 @@ type Bus struct {
 	cell     string
 	clock    func() time.Time
 	commands map[string]pack.CommandHandler
+	queries  map[string]pack.QueryHandler
 	caps     map[string]string // operation -> capability id
 	ttl      time.Duration
 }
@@ -57,7 +58,7 @@ func New(db *store.DB, cell string, clock func() time.Time) *Bus {
 	if clock == nil {
 		clock = time.Now
 	}
-	return &Bus{db: db, cell: cell, clock: clock, commands: map[string]pack.CommandHandler{}, caps: map[string]string{}, ttl: 24 * time.Hour}
+	return &Bus{db: db, cell: cell, clock: clock, commands: map[string]pack.CommandHandler{}, queries: map[string]pack.QueryHandler{}, caps: map[string]string{}, ttl: 24 * time.Hour}
 }
 
 // Register adds a pack's commands under "<slug>:<Command>", slug being the first segment of its capability id.
@@ -66,6 +67,11 @@ func (b *Bus) Register(p pack.Pack) {
 	for name, h := range p.Commands() {
 		op := slug + ":" + name
 		b.commands[op] = h
+		b.caps[op] = p.CapabilityID()
+	}
+	for name, h := range p.Queries() {
+		op := slug + ":" + name
+		b.queries[op] = h
 		b.caps[op] = p.CapabilityID()
 	}
 }
@@ -164,6 +170,56 @@ func (b *Bus) Execute(ctx context.Context, req Request) (Response, error) {
 	return resp, err
 }
 
+// Query runs a read-only query in a tenant transaction (no idempotency, no audit of reads in Phase 0).
+func (b *Bus) Query(ctx context.Context, req Request) (Response, error) {
+	now := b.clock().UTC()
+	if req.Envelope == nil {
+		return problem(http.StatusUnauthorized, "CTX_MISSING", "context envelope required"), nil
+	}
+	if err := req.Envelope.Validate(now); err != nil {
+		return problem(http.StatusUnauthorized, "CTX_INVALID", err.Error()), nil
+	}
+	h, ok := b.queries[req.OperationID]
+	if !ok {
+		return problem(http.StatusNotFound, "OPERATION_UNKNOWN", "unknown operation "+req.OperationID), nil
+	}
+	var resp Response
+	err := b.db.InTenant(ctx, req.Envelope.Tenant, store.RoleApp, func(tx pgx.Tx) error {
+		if _, err := tx.Exec(ctx, `SET TRANSACTION READ ONLY`); err != nil {
+			return err
+		}
+		k := &kernelTx{ctx: ctx, tx: tx, bus: b, tenant: req.Envelope.Tenant, capability: b.caps[req.OperationID], now: now}
+		result, herr := h(&pack.CommandCtx{Context: req.Envelope, Tx: k, Temporal: k, Allocate: money.Allocate}, withTarget(req))
+		var p *pack.Problem
+		switch {
+		case errors.As(herr, &p):
+			resp = Response{Status: p.Status, Problem: p}
+		case herr != nil:
+			return herr
+		default:
+			body, err := json.Marshal(result.Body)
+			if err != nil {
+				return err
+			}
+			resp = Response{Status: result.Status, Body: body}
+		}
+		return nil
+	})
+	return resp, err
+}
+
+// Operations lists registered command and query ids (the gateway routes only to these).
+func (b *Bus) Operations() map[string]bool {
+	out := map[string]bool{}
+	for op := range b.commands {
+		out[op] = true
+	}
+	for op := range b.queries {
+		out[op] = true
+	}
+	return out
+}
+
 // The payload handed to handlers carries the target id as "_target" so handlers stay pure functions of input.
 func withTarget(req Request) json.RawMessage {
 	if req.TargetID == "" {
@@ -207,6 +263,29 @@ func (k *kernelTx) Get(typ, id string) (*pack.Object, error) {
 	}
 	o.Attributes, o.Custom = attrs, custom
 	return o, nil
+}
+
+func (k *kernelTx) List(typ string, limit int, after string) ([]*pack.Object, error) {
+	if limit <= 0 || limit > 500 {
+		limit = 50
+	}
+	rows, err := k.tx.Query(k.ctx, `SELECT id, version, coalesce(status, ''), attributes, custom FROM kernel.objects
+		WHERE type = $1 AND id > $2 ORDER BY id LIMIT $3`, typ, after, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []*pack.Object
+	for rows.Next() {
+		o := &pack.Object{Type: typ}
+		var attrs, custom []byte
+		if err := rows.Scan(&o.ID, &o.Version, &o.Status, &attrs, &custom); err != nil {
+			return nil, err
+		}
+		o.Attributes, o.Custom = attrs, custom
+		out = append(out, o)
+	}
+	return out, rows.Err()
 }
 
 func (k *kernelTx) Save(o *pack.Object, expectedVersion int64) error {

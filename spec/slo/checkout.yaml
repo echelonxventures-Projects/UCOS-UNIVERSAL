@@ -11,7 +11,7 @@ slos:
   sli:
     kind: availability
     metric: checkout_requests_good_ratio
-  objective: 0.995
+  objective: 0.9995
   rollingWindow: P28D
 - id: latency
   description: p99 latency of the critical checkout operation.

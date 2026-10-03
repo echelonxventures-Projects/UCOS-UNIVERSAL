@@ -4,7 +4,7 @@
 | Field | Value |
 |---|---|
 | Document ID | `UCOS-MASTER-ARCH` |
-| Version | 1.2.0 (72 amendments applied, A-01…A-72; see §35) |
+| Version | 1.3.0 (73 amendments applied, A-01…A-73; see §35) |
 | Status | Canonical — supersedes every architecture fragment in `Chat.txt` |
 | Date | 2026-10-03 |
 | Audience | Platform architects, engineers, designers, SRE, security, compliance, and AI coding agents |
@@ -4227,7 +4227,10 @@ When those four properties hold, any new team or agent can read this document, g
 | `spec/` + `tools/` | Machine-readable definitions: 165 manifests, 613 object-type schemas, the gate catalogue (`spec/certification/gates.yaml`) and the error registry (`spec/registries/errors.yaml`). `tools/ucos_check.py` is the consistency checker (CI gate); `gen_manifests.py` and `gen_registries.py` produce the generated files |
 | `docs/adr/` | Architecture Decision Records ADR-001…020 (§34 table expanded) |
 | `docs/threat-models/` | STRIDE threat models for the Phase 0–1 surfaces (gate `SEC-TM-001`) |
-| `business/` | Cost model and unit economics, commercial model, team, budget and roadmap plan |
+| `business/` | Cost model and unit economics, commercial model, team, budget and roadmap plan, validation plan, legal templates |
+| `spec/api/`, `spec/events/payloads/`, `spec/acceptance/`, `spec/slo/` | Kernel and capability API contracts, event payloads, acceptance scenarios, service levels |
+| `docs/runbooks/` | Runbooks for every alert |
+| `tools/ci.sh` + `.github/workflows/` | The deterministic CI (ADR-036) |
 
 ### 35.2 Amendments applied in v1.1
 | # | Amendment | Applied in |
@@ -4277,7 +4280,7 @@ When those four properties hold, any new team or agent can read this document, g
 | A-65 | Real-time Communications & Contact Centre (U109) | §6.2 U109, §22 |
 | A-66 | 23 communication manifests; recording-consent and bot-disclosure controls; `targetPhase`; omnichannel reference platform | §8.3, §11.2, §11.3 |
 
-### 35.3 Amendments applied in v1.2
+### 35.3 Amendments applied in v1.2 and v1.3
 | # | Amendment | Applied in |
 |---|---|---|
 | A-67 | AI & Agents (U49 gateway, U50 prompts as code, U51 agent run loop) and the Phase 2 core (U17, U25, U27, U30, U36, U59, U69, U70) specified | §6.2 rows, §21, constitutions |
@@ -4286,6 +4289,7 @@ When those four properties hold, any new team or agent can read this document, g
 | A-70 | ADR files 001–020; STRIDE threat models with enforced manifest links | §20, §34, docs/ |
 | A-71 | Wireframes W17–W40 for the new universes | §25 |
 | A-72 | Business pack: cost model, commercial model, team/budget/roadmap plan | §32, companion docs |
+| A-73 | Deterministic CI (ADR-036); kernel and generated API/event contracts; acceptance scenarios; SLOs and runbooks; Phase 2 manifests and golden marketplace platform; ADR-021…036; §32.1 phase alignment; legal templates | §15, §26, §28, §32, companion docs |
 
 ---
-*End of UCOS-MASTER-ARCHITECTURE v1.2.0*
+*End of UCOS-MASTER-ARCHITECTURE v1.3.0*

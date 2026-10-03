@@ -17,7 +17,7 @@ const add = (src, key, group) => {
   let label = h1;
   const u = h1.match(/^(U\d+) — (.*?)( Universe)? Constitution$/);
   if (u) label = `${u[1]} ${u[2]}`;
-  label = label.replace(/^UCOS — /, '').replace(/^TM-[A-Z-]+ — /, '');
+  label = label.replace(/^UCOS — /, '').replace(/^TM-[A-Z-]+ — /, '').replace(/^Runbook — /, 'Runbook: ').replace(/ \(template\)$/, '');
   const adr = h1.match(/^ADR-(\d+): (.*)$/);
   if (adr) label = `${adr[1]} ${adr[2]}`;
   docs.push({ src, key, group, label, title: h1 });
@@ -37,8 +37,14 @@ for (const f of readdirSync(join(REPO, 'docs/adr')).filter(f => /^ADR-\d+/.test(
 add('docs/threat-models/README.md', 'threat-models', 'Threat models');
 for (const f of readdirSync(join(REPO, 'docs/threat-models')).filter(f => f.endsWith('.md') && f !== 'README.md').sort())
   add(`docs/threat-models/${f}`, 'tm-' + f.replace('.md', ''), 'Threat models');
-for (const f of ['COST-MODEL.md', 'COMMERCIAL-MODEL.md', 'TEAM-AND-ROADMAP-PLAN.md'])
+for (const f of ['COST-MODEL.md', 'COMMERCIAL-MODEL.md', 'TEAM-AND-ROADMAP-PLAN.md', 'VALIDATION-PLAN.md'])
   add(`business/${f}`, 'business-' + f.replace('.md', '').toLowerCase(), 'Business');
+for (const f of readdirSync(join(REPO, 'business/legal')).filter(f => f.endsWith('.md')).sort())
+  add(`business/legal/${f}`, 'legal-' + f.replace('.md', '').toLowerCase(), 'Business');
+add('docs/runbooks/README.md', 'runbooks', 'Operations');
+for (const f of readdirSync(join(REPO, 'docs/runbooks')).filter(f => f.endsWith('.md') && f !== 'README.md').sort())
+  add(`docs/runbooks/${f}`, 'runbook-' + f.replace('.md', ''), 'Operations');
+add('CONTRIBUTING.md', 'contributing', 'Overview');
 const bySrc = Object.fromEntries(docs.map(d => [d.src, d]));
 
 // ---------------------------------------------------------------- markdown renderer
@@ -108,7 +114,7 @@ const extraCss = `<style>
 .lib-panel ul { display: flex; flex-wrap: wrap; gap: 6px 18px; list-style: none; margin: 0; padding: 0; font-size: 15px; }
 .lib-panel li + li { margin-top: 0; }
 </style>`;
-const groups = ['Overview', 'Engineering', 'Universes', 'Decisions', 'Threat models', 'Business'];
+const groups = ['Overview', 'Engineering', 'Universes', 'Decisions', 'Threat models', 'Operations', 'Business'];
 function libNav(prefix, currentKey, masterHref) {
   let s = `<li class="nav-part">Start</li>\n<li><a href="${masterHref}"><span class="n">◆</span>Master architecture</a></li>\n<li><a href="${prefix}library.html"${currentKey === 'library' ? ' class="current" aria-current="page"' : ''}><span class="n">≡</span>Library index</a></li>\n`;
   for (const g of groups) {

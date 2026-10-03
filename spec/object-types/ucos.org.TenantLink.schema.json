@@ -15,20 +15,20 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "from": {
-          "description": "from"
+        "OrgUnit": {
+          "description": "example: null"
         },
-        "to": {
-          "description": "to"
+        "Workspace": {
+          "description": "example: null"
         },
-        "type": {
-          "description": "type"
+        "Brand": {
+          "description": "example: null"
         },
-        "scope": {
-          "description": "scope"
+        "Store": {
+          "description": "example: null"
         },
-        "agreement": {
-          "description": "agreement"
+        "TenantLink": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

@@ -14,7 +14,84 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id"
+        },
+        "name": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/LocalizedText"
+        },
+        "controller": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "purposes": {
+          "type": "array",
+          "items": {
+            "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+          }
+        },
+        "dataSubjects": {
+          "type": "array",
+          "items": {
+            "description": "dataSubjects: [string]"
+          }
+        },
+        "dataCategories": {
+          "type": "array",
+          "items": {
+            "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/Classification"
+          }
+        },
+        "objectTypes": {
+          "type": "array",
+          "items": {
+            "description": "objectTypes: [string]"
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "description": "capabilities: [string]"
+          }
+        },
+        "processors": {
+          "type": "array",
+          "items": {
+            "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+          }
+        },
+        "transfers": {
+          "type": "array",
+          "items": {
+            "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+          }
+        },
+        "retention": {
+          "type": "array",
+          "items": {
+            "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+          }
+        },
+        "securityMeasures": {
+          "type": "array",
+          "items": {
+            "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+          }
+        },
+        "generatedAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "reviewedAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "current",
+            "stale"
+          ]
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +100,6 @@
     "capability": "privacy.retention",
     "phase": 1,
     "spec": "constitutions/U66-privacy-consent/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

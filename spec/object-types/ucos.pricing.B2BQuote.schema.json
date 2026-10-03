@@ -14,7 +14,52 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id"
+        },
+        "buyer": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "seller": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "description": "lines: [{unit, quantity, unitPrice: Money, discount: Percentage}]"
+          }
+        },
+        "priceList": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "terms": {
+          "description": "terms: {paymentTerms, incoterms, deliverySchedule}"
+        },
+        "total": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/Money"
+        },
+        "validUntil": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "approval": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "sent",
+            "accepted",
+            "rejected",
+            "expired",
+            "converted"
+          ]
+        },
+        "acceptedAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +68,6 @@
     "capability": "pricing.engine",
     "phase": 1,
     "spec": "constitutions/U23-pricing/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

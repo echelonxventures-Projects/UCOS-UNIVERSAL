@@ -14,7 +14,64 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id"
+        },
+        "version": {
+          "description": "version: string"
+        },
+        "subjectType": {
+          "description": "subjectType: string"
+        },
+        "initial": {
+          "description": "initial: string"
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "description": "states: [{name, entry, exit, timers}]"
+          }
+        },
+        "transitions": {
+          "type": "array",
+          "items": {
+            "description": "transitions: [{from, on, to, guard, actions}]"
+          }
+        },
+        "sagas": {
+          "type": "array",
+          "items": {
+            "description": "sagas: [{steps, compensations}]"
+          }
+        },
+        "humanTasks": {
+          "type": "array",
+          "items": {
+            "description": "humanTasks: [string]"
+          }
+        },
+        "subworkflows": {
+          "type": "array",
+          "items": {
+            "description": "subworkflows: [string]"
+          }
+        },
+        "slo": {
+          "description": "slo?: object"
+        },
+        "publishedAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "published",
+            "deprecated"
+          ]
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +80,6 @@
     "capability": "workflow.core",
     "phase": 1,
     "spec": "constitutions/U60-workflow/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

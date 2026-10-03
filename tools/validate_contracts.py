@@ -356,6 +356,79 @@ for f in sorted(glob.glob(os.path.join(ROOT, 'spec', 'decisions', '*.yaml'))):
 counts['decision-tables'] = len(decision_files)
 counts['decision-tests'] = n_dec_tests
 
+# ---------------------------------------------------------------- 10. genesis record
+g_schema = json.load(open(os.path.join(ROOT, 'spec', 'genesis', 'genesis-record.schema.json')))
+for f in sorted(glob.glob(os.path.join(ROOT, 'spec', 'genesis', '*.json'))):
+    if f.endswith('.schema.json'):
+        continue
+    for e in Draft202012Validator(g_schema).iter_errors(json.load(open(f))):
+        err(f'{rel(f)}: {e.message}')
+
+# ---------------------------------------------------------------- 11. workflow definitions
+wf_v = Draft202012Validator(json.load(open(os.path.join(ROOT, 'spec', 'workflows', 'workflow-definition.schema.json'))))
+object_types = {os.path.basename(p)[:-len('.schema.json')] for p in glob.glob(os.path.join(ROOT, 'spec', 'object-types', '*.schema.json'))}
+n_wf = 0
+for f in sorted(glob.glob(os.path.join(ROOT, 'spec', 'workflows', '*.yaml'))):
+    n_wf += 1
+    wf = yaml.safe_load(open(f))
+    def bool_keys(o, path=''):
+        if isinstance(o, dict):
+            for k, v in o.items():
+                if isinstance(k, bool):
+                    err(f'{rel(f)}: key at {path or "/"} parsed as boolean {k}: quote it (YAML 1.1 reads on/off/yes/no as booleans)')
+                bool_keys(v, f'{path}/{k}')
+        elif isinstance(o, list):
+            for i, v in enumerate(o):
+                bool_keys(v, f'{path}/{i}')
+    bool_keys(wf)
+    for e in wf_v.iter_errors(wf):
+        err(f'{rel(f)}: {e.message}')
+    states = wf.get('states', {})
+    if wf.get('object') not in object_types:
+        err(f'{rel(f)}: object {wf.get("object")} is not a registered object type')
+    targets = {}
+    for name, st in states.items():
+        nxt = list((st.get('on') or {}).values()) + [t.get('then') for t in (st.get('timers') or {}).values()]
+        if st.get('then'):
+            nxt.append(st['then'])
+        for n in nxt:
+            if n not in states:
+                err(f'{rel(f)}: state {name} goes to unknown state {n}')
+        targets[name] = [n for n in nxt if n in states]
+        if st.get('final') and (st.get('on') or st.get('timers') or st.get('then')):
+            err(f'{rel(f)}: final state {name} has outgoing transitions')
+        if not st.get('final') and not nxt:
+            err(f'{rel(f)}: state {name} is a dead end (no transitions and not final)')
+        for tm in (st.get('timers') or {}).values():
+            if 'decision' in tm and tm['decision'] not in decision_files:
+                err(f'{rel(f)}: timer uses unknown decision {tm["decision"]}')
+            if 'decision' not in tm and 'duration' not in tm:
+                err(f'{rel(f)}: timer in {name} needs a duration or a decision')
+    seen, stack = set(), [wf.get('initial')]
+    while stack:
+        s_ = stack.pop()
+        if s_ in seen or s_ not in states:
+            continue
+        seen.add(s_); stack.extend(targets.get(s_, []))
+    for s_ in sorted(set(states) - seen):
+        err(f'{rel(f)}: state {s_} is unreachable from {wf.get("initial")}')
+    if not any(st.get('final') for st in states.values()):
+        err(f'{rel(f)}: no final state')
+    for g in (wf.get('guards') or {}):
+        if not any(g in (st.get('on') or {}) for st in states.values()):
+            err(f'{rel(f)}: guard {g} is not an event of any state')
+counts['workflows'] = n_wf
+
+# ---------------------------------------------------------------- 12. spike kits
+cel = yaml.safe_load(open(os.path.join(ROOT, 'tools', 'spikes', 'cel-vectors.yaml')))
+ids = [v.get('id') for v in cel['vectors']]
+for v in cel['vectors']:
+    if not v.get('expr') or (('expect' in v) == ('error' in v)):
+        err(f'tools/spikes/cel-vectors.yaml: vector {v.get("id")} needs expr and exactly one of expect or error')
+if len(ids) != len(set(ids)):
+    err('tools/spikes/cel-vectors.yaml: duplicate vector ids')
+counts['cel-vectors'] = len(ids)
+
 # ---------------------------------------------------------------- report
 print('  '.join(f'{k}: {v}' for k, v in counts.items()))
 print(f'errors: {len(errors)}')

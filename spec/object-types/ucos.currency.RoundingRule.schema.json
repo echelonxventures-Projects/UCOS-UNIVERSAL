@@ -15,30 +15,14 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "id": {
-          "description": "id"
+        "RateSource": {
+          "description": "example: null"
         },
-        "mode": {
-          "description": "mode"
+        "RatePolicy": {
+          "description": "example: null"
         },
-        "scale": {
-          "description": "scale: minorUnit|int"
-        },
-        "cashIncrement": {
-          "description": "cashIncrement?"
-        },
-        "jurisdiction": {
-          "description": "jurisdiction?"
-        },
-        "purpose": {
-          "type": "string",
-          "enum": [
-            "display",
-            "invoice-line",
-            "invoice-total",
-            "tax",
-            "payment"
-          ]
+        "RoundingRule": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

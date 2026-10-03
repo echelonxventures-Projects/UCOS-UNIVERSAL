@@ -14,7 +14,29 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "target": {
+          "description": "target: Slot"
+        },
+        "Session": {
+          "description": "Session"
+        },
+        "Resource": {
+          "description": "Resource or AvailabilityWindow"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "description": "entries: [{party, requested range, priority, joinedAt: TimePoint, expiresAt: TimePoint}]"
+          }
+        },
+        "promotionPolicy": {
+          "description": "promotionPolicy: auto-hold"
+        },
+        "notify": {
+          "description": "notify or manual"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +45,6 @@
     "capability": "temporal.core",
     "phase": 0,
     "spec": "constitutions/U13-temporal/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

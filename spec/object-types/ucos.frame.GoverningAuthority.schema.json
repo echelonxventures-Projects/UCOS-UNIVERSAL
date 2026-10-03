@@ -15,11 +15,17 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "kind": {
-          "description": "kind"
+        "MonetarySystem": {
+          "description": "example: null"
         },
-        "jurisdictionOver": {
-          "description": "jurisdictionOver"
+        "UnitSystem": {
+          "description": "example: null"
+        },
+        "LanguageSystem": {
+          "description": "example: null"
+        },
+        "GoverningAuthority": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

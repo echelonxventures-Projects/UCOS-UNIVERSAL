@@ -15,17 +15,32 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "name": {
-          "description": "name"
+        "id": {
+          "description": "example: null"
         },
-        "scope": {
-          "description": "scope"
+        "tenant": {
+          "description": "example: null"
+        },
+        "name": {
+          "description": "example: null"
         },
         "permissions": {
-          "description": "permissions"
+          "description": "example: null"
+        },
+        "scopeType": {
+          "description": "example: null"
         },
         "privileged": {
-          "description": "privileged"
+          "description": "example: null"
+        },
+        "sodConflicts": {
+          "description": "example: null"
+        },
+        "maxGrantDuration": {
+          "description": "example: null"
+        },
+        "validity": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimeRange"
         }
       },
       "additionalProperties": true

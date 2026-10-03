@@ -14,7 +14,59 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id"
+        },
+        "subject": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "subjectDigest": {
+          "description": "subjectDigest: string"
+        },
+        "profile": {
+          "description": "profile: string"
+        },
+        "gates": {
+          "type": "array",
+          "items": {
+            "description": "gates: [GateResult]"
+          }
+        },
+        "waivers": {
+          "type": "array",
+          "items": {
+            "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+          }
+        },
+        "validFrom": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "validUntil": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "invalidatedBy": {
+          "description": "invalidatedBy?: {event, at: TimePoint}"
+        },
+        "attestation": {
+          "description": "attestation: string (DSSE envelope, in-toto predicate ucos.io/certification/v1)"
+        },
+        "signedBy": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "approvedBy": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "valid",
+            "expiring",
+            "invalidated",
+            "revoked"
+          ]
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +75,6 @@
     "capability": "certification.core",
     "phase": 0,
     "spec": "constitutions/U74-certification/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

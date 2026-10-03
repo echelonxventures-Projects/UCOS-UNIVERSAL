@@ -71,4 +71,5 @@ Signals: `lcp_ms{portal,channel}` (storefront p75 < 2.5 s), `inp_ms`, `cls`, `js
 
 ## Appendix
 - **A.** Flutter renderer (alternative) — evaluate only if RN performance insufficient for POS/kiosk.
+- **D. Attribute definitions (A-74).** `ViewDefinition { id, version: string, type: list|detail|form|board|calendar|map|timeline|dashboard|wizard|chat|document|graph-canvas, objectType?: string, variants: [{channel, breakpoint, layout}], dataBindings: [{query|command, params}], actions: [{command, confirm, obligations}], fields: [{path, component, readOnly}], a11y: {landmarks, focusOrder}, localeKeys: [string], status: draft|published|deprecated }`
 - **C.** 0.1.0.

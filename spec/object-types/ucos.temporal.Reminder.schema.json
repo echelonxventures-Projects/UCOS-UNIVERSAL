@@ -14,7 +14,20 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "subject": {
+          "description": "subject"
+        },
+        "offsets": {
+          "description": "offsets: [Duration] (e.g. -P1D, -PT1H)"
+        },
+        "channelPreference": {
+          "description": "channelPreference"
+        },
+        "template": {
+          "description": "template"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +36,6 @@
     "capability": "temporal.core",
     "phase": 0,
     "spec": "constitutions/U13-temporal/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

@@ -28,7 +28,7 @@
           "description": "problem: taxonomy + description + media"
         },
         "reportedAt": {
-          "description": "reportedAt"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
         "triage": {
           "description": "triage: diagnosis"

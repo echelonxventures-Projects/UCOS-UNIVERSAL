@@ -151,4 +151,5 @@ Reference: 100k events/s per cell sustained, 500k/s peak for signal topics. Kafk
 
 ## Appendix
 - **B. Amendments:** master §15.5 gains event categories and the claim-check rule.
+- **D. Attribute definitions (A-74).** `EventSchema { id, eventType: string, version: string (semver), format: json-schema|avro|protobuf, schema: object, compatibility: BACKWARD_TRANSITIVE|FORWARD|FULL|NONE, examples: [object], fieldClassifications: [{path, classification: Classification}], registeredAt: TimePoint, deprecatedAt?: TimePoint, status: active|deprecated|retired }`
 - **C.** 0.1.0.

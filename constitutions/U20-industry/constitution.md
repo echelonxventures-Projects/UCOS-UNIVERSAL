@@ -72,4 +72,5 @@ gap(industry_regulation_unmapped, I) :- industry(I), regulated(I), not complianc
 Templates `public`; benchmarks aggregate only (k-anonymity). AI: intent → template matching and question answering in W2. Signals: `template_usage{template}`, `template_time_to_launch_days`. Views: W2 template gallery, `industry.template.editor` (for solution architects), `industry.benchmark.panel`. Small data; control plane; T2.
 
 ## Appendix
+- **D. Attribute definitions (A-74).** `IndustryTemplate { id, version: string, name: LocalizedText, industryCodes: [{scheme: isic|naics|nace|nic, code}], platformDefinition: object (pre-filled PlatformDefinition), capabilityBundles: [string], taxonomySubset: UGID, workflows: [string], compliancePacks: [string], uiTemplates: [string], seedData: [UGID], publishedAt: TimePoint, status: draft|published|deprecated }`
 - **C.** 0.1.0.

@@ -19,7 +19,7 @@
           "description": "schedule (Temporal)"
         },
         "period": {
-          "description": "period"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimeRange"
         },
         "subscriptions": {
           "description": "subscriptions"

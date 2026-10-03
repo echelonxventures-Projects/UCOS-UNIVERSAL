@@ -22,7 +22,7 @@
           "description": "pins: { capabilities: hash, objectTypes: hash, ruleModules: hash, refdata: [releaseIds], tzRelease, policiesBaseline: hash, complianceLibrary: hash }"
         },
         "createdAt": {
-          "description": "createdAt"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         }
       },
       "additionalProperties": true

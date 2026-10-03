@@ -15,20 +15,17 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "name": {
-          "description": "name"
+        "Campaign": {
+          "description": "example: null"
         },
-        "offers": {
-          "description": "offers[]"
+        "Coupon": {
+          "description": "example: null"
         },
-        "temporalPolicy": {
-          "description": "temporalPolicy"
+        "CouponBatch": {
+          "description": "example: null"
         },
-        "channels": {
-          "description": "channels"
-        },
-        "budget": {
-          "description": "budget"
+        "Redemption": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

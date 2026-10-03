@@ -25,10 +25,10 @@
           "description": "category"
         },
         "detectedAt": {
-          "description": "detectedAt"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
         "declaredAt": {
-          "description": "declaredAt"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
         "commander": {
           "description": "commander"

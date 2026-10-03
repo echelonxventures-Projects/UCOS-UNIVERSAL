@@ -15,11 +15,14 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "geometry": {
-          "description": "geometry"
+        "Zone": {
+          "description": "example: null"
         },
-        "triggers": {
-          "description": "triggers"
+        "Geofence": {
+          "description": "example: null"
+        },
+        "ServiceArea": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

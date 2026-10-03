@@ -22,6 +22,7 @@
 .decl control_implemented_by(k: symbol, c: symbol)
 .decl abstract(c: symbol)
 .decl implements(a: symbol, abs: symbol)
+.decl adapter_kind(a: symbol)                 // capabilityKind adapter or simulator
 .decl adapter_jur(a: symbol, j: symbol)       // j may be "*"
 .decl adapter_method(a: symbol, m: symbol)    // m may be "*"; no fact = method-agnostic
 .decl needed_method(abs: symbol, j: symbol, m: symbol)
@@ -49,6 +50,8 @@ applies(r) :- pd_reality("physical"), regulation(r, j), (in_scope(j) ; j = "*"),
 applies(r) :- pd_reality("physical"), regulation(r, j), (in_scope(j) ; j = "*"), reg_when_framework(r, f), pd_framework(f).
 required_control(k) :- applies(r), requires_control(r, k).
 required(c) :- required_control(k), control_implemented_by(k, c).
+// An adapter required directly (by a control or a PD include) brings its port with it.
+required(abs) :- required(a), adapter_kind(a), implements(a, abs).
 
 // Adapter selection: specific jurisdiction beats "*"; method must match or be "*" or adapter is method-agnostic.
 selected_adapter(abs, j, m, a) :- required(abs), abstract(abs), needed_method(abs, j, m),

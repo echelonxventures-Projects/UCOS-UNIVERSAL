@@ -14,7 +14,23 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "event": {
+          "description": "event or reservation"
+        },
+        "attendees": {
+          "description": "attendees (PartyRefs, external emails)"
+        },
+        "rsvp": {
+          "description": "rsvp status"
+        },
+        "method": {
+          "description": "method: REQUEST"
+        },
+        "CANCEL": {
+          "description": "CANCEL or UPDATE"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +39,6 @@
     "capability": "temporal.core",
     "phase": 0,
     "spec": "constitutions/U13-temporal/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

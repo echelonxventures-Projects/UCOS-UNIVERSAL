@@ -14,7 +14,31 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "instance": {
+          "description": "instance"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "poll",
+            "reconcile",
+            "backfill"
+          ]
+        },
+        "schedule": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/Recurrence"
+        },
+        "cursor": {
+          "description": "cursor"
+        },
+        "lastRunAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "status": {
+          "description": "status"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +47,6 @@
     "capability": "integration.core",
     "phase": 1,
     "spec": "constitutions/U62-integration/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

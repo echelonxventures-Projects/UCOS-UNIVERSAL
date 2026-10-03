@@ -70,3 +70,4 @@ Signals: `search_latency_ms` (p95 < 120 ms), `zero_result_ratio`, `ctr@k`, `inde
 
 ## Appendix P1 — Phase 1 behaviour without later-phase dependencies
 - **U49 AI/Model (Phase 3):** Phase 1 search is keyword (BM25) with synonyms, facets and merchandising only. There are no embeddings, semantic retrieval or LLM query understanding. `IndexDefinition.vector` stays empty. Migration: vectors are back-filled by a reindex job when U49 and the AI gateway are active.
+- **D. Attribute definitions (A-74).** `QueryRule { id, tenant: UGID, locale: LocaleTag, match: {terms, concept?}, rule: redirect|filter|boost|rewrite, action: object, validity: TemporalRef, priority: integer, status: active|paused }`

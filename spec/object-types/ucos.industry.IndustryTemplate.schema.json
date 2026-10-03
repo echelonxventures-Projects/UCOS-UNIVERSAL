@@ -14,7 +14,70 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id"
+        },
+        "version": {
+          "description": "version: string"
+        },
+        "name": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/LocalizedText"
+        },
+        "industryCodes": {
+          "type": "array",
+          "items": {
+            "description": "industryCodes: [{scheme: isic|naics|nace|nic, code}]"
+          }
+        },
+        "platformDefinition": {
+          "description": "platformDefinition: object (pre-filled PlatformDefinition)"
+        },
+        "capabilityBundles": {
+          "type": "array",
+          "items": {
+            "description": "capabilityBundles: [string]"
+          }
+        },
+        "taxonomySubset": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "workflows": {
+          "type": "array",
+          "items": {
+            "description": "workflows: [string]"
+          }
+        },
+        "compliancePacks": {
+          "type": "array",
+          "items": {
+            "description": "compliancePacks: [string]"
+          }
+        },
+        "uiTemplates": {
+          "type": "array",
+          "items": {
+            "description": "uiTemplates: [string]"
+          }
+        },
+        "seedData": {
+          "type": "array",
+          "items": {
+            "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+          }
+        },
+        "publishedAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "published",
+            "deprecated"
+          ]
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +86,6 @@
     "capability": "industry.registry",
     "phase": 1,
     "spec": "constitutions/U20-industry/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

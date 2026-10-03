@@ -16,16 +16,19 @@
       "type": "object",
       "properties": {
         "tier": {
-          "description": "tier"
+          "description": "example: \"T1\""
         },
-        "rpo": {
-          "description": "rpo"
+        "postgres": {
+          "description": "example: {\"pitr\": true, \"walArchive\": \"continuous\", \"fullBackup\": \"FREQ=DAILY\", \"retention\": \"P35D\", \"crossRegionCopy\": \"true (sa"
         },
-        "schedule": {
-          "description": "schedule"
+        "kafka": {
+          "description": "example: {\"tieredStorage\": true, \"mirrorTo\": \"drPair\", \"rpo\": \"PT1M\"}"
         },
-        "retention": {
-          "description": "retention"
+        "objectStore": {
+          "description": "example: {\"versioning\": true, \"replication\": \"drPair\"}"
+        },
+        "restoreTest": {
+          "description": "example: {\"schedule\": \"FREQ=WEEKLY\", \"scope\": \"random-tenant-sample\", \"evidence\": \"ec.restore-test\"}"
         }
       },
       "additionalProperties": true

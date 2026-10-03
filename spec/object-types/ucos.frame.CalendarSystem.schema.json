@@ -15,17 +15,23 @@
     "attributes": {
       "type": "object",
       "properties": {
+        "id": {
+          "description": "example: \"ucos:calsys:darian\""
+        },
         "kind": {
-          "description": "kind"
+          "description": "example: \"darian\""
         },
         "timeScale": {
-          "description": "timeScale"
+          "description": "example: \"ucos:timescale:mtc\""
         },
-        "dayLength": {
-          "description": "dayLength"
+        "dayUnit": {
+          "description": "example: {\"name\": \"sol\", \"length\": {\"value\": \"88775.244\", \"unit\": \"s\"}}"
         },
         "yearStructure": {
-          "description": "yearStructure"
+          "description": "example: {\"months\": 24, \"...\": null}"
+        },
+        "cldrDisplay": {
+          "description": "example: \"custom-pack frame.calendar.darian@1\""
         }
       },
       "additionalProperties": true

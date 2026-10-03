@@ -529,3 +529,4 @@ Shorthand field names used anywhere in UCOS specs carry these types. The linter 
 - **Value-type use** (`TimePoint`, `TimeRange`, `Duration` and so on from the kernel SDK) is allowed for **every** universe, including those layered below Temporal (U04, U05, U06, U08, U12, U77). It creates no service dependency and no cycle.
 - **Service use** (calendars, policies, triggers, reservations, SLA clocks, feeds, waitlists) requires `U13 Temporal` in the universe's *Depends on* list.
 - Gate `ARCH-TMP-05` fails a universe that uses Temporal services without declaring the dependency, or that declares a schedule, expiry, SLA or reminder implemented by anything other than U13 services.
+- **T. Attribute definitions (A-74).** `TimezoneRelease { id, version: string (IANA tzdata, e.g. 2026c), sourceDigest: string, effectiveFrom: TimePoint, pinnedBy: UGID (governance proposal), affectedZones: [string], shiftReport?: UGID, status: proposed|pinned|superseded }`

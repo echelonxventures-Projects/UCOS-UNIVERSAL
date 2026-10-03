@@ -15,33 +15,14 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "key": {
-          "description": "key"
+        "MessageKey": {
+          "description": "example: null"
         },
-        "locale": {
-          "description": "locale"
+        "MessageBundle": {
+          "description": "example: null"
         },
-        "value": {
-          "description": "value (ICU)"
-        },
-        "status": {
-          "description": "status"
-        },
-        "translatedBy": {
-          "type": "string",
-          "enum": [
-            "party",
-            "mt-engine"
-          ]
-        },
-        "reviewedBy": {
-          "description": "reviewedBy?"
-        },
-        "sourceHash": {
-          "description": "sourceHash"
-        },
-        "tenantOverride": {
-          "description": "tenantOverride?: TenantRef"
+        "Translation": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

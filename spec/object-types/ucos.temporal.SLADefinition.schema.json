@@ -15,14 +15,32 @@
     "attributes": {
       "type": "object",
       "properties": {
+        "id": {
+          "description": "example: null"
+        },
         "target": {
-          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/BusinessDuration"
+          "description": "example: null"
+        },
+        "start": {
+          "description": "example: null"
         },
         "pauseOn": {
-          "description": "pauseOn"
+          "description": "example: null"
         },
-        "breachActions": {
-          "description": "breachActions"
+        "stopOn": {
+          "description": "example: null"
+        },
+        "warnings": {
+          "description": "example: null"
+        },
+        "breach": {
+          "description": "example: null"
+        },
+        "startedAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "dueAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         }
       },
       "additionalProperties": true

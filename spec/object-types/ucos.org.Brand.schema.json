@@ -15,14 +15,20 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "name": {
-          "description": "name"
+        "OrgUnit": {
+          "description": "example: null"
         },
-        "theme": {
-          "description": "theme"
+        "Workspace": {
+          "description": "example: null"
         },
-        "domains": {
-          "description": "domains"
+        "Brand": {
+          "description": "example: null"
+        },
+        "Store": {
+          "description": "example: null"
+        },
+        "TenantLink": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

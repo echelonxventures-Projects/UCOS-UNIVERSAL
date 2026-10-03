@@ -15,23 +15,14 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "id": {
-          "description": "id"
+        "RateSource": {
+          "description": "example: null"
         },
-        "name": {
-          "description": "name"
+        "RatePolicy": {
+          "description": "example: null"
         },
-        "adapter": {
-          "description": "adapter: fx.provider.<x>"
-        },
-        "refresh": {
-          "description": "refresh: TemporalPolicyRef"
-        },
-        "types": {
-          "type": "array",
-          "items": {
-            "description": "types: [mid, official]"
-          }
+        "RoundingRule": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

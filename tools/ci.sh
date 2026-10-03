@@ -84,6 +84,7 @@ run "generated manifests in sync"   "$PY" tools/gen_manifests.py --check
 run "generated registries in sync"  "$PY" tools/gen_registries.py --check
 run "generated contracts in sync"   "$PY" tools/gen_contracts.py --check
 run "spec consistency (ucos_check)" "$PY" tools/ucos_check.py
+run "composition rules agree (closure.dl oracle)" "$PY" tools/datalog.py oracle
 if [[ "$QUICK" == "1" ]]; then
   run "contracts, scenarios, SLOs"  "$PY" tools/validate_contracts.py --quick
 else
@@ -103,6 +104,8 @@ if [[ "$QUICK" == "0" ]] && need node; then
     (cd tools/site && npm ci --silent --no-audit --no-fund && node build.mjs "$ROOT/generated/site")
   }
   run "site builds" build_site
+  check_k6() { for f in tools/spikes/k6/*.js; do node --check "$f" || return 1; done; }
+  run "spike load scripts parse" check_k6
 fi
 
 # ------------------------------------------------------------------ summary

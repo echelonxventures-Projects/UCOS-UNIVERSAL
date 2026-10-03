@@ -25,7 +25,7 @@
           "description": "version (source version or date)"
         },
         "importedAt": {
-          "description": "importedAt"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
         "diff": {
           "description": "diff: {added[], deprecated[], changed[]}"

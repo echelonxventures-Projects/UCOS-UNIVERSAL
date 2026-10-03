@@ -19,7 +19,7 @@
           "description": "resourceRef"
         },
         "range": {
-          "description": "range"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimeRange"
         },
         "capacity": {
           "description": "capacity"

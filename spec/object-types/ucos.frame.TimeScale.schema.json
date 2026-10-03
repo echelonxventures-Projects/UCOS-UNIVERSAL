@@ -15,14 +15,20 @@
     "attributes": {
       "type": "object",
       "properties": {
+        "id": {
+          "description": "example: \"ucos:timescale:mtc\""
+        },
         "kind": {
-          "description": "kind"
+          "description": "example: \"MTC\""
         },
-        "reference": {
-          "description": "reference"
+        "definition": {
+          "description": "example: \"Mean solar time at Mars prime meridian (Airy-0)\""
         },
-        "conversionTo": {
-          "description": "conversionTo(TAI)"
+        "toTAI": {
+          "description": "example: \"conversion pack frame.time.mars@1\""
+        },
+        "leapPolicy": {
+          "description": "example: \"none\""
         }
       },
       "additionalProperties": true

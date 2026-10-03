@@ -15,20 +15,8 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "identityGroup": {
-          "description": "identity|group"
-        },
-        "role": {
-          "description": "role"
-        },
-        "scope": {
-          "description": "scope"
-        },
         "validity": {
-          "description": "validity"
-        },
-        "grantor": {
-          "description": "grantor"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimeRange"
         }
       },
       "additionalProperties": true

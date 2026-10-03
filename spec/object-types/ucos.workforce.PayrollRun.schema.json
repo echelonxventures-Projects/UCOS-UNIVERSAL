@@ -19,7 +19,7 @@
           "description": "entity"
         },
         "period": {
-          "description": "period (payroll calendar)"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimeRange"
         },
         "inputs": {
           "description": "inputs hash"

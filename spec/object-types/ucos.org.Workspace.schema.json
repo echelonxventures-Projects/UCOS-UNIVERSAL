@@ -15,13 +15,20 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "purpose": {
-          "type": "string",
-          "enum": [
-            "sandbox",
-            "simulation",
-            "production"
-          ]
+        "OrgUnit": {
+          "description": "example: null"
+        },
+        "Workspace": {
+          "description": "example: null"
+        },
+        "Brand": {
+          "description": "example: null"
+        },
+        "Store": {
+          "description": "example: null"
+        },
+        "TenantLink": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

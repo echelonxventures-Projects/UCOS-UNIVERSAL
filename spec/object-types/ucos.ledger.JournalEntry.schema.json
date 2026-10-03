@@ -22,7 +22,7 @@
           "description": "entity"
         },
         "period": {
-          "description": "period"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimeRange"
         },
         "postedAt": {
           "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"

@@ -1,5 +1,7 @@
 # Runbooks
 
+Ceremonies: [genesis](genesis.md) (root authority and trust anchors, end of Phase 0).
+
 One runbook per service with an SLO in `spec/slo/`. Every alert links to a section here; the checker fails on a missing link.
 
 | Service | Tier | Universe |

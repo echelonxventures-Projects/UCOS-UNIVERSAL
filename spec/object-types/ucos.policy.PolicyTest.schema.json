@@ -14,7 +14,26 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "example: \"test.seller-cannot-edit-other-seller-listing\""
+        },
+        "principal": {
+          "description": "example: {\"type\": \"Identity\", \"attrs\": {\"roles\": [\"seller\"], \"organization\": \"org-A\"}}"
+        },
+        "action": {
+          "description": "example: \"catalog:UpdateListing\""
+        },
+        "resource": {
+          "description": "example: {\"type\": \"Catalog::Listing\", \"attrs\": {\"seller\": \"org-B\"}}"
+        },
+        "context": {
+          "description": "example: {\"risk\": {\"score\": 10}}"
+        },
+        "expect": {
+          "description": "example: \"DENY\""
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +42,6 @@
     "capability": "policy.core",
     "phase": 0,
     "spec": "constitutions/U03-policy/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

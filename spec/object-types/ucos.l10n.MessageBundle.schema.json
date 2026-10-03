@@ -15,20 +15,14 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "id": {
-          "description": "id: commerce.cart"
+        "MessageKey": {
+          "description": "example: null"
         },
-        "version": {
-          "description": "version: 2.3.0"
+        "MessageBundle": {
+          "description": "example: null"
         },
-        "keys": {
-          "type": "array",
-          "items": {
-            "description": "keys: [MessageKeyRef]"
-          }
-        },
-        "providedBy": {
-          "description": "providedBy: commerce.cart"
+        "Translation": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

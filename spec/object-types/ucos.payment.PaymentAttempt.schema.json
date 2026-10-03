@@ -37,10 +37,10 @@
           "description": "failure?: {code (normalised), providerCode, retryable, message key}"
         },
         "startedAt": {
-          "description": "startedAt"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
         "completedAt": {
-          "description": "completedAt"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         }
       },
       "additionalProperties": true

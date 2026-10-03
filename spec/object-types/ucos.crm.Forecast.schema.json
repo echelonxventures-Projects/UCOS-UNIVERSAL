@@ -19,7 +19,7 @@
           "description": "team"
         },
         "period": {
-          "description": "period (fiscal, U13)"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimeRange"
         },
         "commit": {
           "description": "commit"

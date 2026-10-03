@@ -73,4 +73,5 @@ Signals: `workflow_instances_running{def}`, `transition_latency_ms`, `task_sla_b
 
 ## Appendix
 - **A.** Temporal.io vs Camunda 8 (master §31.1 recommends Temporal.io for durability; BPMN import supported by converter for enterprise customers).
+- **D. Attribute definitions (A-74).** `WorkflowDefinition { id, version: string, subjectType: string, initial: string, states: [{name, entry, exit, timers}], transitions: [{from, on, to, guard, actions}], sagas: [{steps, compensations}], humanTasks: [string], subworkflows: [string], slo?: object, publishedAt?: TimePoint, status: draft|published|deprecated }` (master §16.1 DSL)
 - **C.** 0.1.0.

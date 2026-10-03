@@ -14,7 +14,46 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id"
+        },
+        "candidate": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "proposedGlobalProduct": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "scores": {
+          "description": "scores: {identifier, title, attributes, image}"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "match",
+            "new-product",
+            "reject"
+          ]
+        },
+        "decidedBy": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "openedAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "decidedAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "auto-matched",
+            "in-review",
+            "closed"
+          ]
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +62,6 @@
     "capability": "product.intelligence",
     "phase": 1,
     "spec": "constitutions/U18-product-intelligence/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

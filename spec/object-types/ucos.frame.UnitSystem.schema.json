@@ -15,11 +15,17 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "base": {
-          "description": "base units"
+        "MonetarySystem": {
+          "description": "example: null"
         },
-        "dimensions": {
-          "description": "dimensions"
+        "UnitSystem": {
+          "description": "example: null"
+        },
+        "LanguageSystem": {
+          "description": "example: null"
+        },
+        "GoverningAuthority": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

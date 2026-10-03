@@ -15,14 +15,14 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "capability": {
-          "description": "capability"
+        "Zone": {
+          "description": "example: null"
         },
-        "geometryPlaces": {
-          "description": "geometry|places"
+        "Geofence": {
+          "description": "example: null"
         },
-        "rules": {
-          "description": "rules"
+        "ServiceArea": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

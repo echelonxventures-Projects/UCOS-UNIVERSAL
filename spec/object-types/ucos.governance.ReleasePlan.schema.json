@@ -15,14 +15,17 @@
     "attributes": {
       "type": "object",
       "properties": {
+        "strategy": {
+          "description": "example: \"canary-cohorts\""
+        },
         "waves": {
-          "description": "waves"
+          "description": "example: [{\"name\": \"canary\", \"target\": {\"tenants\": [\"ucos:tenant:internal-dogfood\"]}, \"hold\": \"PT30M\"}, {\"name\": \"wave-1\", \"targe"
         },
         "guards": {
-          "description": "guards"
+          "description": "example: [{\"signal\": \"error_rate_ratio\", \"threshold\": \"> baseline*1.5\", \"action\": \"rollback\"}, {\"signal\": \"slo_burn_rate_1h\", \"th"
         },
         "window": {
-          "description": "window"
+          "description": "example: \"ucos:tmp:change-window-weekdays-0900-1700-IST\""
         }
       },
       "additionalProperties": true

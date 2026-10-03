@@ -16,16 +16,25 @@
       "type": "object",
       "properties": {
         "cell": {
-          "description": "cell"
+          "description": "example: \"cell-in-mum-1\""
         },
         "pair": {
-          "description": "pair"
+          "description": "example: \"cell-in-hyd-1\""
         },
         "rto": {
-          "description": "rto"
+          "description": "example: \"PT30M\""
+        },
+        "rpo": {
+          "description": "example: \"PT5M\""
+        },
+        "mode": {
+          "description": "example: \"warm-standby\""
         },
         "runbook": {
-          "description": "runbook"
+          "description": "example: \"runbooks/dr-failover-cell.md\""
+        },
+        "drill": {
+          "description": "example: \"FREQ=QUARTERLY\""
         }
       },
       "additionalProperties": true

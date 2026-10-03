@@ -28,7 +28,7 @@
           "description": "price"
         },
         "validity": {
-          "description": "validity (market session Temporal)"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimeRange"
         },
         "status": {
           "description": "status"

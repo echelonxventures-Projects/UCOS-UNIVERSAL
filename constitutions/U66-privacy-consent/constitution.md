@@ -77,4 +77,5 @@ AI use of personal data only for purposes with lawful basis; `ai-training` purpo
 Signals: `dsr_open{type}`, `dsr_time_to_complete_days`, `consent_withdrawals_total{purpose}`, `retention_records_deleted_total`, `fields_without_purpose`. Views: end-user `privacy.center` (consents, data download, delete account, grievance), `privacy.dsr.console` (DPO), `privacy.ropa.report`, `privacy.retention.rules`, `privacy.dpia.editor`, web `cookie.banner` (honest, equal-weight accept/reject). Scale: consents 10⁹; DSR volume modest; retention batch jobs per cell. T1.
 
 ## Appendix
+- **D. Attribute definitions (A-74).** `ProcessingActivity { id, name: LocalizedText, controller: UGID, purposes: [UGID], dataSubjects: [string], dataCategories: [Classification], objectTypes: [string], capabilities: [string], processors: [UGID], transfers: [UGID], retention: [UGID], securityMeasures: [UGID], generatedAt: TimePoint, reviewedAt?: TimePoint, status: current|stale }` (RoPA, generated from the knowledge graph)
 - **C.** 0.1.0.

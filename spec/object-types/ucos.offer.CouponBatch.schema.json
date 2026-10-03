@@ -15,14 +15,17 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "pattern": {
-          "description": "pattern"
+        "Campaign": {
+          "description": "example: null"
         },
-        "count": {
-          "description": "count"
+        "Coupon": {
+          "description": "example: null"
         },
-        "distribution": {
-          "description": "distribution"
+        "CouponBatch": {
+          "description": "example: null"
+        },
+        "Redemption": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

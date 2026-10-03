@@ -35,7 +35,7 @@
           "description": "status"
         },
         "receivedAt": {
-          "description": "receivedAt"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
         "inspection": {
           "description": "inspection: {condition, disposition}"

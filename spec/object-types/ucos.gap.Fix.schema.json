@@ -14,7 +14,29 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "example: \"fix.add-capability\""
+        },
+        "params": {
+          "description": "example: {\"capability\": \"CapabilityRef\"}"
+        },
+        "effect": {
+          "description": "example: \"pd.capabilities.include += capability\""
+        },
+        "effort": {
+          "description": "example: \"config\""
+        },
+        "automatable": {
+          "description": "example: true"
+        },
+        "requiresApproval": {
+          "description": "example: \"inherit\""
+        },
+        "preview": {
+          "description": "example: \"compose-diff\""
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +45,6 @@
     "capability": "gap.core",
     "phase": 0,
     "spec": "constitutions/U75-discovery-gap/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

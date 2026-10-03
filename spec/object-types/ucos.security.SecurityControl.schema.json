@@ -14,7 +14,38 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "example: \"ucos.sec.field-encryption-restricted\""
+        },
+        "title": {
+          "description": "example: \"Restricted fields are encrypted at application level with tenant keys\""
+        },
+        "area": {
+          "description": "example: \"cryptography\""
+        },
+        "appliesTo": {
+          "description": "example: {\"dataClasses\": [\"PCI\", \"SPI\", \"PHI\", \"CREDENTIAL\"]}"
+        },
+        "profiles": {
+          "description": "example: [\"standard\", \"high\", \"regulated\", \"sovereign\"]"
+        },
+        "implementation": {
+          "description": "example: [\"kernel.sdk.encrypted-field\", \"U65.key-service\"]"
+        },
+        "tests": {
+          "description": "example: [{\"id\": \"test.sec.encrypted-at-rest-sample\", \"schedule\": \"FREQ=DAILY\"}]"
+        },
+        "evidenceCollector": {
+          "description": "example: \"ec.db-encryption-sampler\""
+        },
+        "mappings": {
+          "description": "example: [\"PCI-DSS:3.5.1\", \"ISO27001:A.8.24\", \"SOC2:CC6.1\", \"HIPAA:164.312(a)(2)(iv)\"]"
+        },
+        "severityIfFailing": {
+          "description": "example: \"critical\""
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +54,6 @@
     "capability": "security.core",
     "phase": 0,
     "spec": "constitutions/U65-security/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

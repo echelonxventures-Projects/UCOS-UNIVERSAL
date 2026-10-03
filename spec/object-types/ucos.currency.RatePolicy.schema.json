@@ -14,7 +14,17 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "RateSource": {
+          "description": "example: null"
+        },
+        "RatePolicy": {
+          "description": "example: null"
+        },
+        "RoundingRule": {
+          "description": "example: null"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +33,6 @@
     "capability": "currency.core",
     "phase": 0,
     "spec": "constitutions/U14-currency-unit/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

@@ -14,7 +14,29 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "tenant": {
+          "description": "tenant"
+        },
+        "locale": {
+          "description": "locale"
+        },
+        "terms": {
+          "description": "terms ↔ concept (U05)"
+        },
+        "rule": {
+          "type": "string",
+          "enum": [
+            "redirect",
+            "filter",
+            "boost",
+            "rewrite"
+          ]
+        },
+        "validity": {
+          "description": "validity: TemporalPolicyRef"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +45,6 @@
     "capability": "search.core",
     "phase": 1,
     "spec": "constitutions/U44-search/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

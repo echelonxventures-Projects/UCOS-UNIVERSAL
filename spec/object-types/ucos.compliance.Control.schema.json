@@ -14,7 +14,41 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id"
+        },
+        "objective": {
+          "description": "objective"
+        },
+        "implementedBy": {
+          "type": "array",
+          "items": {
+            "description": "implementedBy: [capabilities/policies/workflows/views/decisions]"
+          }
+        },
+        "parameters": {
+          "description": "parameters (decision refs)"
+        },
+        "tests": {
+          "description": "tests"
+        },
+        "evidenceCollectors": {
+          "description": "evidenceCollectors"
+        },
+        "owner": {
+          "description": "owner"
+        },
+        "severity": {
+          "description": "severity"
+        },
+        "mappings": {
+          "type": "array",
+          "items": {
+            "description": "mappings: [{clause, relation: satisfies|partially|supports}]"
+          }
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +57,6 @@
     "capability": "compliance.core",
     "phase": 1,
     "spec": "constitutions/U67-compliance/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

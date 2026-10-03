@@ -22,7 +22,7 @@
           "description": "scope: {tenant, frameworks, period: TimeRange, evidencePacks}"
         },
         "validity": {
-          "description": "validity (≤ P90D)"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimeRange"
         },
         "watermark": {
           "description": "watermark: true"

@@ -28,7 +28,7 @@
           "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
         "expiresAt": {
-          "description": "expiresAt (TimePoint)"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
         "status": {
           "type": "string",

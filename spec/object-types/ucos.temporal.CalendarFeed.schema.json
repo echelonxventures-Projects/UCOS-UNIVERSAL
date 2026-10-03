@@ -14,7 +14,23 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id"
+        },
+        "source": {
+          "description": "source: Calendar or query (e.g. \"my appointments\", \"store holidays\", \"offer calendar\")"
+        },
+        "audience": {
+          "description": "audience"
+        },
+        "tokenised": {
+          "description": "tokenised URL (revocable)"
+        },
+        "privacy": {
+          "description": "privacy: busy-only or details"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +39,6 @@
     "capability": "temporal.core",
     "phase": 0,
     "spec": "constitutions/U13-temporal/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

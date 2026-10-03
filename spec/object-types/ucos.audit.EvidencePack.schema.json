@@ -49,7 +49,7 @@
           }
         },
         "expires": {
-          "description": "expires"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         }
       },
       "additionalProperties": true

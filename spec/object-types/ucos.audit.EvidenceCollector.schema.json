@@ -14,7 +14,26 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "example: \"ec.dsr-completion-log\""
+        },
+        "source": {
+          "description": "example: \"query:privacy.dsr-requests(status=completed, period)\""
+        },
+        "schedule": {
+          "description": "example: \"FREQ=DAILY\""
+        },
+        "produces": {
+          "description": "example: {\"kind\": \"log-extract\", \"proves\": [\"ucos.ctrl.dsr-erasure\"]}"
+        },
+        "freshnessSLO": {
+          "description": "example: \"P2D\""
+        },
+        "owner": {
+          "description": "example: \"U66-privacy\""
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +42,6 @@
     "capability": "audit.core",
     "phase": 0,
     "spec": "constitutions/U68-audit-evidence/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

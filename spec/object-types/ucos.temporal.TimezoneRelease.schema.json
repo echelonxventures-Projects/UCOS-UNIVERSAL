@@ -14,7 +14,40 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id"
+        },
+        "version": {
+          "description": "version: string (IANA tzdata, e.g. 2026c)"
+        },
+        "sourceDigest": {
+          "description": "sourceDigest: string"
+        },
+        "effectiveFrom": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "pinnedBy": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "affectedZones": {
+          "type": "array",
+          "items": {
+            "description": "affectedZones: [string]"
+          }
+        },
+        "shiftReport": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/UGID"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "proposed",
+            "pinned",
+            "superseded"
+          ]
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +56,6 @@
     "capability": "temporal.core",
     "phase": 0,
     "spec": "constitutions/U13-temporal/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

@@ -192,4 +192,5 @@ Millions of open and closed gaps across tenants. Gap store in control-plane Post
 
 ## Appendix
 - **B. Amendments:** master §11.6 gains discovery kinds and `INSIGHT` severity; the fix catalog becomes a first-class object.
+- **D. Attribute definitions (A-74).** `GapReport { id, scope: UGID, blueprintCandidate?: string, snapshot: string, scanType: composition|on-change|scheduled, gaps: [UGID], summary: {mandatory, recommended, optional, insight}, newSinceLast: integer, resolvedSinceLast: integer, trend: improving|stable|worsening, scannedAt: TimePoint }`
 - **C.** 0.1.0.

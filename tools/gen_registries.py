@@ -111,7 +111,7 @@ def find_definition(text, name, full):
         end = re.search(r'^#{1,5} ', text[h.end():], re.M)
         sect = text[h.end(): h.end() + end.start()] if end else text[h.end():]
         rows = [l for l in sect.splitlines() if l.startswith('|')]
-        if len(rows) > 2 and 'attribute' in rows[0].lower():
+        if len(rows) > 2 and re.search(r'\|\s*(attribute|field)\s*\|', rows[0].lower()):
             out = []
             for r in rows[2:]:
                 cells = [c.strip() for c in r.strip().strip('|').split('|')]
@@ -123,10 +123,41 @@ def find_definition(text, name, full):
             body = brace_body(sect, b.start() + 1)
             if body:
                 return ('block', body)
+        y = re.search(r'^```(?:yaml|json)\n(.*?)^```', sect, re.M | re.S)
+        if y and y.start() < 400:
+            try:
+                doc = yaml.safe_load(y.group(1))
+            except yaml.YAMLError:
+                doc = None
+            if doc is None:                       # not valid YAML: read field names line by line
+                lines = y.group(1).splitlines()
+                start = next((i for i, l in enumerate(lines) if l.rstrip() == f'{name}:'), None)
+                if start is not None:
+                    keys = [re.match(r'^  ([A-Za-z][A-Za-z0-9]*):', l) for l in lines[start + 1:]]
+                    keys = [k.group(1) for k in keys if k]
+                else:
+                    keys = [k.group(1) for k in (re.match(r'^([A-Za-z][A-Za-z0-9]*):', l) for l in lines) if k]
+                doc = {k: None for k in keys} or None
+            if isinstance(doc, dict) and name in doc and isinstance(doc[name], dict):
+                doc = doc[name]
+            if isinstance(doc, dict) and doc:
+                return ('example', doc)
+    # 2b. a table row naming the type with a `{ ... }` cell, e.g. | `Waitlist` | purpose | `{ ... }` |
+    m = re.search(r'^\|\s*`' + re.escape(name) + r'`\s*\|[^\n]*?`\{', text, re.M)
+    if m:
+        body = brace_body(text, m.end() - 1)
+        if body:
+            return ('block', body)
+    # 2c. `Name` followed (within a sentence, possibly one line break) by a `{ ... }` block, or a bold group ending in `Name`
+    m = re.search(r'`' + re.escape(name) + r'`(?:\*\*)?[^`\n]{0,200}\n?`\{', text)
+    if m:
+        body = brace_body(text, m.end() - 1)
+        if body:
+            return ('block', body)
     # 3. inline `Name { ... }`, `Name (note) { ... }` or **`Name`** `{ ... }`
     m = re.search(r'`' + re.escape(name) + r'(?:\s*\([^)`]*\))?\s*\{', text) \
         or re.search(r'`' + re.escape(name) + r'`\s*\([^)\n]*\)\s*`\{', text) \
-        or re.search(r'\*\*`' + re.escape(name) + r'`\*\*[^`\n]{0,40}`\{', text)
+        or re.search(r'\*\*`' + re.escape(name) + r'`[^*\n]{0,60}\*\*[^`\n]{0,200}`\{', text)
     if m:
         body = brace_body(text, m.end() - 1)
         if body:
@@ -148,6 +179,14 @@ def find_definition(text, name, full):
 def camel(words):
     w = re.sub(r'[^A-Za-z0-9 ]+', ' ', words).split()
     return (w[0][0].lower() + w[0][1:] + ''.join(x[:1].upper() + x[1:] for x in w[1:])) if w else None
+
+def name_typed(name):
+    """U13 App. E.3 canonical naming: time fields carry their value type even when the spec omits it."""
+    if re.fullmatch(r'[a-z][A-Za-z0-9]*At', name) or name in ('validUntil', 'effectiveFrom', 'expires', 'expiry', 'dueBy', 'deadline'):
+        return {'$ref': VT + 'TimePoint'}
+    if name in ('validity', 'period', 'range'):
+        return {'$ref': VT + 'TimeRange'}
+    return None
 
 def prop_schema(typ, raw):
     t = typ.strip()
@@ -179,7 +218,7 @@ def parse_attributes(body):
         key = name if re.fullmatch(r'[A-Za-z][A-Za-z0-9]*', name) else camel(name)
         if not key or key in props:
             continue
-        props[key] = prop_schema(typ, f) if typ else {'description': f}
+        props[key] = prop_schema(typ, f) if typ else (name_typed(key) or {'description': f})
     return props
 
 def build_object_types():
@@ -196,6 +235,10 @@ def build_object_types():
             attrs = {}
             if found and found[0] == 'block':
                 attrs = parse_attributes(found[1])
+            elif found and found[0] == 'example':
+                for k, v in found[1].items():
+                    if re.fullmatch(r'[A-Za-z][A-Za-z0-9]*', str(k)):
+                        attrs[k] = name_typed(k) or {'description': f'example: {json.dumps(v, default=str)[:120]}'}
             elif found:
                 for names, typ in found[1]:
                     for n in names:

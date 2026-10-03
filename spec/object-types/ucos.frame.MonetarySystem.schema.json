@@ -15,14 +15,17 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "issuerAuthority": {
-          "description": "issuerAuthority"
+        "MonetarySystem": {
+          "description": "example: null"
         },
-        "reality": {
-          "description": "reality"
+        "UnitSystem": {
+          "description": "example: null"
         },
-        "currencies": {
-          "description": "currencies"
+        "LanguageSystem": {
+          "description": "example: null"
+        },
+        "GoverningAuthority": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

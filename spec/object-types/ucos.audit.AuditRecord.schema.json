@@ -14,7 +14,56 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id: ULID"
+        },
+        "seq": {
+          "description": "seq: Integer"
+        },
+        "time": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "tenant": {
+          "description": "tenant: TenantRef"
+        },
+        "actor": {
+          "description": "actor: `{identity, kind, onBehalfOf?, sessionId, acr}`"
+        },
+        "action": {
+          "description": "action: String"
+        },
+        "resource": {
+          "description": "resource: `{type, id, version?}`"
+        },
+        "decision": {
+          "description": "decision: `{ effect, policies: [ids], obligations: [..] }`"
+        },
+        "result": {
+          "description": "result: `success"
+        },
+        "contextHash": {
+          "description": "contextHash: bytes"
+        },
+        "requestHash": {
+          "description": "requestHash: bytes"
+        },
+        "changes": {
+          "description": "changes: `{ fields: [names], beforeHash, afterHash }`"
+        },
+        "payloadRef": {
+          "description": "payloadRef: EncryptedPayloadRef"
+        },
+        "traceId": {
+          "description": "traceId: String"
+        },
+        "prevHash": {
+          "description": "prevHash: bytes"
+        },
+        "hash": {
+          "description": "hash: bytes"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +72,6 @@
     "capability": "audit.core",
     "phase": 0,
     "spec": "constitutions/U68-audit-evidence/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

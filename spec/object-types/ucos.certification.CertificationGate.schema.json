@@ -14,7 +14,35 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "example: \"SEC-007\""
+        },
+        "family": {
+          "description": "example: \"SEC\""
+        },
+        "title": {
+          "description": "example: \"No open critical or high vulnerabilities beyond SLA\""
+        },
+        "appliesTo": {
+          "description": "example: [\"capability-pack\", \"kernel-release\", \"blueprint\"]"
+        },
+        "criteria": {
+          "description": "example: [{\"id\": \"c1\", \"check\": \"query\", \"expr\": \"count(findings{subject=$subject, severity in [critical,high], status!=fixed, pa"
+        },
+        "waivable": {
+          "description": "example: {\"maxLevelRequired\": 4, \"maxDuration\": \"P30D\"}"
+        },
+        "severity": {
+          "description": "example: \"blocking\""
+        },
+        "version": {
+          "description": "example: \"1.2.0\""
+        },
+        "owner": {
+          "description": "example: \"U65-security\""
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +51,6 @@
     "capability": "certification.core",
     "phase": 0,
     "spec": "constitutions/U74-certification/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

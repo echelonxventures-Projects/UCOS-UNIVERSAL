@@ -15,17 +15,11 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "subjectRef": {
-          "description": "subjectRef"
+        "startedAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
-        "started": {
-          "description": "started"
-        },
-        "paused": {
-          "description": "paused"
-        },
-        "breachAt": {
-          "description": "breachAt"
+        "dueAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         }
       },
       "additionalProperties": true

@@ -14,7 +14,38 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "party": {
+          "description": "party or resource"
+        },
+        "provider": {
+          "description": "provider: google"
+        },
+        "microsoftGraph": {
+          "description": "microsoft-graph"
+        },
+        "caldav": {
+          "description": "caldav"
+        },
+        "icloud": {
+          "description": "icloud (connector U62)"
+        },
+        "direction": {
+          "description": "direction: import-busy"
+        },
+        "exportEventsOrBidirectional": {
+          "description": "export-events or bidirectional"
+        },
+        "scope": {
+          "description": "scope"
+        },
+        "lastSync": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "conflictPolicy": {
+          "description": "conflictPolicy"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +54,6 @@
     "capability": "temporal.core",
     "phase": 0,
     "spec": "constitutions/U13-temporal/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

@@ -44,7 +44,7 @@
           ]
         },
         "validity": {
-          "description": "validity (TemporalRef)"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimeRange"
         },
         "renewal": {
           "description": "renewal: {auto, notice Duration}"

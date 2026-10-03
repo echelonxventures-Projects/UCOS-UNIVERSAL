@@ -55,7 +55,7 @@
           }
         },
         "publishedAt": {
-          "description": "publishedAt"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
         "revoked": {
           "description": "revoked?: {at: TimePoint, reason, decision}"

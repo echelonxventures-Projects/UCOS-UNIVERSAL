@@ -154,3 +154,4 @@ Target 10⁸–10⁹ global products long-term (P4+), 10⁶ by end of P4; facts 
 - **Search:** filter by jurisdiction.
 
 Gap rule: `gap(regulated_without_profile, N, J) :- taxonomy_node(N), regulated_concept(N), sold_in(N, J), not regulated_profile(N, J).`
+- **D. Attribute definitions (A-74).** `MatchCase { id, candidate: UGID (tenant listing or contribution), proposedGlobalProduct?: UGID, scores: {identifier, title, attributes, image}, decision?: match|new-product|reject, decidedBy?: UGID, openedAt: TimePoint, decidedAt?: TimePoint, status: open|auto-matched|in-review|closed }`

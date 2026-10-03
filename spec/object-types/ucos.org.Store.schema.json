@@ -15,17 +15,20 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "kind": {
-          "description": "kind"
+        "OrgUnit": {
+          "description": "example: null"
         },
-        "channel": {
-          "description": "channel"
+        "Workspace": {
+          "description": "example: null"
         },
-        "site": {
-          "description": "site"
+        "Brand": {
+          "description": "example: null"
         },
-        "brand": {
-          "description": "brand"
+        "Store": {
+          "description": "example: null"
+        },
+        "TenantLink": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

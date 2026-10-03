@@ -161,4 +161,5 @@ Thousands of runs per day. Stateless orchestrator with evidence lookups. Control
 
 ## Appendix
 - **B. Amendments:** master §28.3 Certification record gains `profile`, `subjectDigest` and DSSE attestation. §28.2 gains the invalidation-grace rule (no automatic shutdown).
+- **D. Attribute definitions (A-74).** `Certification { id, subject: UGID, subjectDigest: string, profile: string, gates: [GateResult], waivers: [UGID], validFrom: TimePoint, validUntil: TimePoint, invalidatedBy?: {event, at: TimePoint}, attestation: string (DSSE envelope, in-toto predicate ucos.io/certification/v1), signedBy: UGID, approvedBy?: UGID (DecisionRecord; required for blueprints and T0/T1 packs), status: valid|expiring|invalidated|revoked }`
 - **C.** 0.1.0.

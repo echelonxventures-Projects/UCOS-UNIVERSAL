@@ -14,7 +14,35 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "example: null"
+        },
+        "namespace": {
+          "description": "example: null"
+        },
+        "category": {
+          "description": "example: null"
+        },
+        "source": {
+          "description": "example: null"
+        },
+        "description": {
+          "description": "example: null"
+        },
+        "placeholders": {
+          "description": "example: null"
+        },
+        "maxLength": {
+          "description": "example: null"
+        },
+        "requiresHumanReview": {
+          "description": "example: null"
+        },
+        "screenshots": {
+          "description": "example: null"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +51,6 @@
     "capability": "l10n.core",
     "phase": 0,
     "spec": "constitutions/U15-localization/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

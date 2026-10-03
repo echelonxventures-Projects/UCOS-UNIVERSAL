@@ -28,7 +28,7 @@
           "description": "holder: checkout|order|cart(optional)"
         },
         "expiresAt": {
-          "description": "expiresAt (Temporal)"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
         "status": {
           "type": "string",

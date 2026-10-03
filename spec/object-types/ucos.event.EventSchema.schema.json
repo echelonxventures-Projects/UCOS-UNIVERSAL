@@ -14,7 +14,57 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id"
+        },
+        "eventType": {
+          "description": "eventType: string"
+        },
+        "version": {
+          "description": "version: string (semver)"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "json-schema",
+            "avro",
+            "protobuf"
+          ]
+        },
+        "schema": {
+          "description": "schema: object"
+        },
+        "compatibility": {
+          "description": "compatibility: BACKWARD_TRANSITIVE|FORWARD|FULL|NONE"
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "description": "examples: [object]"
+          }
+        },
+        "fieldClassifications": {
+          "type": "array",
+          "items": {
+            "description": "fieldClassifications: [{path, classification: Classification}]"
+          }
+        },
+        "registeredAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "deprecatedAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "deprecated",
+            "retired"
+          ]
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +73,6 @@
     "capability": "event.core",
     "phase": 0,
     "spec": "constitutions/U61-event/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

@@ -15,42 +15,14 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "id": {
-          "description": "id"
+        "Refund": {
+          "description": "example: null"
         },
-        "intent": {
-          "description": "intent"
+        "Payout": {
+          "description": "example: null"
         },
-        "amount": {
-          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/Money"
-        },
-        "reason": {
-          "description": "reason"
-        },
-        "initiatedBy": {
-          "description": "initiatedBy"
-        },
-        "adjustment": {
-          "description": "adjustment: OrderAdjustmentRef?"
-        },
-        "status": {
-          "type": "string",
-          "enum": [
-            "pending",
-            "succeeded",
-            "failed"
-          ]
-        },
-        "providerRef": {
-          "description": "providerRef"
-        },
-        "method": {
-          "type": "string",
-          "enum": [
-            "original",
-            "store-credit",
-            "bank-transfer"
-          ]
+        "Dispute": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

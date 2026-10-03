@@ -133,4 +133,5 @@ Views: `pricing.pricelist.grid` (spreadsheet-like editor, bulk paste, scheduled 
 10⁹ price entries platform-wide; partitioned by tenant/price list; display prices projected to cache/search; quote engine stateless, in-memory indexes per cell. T0 on checkout path.
 
 ## Appendix
+- **D. Attribute definitions (A-74).** `B2BQuote { id, buyer: UGID, seller: UGID, lines: [{unit, quantity, unitPrice: Money, discount: Percentage}], priceList: UGID, terms: {paymentTerms, incoterms, deliverySchedule}, total: Money, validUntil: TimePoint, approval?: UGID, status: draft|sent|accepted|rejected|expired|converted, acceptedAt?: TimePoint }`
 - **C.** 0.1.0.

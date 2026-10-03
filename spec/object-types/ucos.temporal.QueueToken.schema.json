@@ -14,7 +14,35 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "queue": {
+          "description": "queue"
+        },
+        "number": {
+          "description": "number"
+        },
+        "party": {
+          "description": "party?"
+        },
+        "issuedAt": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
+        },
+        "estimatedWait": {
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/Duration"
+        },
+        "status": {
+          "description": "status: waiting"
+        },
+        "called": {
+          "description": "called"
+        },
+        "serving": {
+          "description": "serving"
+        },
+        "done": {
+          "description": "done or no-show"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +51,6 @@
     "capability": "temporal.core",
     "phase": 0,
     "spec": "constitutions/U13-temporal/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

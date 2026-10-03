@@ -1937,6 +1937,8 @@ guards:
 observability: { slo: { "placed→confirmed": "p95 < 60s" } }
 ```
 
+**YAML note (A-74):** quote the `"on"` key. YAML 1.1 parsers (PyYAML, Go yaml.v2) read a bare `on:` as the boolean `true`; the machine-readable definitions in `spec/workflows/` quote it, and CI rejects boolean keys.
+
 Human tasks support assignment rules (Decision), approvals (n-of-m, sequential, parallel), delegation, escalation chains bound to SLA clocks, and four-eyes/SoD guards from policy.
 
 ### 16.2 Decision tables (configurable business logic)

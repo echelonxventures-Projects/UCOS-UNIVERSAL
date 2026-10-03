@@ -47,7 +47,7 @@
           "description": "determination"
         },
         "issuedAt": {
-          "description": "issuedAt"
+          "$ref": "https://schemas.ucos.io/meta/value-types.schema.json#/$defs/TimePoint"
         },
         "eInvoice": {
           "description": "eInvoice?: {irn, qr, ackNo, status}"

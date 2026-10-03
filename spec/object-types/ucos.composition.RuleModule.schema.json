@@ -16,16 +16,25 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "id"
+          "description": "example: null"
         },
         "version": {
-          "description": "version"
+          "description": "example: null"
         },
         "owner": {
-          "description": "owner"
+          "description": "example: null"
         },
-        "rules": {
-          "description": "rules"
+        "language": {
+          "description": "example: null"
+        },
+        "imports": {
+          "description": "example: null"
+        },
+        "facts": {
+          "description": "example: null"
+        },
+        "tests": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

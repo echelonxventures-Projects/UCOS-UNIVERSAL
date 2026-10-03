@@ -15,14 +15,20 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "kind": {
-          "description": "kind"
+        "OrgUnit": {
+          "description": "example: null"
         },
-        "parent": {
-          "description": "parent"
+        "Workspace": {
+          "description": "example: null"
         },
-        "manager": {
-          "description": "manager"
+        "Brand": {
+          "description": "example: null"
+        },
+        "Store": {
+          "description": "example: null"
+        },
+        "TenantLink": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

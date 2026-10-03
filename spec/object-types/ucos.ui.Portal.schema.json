@@ -14,7 +14,32 @@
     },
     "attributes": {
       "type": "object",
-      "properties": {},
+      "properties": {
+        "id": {
+          "description": "id"
+        },
+        "audience": {
+          "description": "audience"
+        },
+        "navigation": {
+          "description": "navigation (IA tree referencing views)"
+        },
+        "auth": {
+          "description": "auth requirements"
+        },
+        "theme": {
+          "description": "theme"
+        },
+        "domainsAppIds": {
+          "description": "domains/app ids"
+        },
+        "channels": {
+          "description": "channels"
+        },
+        "featureFlags": {
+          "description": "featureFlags"
+        }
+      },
       "additionalProperties": true
     }
   },
@@ -23,6 +48,6 @@
     "capability": "ui.core",
     "phase": 1,
     "spec": "constitutions/U64-ui-app-channel/constitution.md",
-    "attributesFromSpec": false
+    "attributesFromSpec": true
   }
 }

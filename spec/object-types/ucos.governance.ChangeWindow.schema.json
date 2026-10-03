@@ -15,11 +15,14 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "temporalPolicy": {
-          "description": "temporalPolicy"
+        "id": {
+          "description": "example: null"
         },
-        "freeze": {
-          "description": "freeze"
+        "allowed": {
+          "description": "example: \"TemporalPolicyRef\""
+        },
+        "freezes": {
+          "description": "example: [\"TemporalPolicyRef\"]"
         }
       },
       "additionalProperties": true

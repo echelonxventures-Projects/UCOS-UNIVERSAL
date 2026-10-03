@@ -15,20 +15,17 @@
     "attributes": {
       "type": "object",
       "properties": {
-        "offer": {
-          "description": "offer"
+        "Campaign": {
+          "description": "example: null"
         },
-        "order": {
-          "description": "order"
+        "Coupon": {
+          "description": "example: null"
         },
-        "party": {
-          "description": "party"
+        "CouponBatch": {
+          "description": "example: null"
         },
-        "amount": {
-          "description": "amount"
-        },
-        "funding": {
-          "description": "funding split"
+        "Redemption": {
+          "description": "example: null"
         }
       },
       "additionalProperties": true

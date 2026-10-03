@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	_ "time/tzdata" // embed the IANA database so the scratch image can resolve time zones
+
 	"ucos.io/kernel/pkg/money"
 	"ucos.io/kernel/pkg/temporal"
 	"ucos.io/kernel/pkg/ugid"

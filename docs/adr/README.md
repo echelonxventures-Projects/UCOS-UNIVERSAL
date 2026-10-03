@@ -40,7 +40,8 @@ Each ADR records one significant decision: its context, the alternatives conside
 | [ADR-034](ADR-034-architecture-board-composition.md) | Architecture Board composition | Accepted (structure); members named by the founders before P0 genesis |
 | [ADR-035](ADR-035-legal-interpretations-are-owned-by-in-house-counsel-with-exter.md) | Legal interpretations are owned by in-house counsel with external firms per jurisdiction | Accepted (structure) |
 | [ADR-036](ADR-036-continuous-integration-is-deterministic-and-needs-no-person-or.md) | Continuous integration is deterministic and needs no person or AI to run | Accepted |
+| [ADR-037](ADR-037-primary-cloud-provider-for-the-first-cells.md) | Primary cloud provider for the first cells | **Proposed** (decision needed by 2026-12-15) |
 
-All open decisions raised by the specs are recorded above (ADR-021…035). Provisional ADRs name the spike that confirms or reverses them.
+All open decisions raised by the specs are recorded above (ADR-021…035). Provisional ADRs name the spike that confirms or reverses them. ADR-037 (cloud provider) is the one decision still open.
 
 Template: copy any ADR and keep the same headings.

@@ -5,7 +5,7 @@
 |---|---|
 | Document ID | `UCOS-MASTER-ARCH` |
 | Author | Bipin Kumar |
-| Version | 1.3.0 (73 amendments applied, A-01…A-73; see §35) |
+| Version | 1.4.0 (74 amendments applied, A-01…A-74; see §35) |
 | Status | Canonical — supersedes every architecture fragment in `Chat.txt` |
 | Date | 2026-10-03 |
 | Audience | Platform architects, engineers, designers, SRE, security, compliance, and AI coding agents |
@@ -4073,6 +4073,7 @@ gantt
 | ADR-034 | Architecture Board composition | Separation of duties |
 | ADR-035 | Ownership of legal interpretations | Accountability for controls |
 | ADR-036 | Deterministic CI with no person or AI in the loop | Reproducible checks; no drift |
+| ADR-037 | Primary cloud provider for the first cells (**Proposed**) | Residency in India and the UAE; decides the cell IaC |
 
 Full records (context, alternatives, consequences, enforcement): `docs/adr/`.
 
@@ -4283,7 +4284,7 @@ When those four properties hold, any new team or agent can read this document, g
 | A-65 | Real-time Communications & Contact Centre (U109) | §6.2 U109, §22 |
 | A-66 | 23 communication manifests; recording-consent and bot-disclosure controls; `targetPhase`; omnichannel reference platform | §8.3, §11.2, §11.3 |
 
-### 35.3 Amendments applied in v1.2 and v1.3
+### 35.3 Amendments applied in v1.2–v1.4
 | # | Amendment | Applied in |
 |---|---|---|
 | A-67 | AI & Agents (U49 gateway, U50 prompts as code, U51 agent run loop) and the Phase 2 core (U17, U25, U27, U30, U36, U59, U69, U70) specified | §6.2 rows, §21, constitutions |
@@ -4292,7 +4293,8 @@ When those four properties hold, any new team or agent can read this document, g
 | A-70 | ADR files 001–020; STRIDE threat models with enforced manifest links | §20, §34, docs/ |
 | A-71 | Wireframes W17–W40 for the new universes | §25 |
 | A-72 | Business pack: cost model, commercial model, team/budget/roadmap plan | §32, companion docs |
+| A-74 | Phase 0–1 readiness: exit test, phase-aware base set and PD reality, rules oracle, policy and decision tests, workflows, seeds S1–S15, kernel schema, Go kernel skeleton, deploy baseline, signed releases; ADR-037 proposed | §11.3, §16.1, §27, §32, companion docs |
 | A-73 | Deterministic CI (ADR-036); kernel and generated API/event contracts; acceptance scenarios; SLOs and runbooks; Phase 2 manifests and golden marketplace platform; ADR-021…036; §32.1 phase alignment; legal templates | §15, §26, §28, §32, companion docs |
 
 ---
-*End of UCOS-MASTER-ARCHITECTURE v1.3.0*
+*End of UCOS-MASTER-ARCHITECTURE v1.4.0*

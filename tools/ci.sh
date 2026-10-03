@@ -147,6 +147,19 @@ if [[ "$QUICK" == "0" ]] && need node; then
   }
   run "site builds" build_site
   check_k6() { for f in tools/spikes/k6/*.js; do node --check "$f" || return 1; done; }
+  if command -v kubectl >/dev/null 2>&1 && command -v go >/dev/null 2>&1; then
+    check_k8s() {
+      [[ -x "$GOBIN_DIR/kubeconform" ]] || GOBIN="$GOBIN_DIR" go install github.com/yannh/kubeconform/cmd/kubeconform@v0.8.0
+      for env in deploy/k8s/overlays/*/; do
+        kubectl kustomize "$env" | "$GOBIN_DIR/kubeconform" -strict -summary -kubernetes-version 1.33.0 - || return 1
+      done
+      "$GOBIN_DIR/kubeconform" -strict -ignore-missing-schemas -summary deploy/k8s/argocd/
+    }
+    run "Kubernetes manifests valid (kubeconform)" check_k8s
+  elif [[ "$IN_CI" == "true" ]]; then echo "kubectl is required in CI" >&2; exit 3; fi
+  if command -v docker >/dev/null 2>&1; then
+    run "dev stack compose file valid" docker compose -f deploy/local/compose.yaml config --quiet
+  fi
   run "spike load scripts parse" check_k6
 fi
 

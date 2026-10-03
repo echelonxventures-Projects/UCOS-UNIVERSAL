@@ -23,8 +23,9 @@ spec/
 │   └── facts/{regulations,controls,defaults}.yaml   # applicability facts (data, governed by stewards)
 ├── policies/
 │   ├── platform-baseline.cedar                 # P-001…P-007 (U03 platform layer)
-│   └── universe-defaults.cedar                 # pack default policies
-├── decisions/*.yaml                            # default decision tables (tenant-configurable within bounds)
+│   ├── universe-defaults.cedar                 # pack default policies
+│   └── tests/*.yaml                            # policy tests, evaluated with the Cedar engine in CI
+├── decisions/*.yaml                            # 16 default decision tables with executable tests
 ├── api/
 │   ├── proto/ucos/kernel/v1/*.proto           # kernel gRPC contracts (hand-written; buf lint + breaking checks)
 │   ├── openapi/kernel/*.yaml                   # gateway and control-plane REST (hand-written, API-L1 exception)
@@ -33,6 +34,9 @@ spec/
 ├── events/payloads/*.schema.json               # 529 payload schemas (generated; hand/ overrides for core events)
 ├── acceptance/**/*.feature + steps.yaml        # Gherkin scenarios over a closed step vocabulary (60 steps)
 ├── slo/*.yaml                                  # service levels and alerts for 17 services (runbooks in docs/runbooks/)
+├── workflows/*.yaml                            # order.lifecycle@3, commerce.checkout@1 (structure validated)
+├── genesis/                                    # GenesisRecord schema and annotated example
+├── seed/                                       # day-one data S1–S15 (see seed/README.md)
 ├── certification/gates.yaml                    # gate catalogue (55 gates, 11 families) and U74 gate profiles
 ├── registries/errors.yaml                      # 219 error codes: owner, category, HTTP/gRPC mapping (generated)
 └── object-types/*.schema.json                  # 613 object-type JSON Schemas (generated; 576 with attributes parsed from specs)
@@ -69,6 +73,7 @@ What `ucos_check` verifies today:
 | `d2c-in-ae` (D2C, India + UAE, web; Phase 1) | 66 (56 tenant, 10 platform) | 21 | 22 | 0 | 0 |
 | `b2b-in` (B2B, India, web + WhatsApp, e-invoicing; Phase 1) | 61 (51 tenant, 10 platform) | 10 | 21 | 0 | 0 |
 | `omnichannel-in` (web, web push, iOS, Android, WhatsApp, live chat, voice, video, Telegram, RCS; Phase 4) | 75 (65 tenant, 10 platform) | 19 | 23 | 0 | 0 |
+| `sample-p0` (Phase 0 exit test: sample pack in a simulated reality) | 20 | 1 (simulator) | 0 | 0 | 0 |
 | `marketplace-in-ae` (multi-seller marketplace with ledger, payouts, logistics, risk, reviews, subscriptions, stored value; India + UAE; Phase 2) | 74 | — | 32 | 0 | 0 |
 
 The production composer (`engineering/KERNEL-DESIGN.md` §9) must reproduce these blueprints exactly (same capability set, adapters and controls) before it replaces this reference checker in CI.

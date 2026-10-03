@@ -1,0 +1,291 @@
+// Package bus is the command bus (KERNEL-DESIGN §3). Every state change enters through Execute, which runs in
+// one tenant transaction:
+//
+//  1. claim the idempotency key (a concurrent duplicate blocks on the unique key, then reads the stored answer);
+//  2. run the pack's handler in a savepoint, with object writes, outbox events and a trigger scheduler;
+//  3. append the audit record (AUD-L1: no audit, no change);
+//  4. store the response under the key and commit.
+//
+// A handler Problem rolls back to the savepoint, so its state changes vanish but its answer is still stored.
+package bus
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/jackc/pgx/v5"
+
+	"ucos.io/kernel/internal/store"
+	"ucos.io/kernel/pkg/ctxenv"
+	"ucos.io/kernel/pkg/money"
+	"ucos.io/kernel/pkg/ugid"
+	"ucos.io/kernel/sdk/pack"
+)
+
+// Request is one command invocation.
+type Request struct {
+	OperationID    string // "<slug>:<Command>"
+	TargetID       string
+	Payload        json.RawMessage
+	IdempotencyKey string
+	Envelope       *ctxenv.Envelope
+}
+
+// Response is what the caller receives (and what a retry with the same key receives again).
+type Response struct {
+	Status  int             `json:"status"`
+	Body    json.RawMessage `json:"body,omitempty"`
+	Problem *pack.Problem   `json:"problem,omitempty"`
+}
+
+type Bus struct {
+	db       *store.DB
+	cell     string
+	clock    func() time.Time
+	commands map[string]pack.CommandHandler
+	caps     map[string]string // operation -> capability id
+	ttl      time.Duration
+}
+
+func New(db *store.DB, cell string, clock func() time.Time) *Bus {
+	if clock == nil {
+		clock = time.Now
+	}
+	return &Bus{db: db, cell: cell, clock: clock, commands: map[string]pack.CommandHandler{}, caps: map[string]string{}, ttl: 24 * time.Hour}
+}
+
+// Register adds a pack's commands under "<slug>:<Command>", slug being the first segment of its capability id.
+func (b *Bus) Register(p pack.Pack) {
+	slug := strings.SplitN(p.CapabilityID(), ".", 2)[0]
+	for name, h := range p.Commands() {
+		op := slug + ":" + name
+		b.commands[op] = h
+		b.caps[op] = p.CapabilityID()
+	}
+}
+
+func problem(status int, code, title string) Response {
+	return Response{Status: status, Problem: pack.NewProblem(status, code, title, "")}
+}
+
+// Execute runs a command. The returned error is reserved for infrastructure failures (retry is safe);
+// business outcomes, including problems, come back in the Response.
+func (b *Bus) Execute(ctx context.Context, req Request) (Response, error) {
+	now := b.clock().UTC()
+	if req.Envelope == nil {
+		return problem(http.StatusUnauthorized, "CTX_MISSING", "context envelope required"), nil
+	}
+	if err := req.Envelope.Validate(now); err != nil {
+		return problem(http.StatusUnauthorized, "CTX_INVALID", err.Error()), nil
+	}
+	h, ok := b.commands[req.OperationID]
+	if !ok {
+		return problem(http.StatusNotFound, "OPERATION_UNKNOWN", "unknown operation "+req.OperationID), nil
+	}
+	if len(req.IdempotencyKey) < 8 {
+		return problem(http.StatusBadRequest, "IDEMPOTENCY_KEY_REQUIRED", "an Idempotency-Key of at least 8 characters is required"), nil
+	}
+	sum := sha256.Sum256([]byte(req.OperationID + "\x00" + req.TargetID + "\x00" + string(req.Payload)))
+	hash := sum[:]
+	tenant := req.Envelope.Tenant
+
+	var resp Response
+	err := b.db.InTenant(ctx, tenant, store.RoleApp, func(tx pgx.Tx) error {
+		tag, err := tx.Exec(ctx, `INSERT INTO kernel.cmd_idempotency (tenant_id, key, request_hash, status, expires_at)
+			VALUES ($1, $2, $3, 'in_progress', $4) ON CONFLICT DO NOTHING`, tenant, req.IdempotencyKey, hash, now.Add(b.ttl))
+		if err != nil {
+			return err
+		}
+		if tag.RowsAffected() == 0 { // the key was used before: replay or reject
+			var prevHash []byte
+			var status string
+			var stored []byte
+			if err := tx.QueryRow(ctx, `SELECT request_hash, status, coalesce(response_raw, convert_to(response::text, 'UTF8')) FROM kernel.cmd_idempotency
+				WHERE tenant_id = $1 AND key = $2`, tenant, req.IdempotencyKey).Scan(&prevHash, &status, &stored); err != nil {
+				return err
+			}
+			switch {
+			case string(prevHash) != string(hash):
+				resp = problem(http.StatusConflict, "IDEMPOTENCY_KEY_REUSED", "this Idempotency-Key was used with a different request")
+			case status != "completed":
+				resp = problem(http.StatusConflict, "IN_PROGRESS", "the original request is still running")
+			default:
+				return json.Unmarshal(stored, &resp)
+			}
+			return nil
+		}
+
+		k := &kernelTx{ctx: ctx, tx: tx, bus: b, tenant: tenant, capability: b.caps[req.OperationID], now: now}
+		cc := &pack.CommandCtx{Context: req.Envelope, Tx: k, Temporal: k, Allocate: money.Allocate}
+		if _, err := tx.Exec(ctx, `SAVEPOINT handler`); err != nil {
+			return err
+		}
+		result, herr := h(cc, withTarget(req))
+		var p *pack.Problem
+		switch {
+		case errors.As(herr, &p):
+			if _, err := tx.Exec(ctx, `ROLLBACK TO SAVEPOINT handler`); err != nil {
+				return err
+			}
+			resp = Response{Status: p.Status, Problem: p}
+		case herr != nil:
+			return herr // infrastructure failure: roll everything back, the key is released
+		default:
+			body, err := json.Marshal(result.Body)
+			if err != nil {
+				return err
+			}
+			resp = Response{Status: result.Status, Body: body}
+		}
+
+		audit := map[string]any{
+			"action": req.OperationID, "target": req.TargetID, "status": resp.Status,
+			"actor": req.Envelope.Actor, "idempotencyKey": req.IdempotencyKey,
+			"requestHash": fmt.Sprintf("%x", hash), "at": now.Format(time.RFC3339Nano),
+		}
+		if resp.Problem != nil {
+			audit["problem"] = resp.Problem.Code
+		}
+		rec, _ := json.Marshal(audit)
+		if _, err := tx.Exec(ctx, `INSERT INTO kernel.audit_pending (tenant_id, record) VALUES ($1, $2::jsonb)`, tenant, string(rec)); err != nil {
+			return err
+		}
+		stored, _ := json.Marshal(resp)
+		_, err = tx.Exec(ctx, `UPDATE kernel.cmd_idempotency SET status = 'completed', response = $3::jsonb, response_raw = $5, http_status = $4
+			WHERE tenant_id = $1 AND key = $2`, tenant, req.IdempotencyKey, string(stored), resp.Status, stored)
+		return err
+	})
+	return resp, err
+}
+
+// The payload handed to handlers carries the target id as "_target" so handlers stay pure functions of input.
+func withTarget(req Request) json.RawMessage {
+	if req.TargetID == "" {
+		return req.Payload
+	}
+	var m map[string]any
+	if json.Unmarshal(req.Payload, &m) != nil || m == nil {
+		m = map[string]any{}
+	}
+	m["_target"] = req.TargetID
+	out, _ := json.Marshal(m)
+	return out
+}
+
+// kernelTx implements pack.Tx and pack.Temporal on the command's transaction.
+type kernelTx struct {
+	ctx        context.Context
+	tx         pgx.Tx
+	bus        *Bus
+	tenant     string
+	capability string
+	now        time.Time
+}
+
+var errNotFound = pack.NewProblem(http.StatusNotFound, "OBJECT_NOT_FOUND", "object not found", "")
+
+func (k *kernelTx) Get(typ, id string) (*pack.Object, error) {
+	o := &pack.Object{ID: id, Type: typ}
+	var status *string
+	var attrs, custom []byte
+	err := k.tx.QueryRow(k.ctx, `SELECT version, status, attributes, custom FROM kernel.objects WHERE type = $1 AND id = $2`,
+		typ, id).Scan(&o.Version, &status, &attrs, &custom)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, errNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	if status != nil {
+		o.Status = *status
+	}
+	o.Attributes, o.Custom = attrs, custom
+	return o, nil
+}
+
+func (k *kernelTx) Save(o *pack.Object, expectedVersion int64) error {
+	attrs := string(o.Attributes)
+	if attrs == "" {
+		attrs = "{}"
+	}
+	custom := string(o.Custom)
+	if custom == "" {
+		custom = "{}"
+	}
+	if expectedVersion == 0 {
+		if _, err := k.tx.Exec(k.ctx, `INSERT INTO kernel.objects (tenant_id, type, id, version, status, attributes, custom)
+			VALUES ($1, $2, $3, 1, $4, $5::jsonb, $6::jsonb)`, k.tenant, o.Type, o.ID, o.Status, attrs, custom); err != nil {
+			return err
+		}
+		o.Version = 1
+		return nil
+	}
+	tag, err := k.tx.Exec(k.ctx, `UPDATE kernel.objects SET version = version + 1, status = $5, attributes = $6::jsonb, custom = $7::jsonb
+		WHERE tenant_id = $1 AND type = $2 AND id = $3 AND version = $4`, k.tenant, o.Type, o.ID, expectedVersion, o.Status, attrs, custom)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return pack.NewProblem(http.StatusConflict, "VERSION_CONFLICT", "the object changed since it was read", "")
+	}
+	o.Version = expectedVersion + 1
+	return nil
+}
+
+// Emit writes a CloudEvent to the outbox in the same transaction (ADR-007).
+func (k *kernelTx) Emit(eventType, subject string, data any) error {
+	parts := strings.Split(eventType, ".")
+	if len(parts) != 3 {
+		return fmt.Errorf("bus: event type %q must be <universe>.<object>.<verb>", eventType)
+	}
+	id, err := ugid.New("event", k.now)
+	if err != nil {
+		return err
+	}
+	ev := map[string]any{
+		"specversion": "1.0", "id": id[len("ucos:event:"):], "type": eventType, "subject": subject,
+		"source": "ucos://" + k.bus.cell + "/" + k.capability, "time": k.now.Format(time.RFC3339Nano),
+		"datacontenttype": "application/json", "ucostenant": k.tenant, "data": data,
+	}
+	body, err := json.Marshal(ev)
+	if err != nil {
+		return err
+	}
+	topic := fmt.Sprintf("ucos.%s.%s.%s.v1", k.bus.cell, parts[0], parts[1])
+	_, err = k.tx.Exec(k.ctx, `INSERT INTO kernel.outbox (tenant_id, event_id, topic, partition_key, event) VALUES ($1, $2, $3, $4, $5::jsonb)`,
+		k.tenant, ev["id"], topic, subject, string(body))
+	return err
+}
+
+func (k *kernelTx) NewID(kind string) (string, error) { return ugid.New(kind, k.now) }
+
+// Now is the command's clock reading (TMP-L1: packs never call time.Now).
+func (k *kernelTx) Now() string { return k.now.Format(time.RFC3339Nano) }
+
+// Schedule registers a trigger in the same transaction; the same idempotency key returns the same trigger.
+func (k *kernelTx) Schedule(idempotencyKey, at, targetOperation, targetID string, payload any) (string, error) {
+	fireAt, err := time.Parse(time.RFC3339, at)
+	if err != nil {
+		return "", pack.NewProblem(http.StatusBadRequest, "TMP_INVALID_TIMEPOINT", "trigger time must be RFC 3339", err.Error())
+	}
+	id, err := ugid.New("trigger", k.now)
+	if err != nil {
+		return "", err
+	}
+	p, _ := json.Marshal(payload)
+	if string(p) == "null" {
+		p = []byte("{}")
+	}
+	var got string
+	err = k.tx.QueryRow(k.ctx, `INSERT INTO kernel.triggers (tenant_id, id, idempotency_key, fire_at, target_operation, target_id, payload, status)
+		VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, 'scheduled')
+		ON CONFLICT (tenant_id, idempotency_key) DO UPDATE SET idempotency_key = EXCLUDED.idempotency_key
+		RETURNING id`, k.tenant, id, idempotencyKey, fireAt, targetOperation, targetID, string(p)).Scan(&got)
+	return got, err
+}

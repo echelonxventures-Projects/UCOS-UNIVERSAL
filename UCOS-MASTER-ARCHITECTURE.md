@@ -5,7 +5,7 @@
 |---|---|
 | Document ID | `UCOS-MASTER-ARCH` |
 | Author | Bipin Kumar |
-| Version | 1.4.0 (74 amendments applied, A-01…A-74; see §35) |
+| Version | 1.4.0 (75 amendments applied, A-01…A-75; see §35) |
 | Status | Canonical — supersedes every architecture fragment in `Chat.txt` |
 | Date | 2026-10-03 |
 | Audience | Platform architects, engineers, designers, SRE, security, compliance, and AI coding agents |
@@ -4293,6 +4293,7 @@ When those four properties hold, any new team or agent can read this document, g
 | A-70 | ADR files 001–020; STRIDE threat models with enforced manifest links | §20, §34, docs/ |
 | A-71 | Wireframes W17–W40 for the new universes | §25 |
 | A-72 | Business pack: cost model, commercial model, team/budget/roadmap plan | §32, companion docs |
+| A-75 | Kernel data path implemented and tested end to end (bus, objects, audit, relay, triggers, sample pack); migrations 0011–0013 | §13, companion code |
 | A-74 | Phase 0–1 readiness: exit test, phase-aware base set and PD reality, rules oracle, policy and decision tests, workflows, seeds S1–S15, kernel schema, Go kernel skeleton, deploy baseline, signed releases; ADR-037 proposed | §11.3, §16.1, §27, §32, companion docs |
 | A-73 | Deterministic CI (ADR-036); kernel and generated API/event contracts; acceptance scenarios; SLOs and runbooks; Phase 2 manifests and golden marketplace platform; ADR-021…036; §32.1 phase alignment; legal templates | §15, §26, §28, §32, companion docs |
 

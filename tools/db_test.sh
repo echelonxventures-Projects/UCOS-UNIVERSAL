@@ -2,7 +2,9 @@
 # Apply db/migrations to a throwaway PostgreSQL cluster and run db/tests/*.sql.
 # The cluster listens only on a private Unix socket in a temp directory and is deleted afterwards,
 # so it never touches a database already running on the machine.
-#   tools/db_test.sh            (needs PostgreSQL 16+ server binaries: initdb, pg_ctl, psql)
+#   tools/db_test.sh                       (needs PostgreSQL 16+ server binaries: initdb, pg_ctl, psql)
+#   tools/db_test.sh --exec <command...>   also runs <command> with UCOS_TEST_DATABASE_URL pointing at a fresh,
+#                                          migrated database (used for the Go integration tests)
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 find_bin() {
@@ -26,3 +28,9 @@ echo "applied $(ls "$ROOT"/db/migrations/*.sql | wc -l | tr -d ' ') migrations (
 for t in "$ROOT"/db/tests/*.sql; do
   "${PSQL[@]}" -d ucos_test -f "$t"
 done
+if [[ "${1:-}" == "--exec" ]]; then
+  shift
+  "${PSQL[@]}" -d postgres -c "CREATE DATABASE ucos_it"
+  for m in "$ROOT"/db/migrations/*.sql; do "${PSQL[@]}" -d ucos_it -f "$m"; done
+  UCOS_TEST_DATABASE_URL="host=$WORK user=postgres dbname=ucos_it sslmode=disable" "$@"
+fi

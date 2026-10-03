@@ -53,7 +53,8 @@ UPDATE kernel.outbox SET published_at = now() WHERE event_id = 'e-1';
 SELECT pg_temp.expect_error($$UPDATE kernel.outbox SET event = '{"x":1}' WHERE event_id = 'e-2'$$, 'permission denied');
 RESET ROLE;
 
--- 5. Audit chain ----------------------------------------------------------------------------------
+-- 5. Audit chain (the appender runs with no tenant context) -------------------------------------------
+RESET app.tenant_id;
 SET ROLE ucos_audit_appender;
 INSERT INTO kernel.audit_records (tenant_id, day, seq, id, rec, prev_hash, hash)
 SELECT 't1', '2027-01-10', 1, 'a1', r, decode(repeat('00', 32), 'hex'), kernel.audit_hash((decode(repeat('00', 32), 'hex'))::bytea, r)
@@ -82,6 +83,16 @@ SET app.tenant_id = 't1';
 INSERT INTO kernel.triggers (tenant_id, id, idempotency_key, fire_at, target_operation, status) VALUES ('t1', 'tr1', 'idem-1', '2027-01-10T09:30:00Z', 'sample:RemindNote', 'scheduled');
 SELECT pg_temp.expect_error($$INSERT INTO kernel.triggers (tenant_id, id, idempotency_key, recurrence, target_operation, status) VALUES ('t1', 'tr2', 'idem-2', 'FREQ=DAILY', 'x:y', 'scheduled')$$, 'triggers_check');
 SELECT pg_temp.expect_error($$INSERT INTO kernel.triggers (tenant_id, id, idempotency_key, fire_at, target_operation, status) VALUES ('t1', 'tr3', 'idem-1', now(), 'x:y', 'scheduled')$$, 'duplicate key');
+
+-- 6b. Trigger engine sees due triggers of every tenant but cannot change their target
+RESET ROLE;
+SET ROLE ucos_trigger_engine;
+SELECT pg_temp.expect_eq((SELECT count(*) FROM kernel.triggers WHERE status = 'scheduled'), 1, 'engine sees due triggers');
+UPDATE kernel.triggers SET status = 'fired' WHERE id = 'tr1';
+SELECT pg_temp.expect_error($$UPDATE kernel.triggers SET target_operation = 'x:evil' WHERE id = 'tr1'$$, 'permission denied');
+RESET ROLE;
+SET ROLE ucos_app;
+SET app.tenant_id = 't1';
 
 -- 7. Generated pack table -----------------------------------------------------------------------------
 INSERT INTO packs.sample_note (tenant_id, id, title, status, author) VALUES ('t1', 'ucos:note:A1', '{"en":"Kernel works"}', 'draft', 'asha');

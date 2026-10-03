@@ -67,6 +67,23 @@ type Result struct {
 	Body   any
 }
 
+// Problem is a business error with a registered code (spec/registries/errors.yaml) and an HTTP status.
+// A handler that returns a Problem has its state changes rolled back; the problem response is stored under
+// the idempotency key, so a retry gets the same answer.
+type Problem struct {
+	Status int    `json:"status"`
+	Code   string `json:"code"`
+	Title  string `json:"title"`
+	Detail string `json:"detail,omitempty"`
+}
+
+func (p *Problem) Error() string { return p.Code + ": " + p.Title }
+
+// NewProblem is a convenience constructor.
+func NewProblem(status int, code, title, detail string) *Problem {
+	return &Problem{Status: status, Code: code, Title: title, Detail: detail}
+}
+
 type CommandHandler func(c *CommandCtx, payload json.RawMessage) (Result, error)
 type QueryHandler func(c *CommandCtx, params json.RawMessage) (Result, error)
 type EventHandler func(c *CommandCtx, cloudEvent json.RawMessage) error

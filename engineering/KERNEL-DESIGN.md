@@ -173,6 +173,8 @@ CREATE TABLE cmd_idempotency (
   PRIMARY KEY (tenant_id, key)
 ) PARTITION BY HASH (tenant_id);
 ```
+**Kernel error codes (A-75):** the command bus returns error `CTX_MISSING` (no envelope), `CTX_INVALID` (envelope fails validation or expired), `OPERATION_UNKNOWN`, `IDEMPOTENCY_KEY_REQUIRED`, `IDEMPOTENCY_KEY_REUSED`, `IN_PROGRESS`; the object store returns error `OBJECT_NOT_FOUND` and `VERSION_CONFLICT`; the trigger API returns error `TMP_INVALID_TIMEPOINT`. Replays return the stored response byte for byte (migration 0012). Implementation: `kernel/internal/bus`.
+
 **Failure modes:**
 - Pack timeout: the row stays `in_progress` until expiry, and the client retries with the same key. Handlers MUST be idempotent on their aggregate (version check).
 - Pack crash mid-transaction: the transaction rolls back and no outbox event is emitted. Safe.

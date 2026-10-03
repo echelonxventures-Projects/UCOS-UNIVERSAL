@@ -489,6 +489,15 @@ for f in sorted(glob.glob(os.path.join(seed, 'documents', '*.yaml'))):
         err(f'{rel(f)}: document template needs legalBasis and requiredFields')
 counts['seed-files'] = len(glob.glob(os.path.join(seed, '**', '*.yaml'), recursive=True))
 
+# ---------------------------------------------------------------- 14. error codes used by code are registered
+CODE_LIT = re.compile(r'(?:NewProblem|problem)\([^,]+,\s*"([A-Z][A-Z0-9_]+)"')
+for f in sorted(glob.glob(os.path.join(ROOT, 'kernel', '**', '*.go'), recursive=True)):
+    if f.endswith('_test.go') or '/gen/' in f:
+        continue
+    for code in CODE_LIT.findall(open(f).read()):
+        if code not in error_codes:
+            err(f'{rel(f)}: error code {code} is not in spec/registries/errors.yaml (name it in the owning spec)')
+
 # ---------------------------------------------------------------- report
 print('  '.join(f'{k}: {v}' for k, v in counts.items()))
 print(f'errors: {len(errors)}')

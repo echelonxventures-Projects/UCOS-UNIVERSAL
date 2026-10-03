@@ -118,6 +118,9 @@ if need go; then
     run "Go: staticcheck" bash -c 'cd kernel && go run honnef.co/go/tools/cmd/staticcheck@v0.8.1 ./...'
     run "Go: known vulnerabilities (govulncheck)" bash -c 'cd kernel && go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...'
     run "Go: money allocation 1M cases (ARCH-CUR-02)" bash -c 'cd kernel && UCOS_LONG=1 go test -count=1 -run Conserves ./pkg/money/'
+    if [[ "$IN_CI" == "true" ]] || command -v initdb >/dev/null 2>&1 || ls /opt/homebrew/opt/postgresql@*/bin/initdb /usr/lib/postgresql/*/bin/initdb >/dev/null 2>&1; then
+      run "Go: kernel end-to-end on PostgreSQL (Phase 0 exit flow)" tools/db_test.sh --exec bash -c 'cd kernel && go test -race -count=1 ./internal/...'
+    fi
   fi
 fi
 

@@ -196,6 +196,41 @@ paths:
         kind: command
         objectType: ucos.sample.Note
         idempotencyRequired: true
+  /sample/notes/{id}:remind:
+    post:
+      operationId: sample:RemindNote
+      summary: RemindNote (sample.notes)
+      tags:
+      - sample.notes
+      parameters:
+      - $ref: ../kernel/common.yaml#/components/parameters/IdempotencyKey
+      - $ref: ../kernel/common.yaml#/components/parameters/Traceparent
+      - $ref: ../kernel/common.yaml#/components/parameters/Id
+      - $ref: ../kernel/common.yaml#/components/parameters/IfMatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: Command payload for RemindNote; see the U57-capability constitution.
+      responses:
+        '200':
+          description: RemindNote accepted
+          headers:
+            ETag:
+              $ref: ../kernel/common.yaml#/components/headers/ETag
+          content:
+            application/json:
+              schema:
+                $ref: ../kernel/common.yaml#/components/schemas/Object
+        default:
+          $ref: ../kernel/common.yaml#/components/responses/Problem
+      x-ucos:
+        kind: command
+        objectType: ucos.sample.Note
+        idempotencyRequired: true
   /sample/notes/{id}:scheduleNoteReminder:
     post:
       operationId: sample:ScheduleNoteReminder
@@ -254,3 +289,8 @@ x-ucos:
   - CAP_PROVIDES_COLLISION
   - CAP_REVOKED
   - CAP_UNSIGNED
+  - SAMPLE_FORBIDDEN
+  - SAMPLE_INVALID_INPUT
+  - SAMPLE_INVALID_STATE
+  - SAMPLE_NOT_AUTHOR
+  - SAMPLE_TITLE_REQUIRED

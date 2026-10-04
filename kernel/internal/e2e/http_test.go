@@ -70,6 +70,7 @@ func TestGatewayHTTP(t *testing.T) {
 	tB := auth.TenantConfig{Issuer: "https://idp.test/realms/b", JWKSURL: idp.srv.URL, Tenant: fmt.Sprintf("ucos:tenant:http-b-%d", stamp), Locale: "en", Currency: "INR", TZ: "Asia/Kolkata", Reality: "simulated"}
 	b := bus.New(db, "sandbox-1", nil)
 	b.Register(sample.Pack{})
+	b.PEP = pep(t)
 	gw, err := gateway.New("../../..", b, auth.NewVerifier([]auth.TenantConfig{tA, tB}, nil, nil), nil)
 	if err != nil {
 		t.Fatal(err)

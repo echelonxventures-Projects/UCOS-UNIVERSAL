@@ -1,32 +1,40 @@
-# ADR-037: Primary cloud provider for the first cells
+# ADR-037: Provider-agnostic cells (no primary cloud provider)
 
 | Field | Value |
 |---|---|
-| Status | **Proposed (decision needed before the first cell is provisioned, by 2026-12-15)** |
-| Deciders | Architecture Board (U01 root authority), with the founders for the commercial terms |
-| References | ADR-002 (cells), ADR-024 (OpenTofu + Crossplane), ADR-028 (multi-region tenants), U73; business/COST-MODEL.md §2 |
+| Status | **Accepted** (2026-10-04; replaces the earlier proposal to choose one primary cloud provider) |
+| Deciders | Founder (Bipin Kumar) |
+| References | ADR-002 (cells), ADR-012 (Kafka API), ADR-021 (identity), ADR-024 (OpenTofu + Crossplane), ADR-028 (multi-region tenants), gate `ARCH-INF-01`, U73 |
 
 ## Context
-Phase 0 ends with a running cell, and the Phase 1 reference platform needs cells in **India** and the **UAE** (data residency, ADR-028). Everything above the cloud is portable by design: Kubernetes, Postgres, a Kafka-API bus, Keycloak, Temporal, and S3-compatible object storage, all behind ports (gate `ARCH-INF-01`). The cell's infrastructure code (OpenTofu modules wrapped by Crossplane) is the one part that must be written for a specific provider. Today `deploy/` holds only the provider-neutral layers: the Kubernetes baseline, the Argo CD ApplicationSet and the local development stack.
+The earlier version of this ADR asked which single cloud provider (AWS, Azure or Google Cloud) should host the first cells in India and the UAE. Everything above the infrastructure was already portable and behind ports. The founder decided that UCOS stays agnostic: it must not depend on any one provider. It is finished and tested locally first, and goes to production only after that.
 
-## Options
-| Criterion | AWS | Azure | Google Cloud |
-|---|---|---|---|
-| India region(s) | Mumbai (ap-south-1), Hyderabad (ap-south-2) | Central India (Pune), South India, West India | Mumbai (asia-south1), Delhi (asia-south2) |
-| UAE region | UAE (me-central-1) | UAE North (Dubai), UAE Central | Doha (me-central1) and Dammam (me-central2) are nearby; no UAE region at the time of writing; verify before relying on it |
-| Managed Kubernetes | EKS | AKS | GKE |
-| Managed Postgres 16+ | RDS / Aurora | Azure Database for PostgreSQL | Cloud SQL / AlloyDB |
-| Kafka API | MSK | Event Hubs (Kafka API) | Managed Kafka |
-| KMS / HSM for genesis keys | KMS, CloudHSM | Key Vault (Managed HSM) | Cloud KMS, Cloud HSM |
-| gVisor (ADR-025) | self-managed node pool | self-managed node pool | GKE Sandbox (built in) |
+## Decision
+1. **A cell is defined by contracts, not by a provider.** A cell needs:
 
-Prices and region lists must be checked against each provider's current documentation before deciding; this table is a starting point, not a quotation.
+   | Need | Contract | Examples (none required) |
+   |---|---|---|
+   | Compute | any conformant Kubernetes ≥ 1.31 | kind, k3s, on-premises, any managed Kubernetes |
+   | Database | PostgreSQL 16+ wire protocol, with RLS | self-operated, CloudNativePG, any managed Postgres |
+   | Event bus | Kafka API (ADR-012) | Redpanda, Apache Kafka, any managed Kafka API |
+   | Identity | OpenID Connect with a JWKS endpoint (ADR-021) | Keycloak, any OIDC provider |
+   | Object storage | S3 API | MinIO, Ceph, any S3-compatible store |
+   | Secrets | a Kubernetes Secret named `ucos-kernel-env` | any secret manager or operator that produces one |
+   | Telemetry | OpenTelemetry (OTLP) and Prometheus text format | any collector or backend |
 
-## Decision criteria
-1. In-country regions for both India and the UAE (residency is a hard requirement).
-2. Startup credits and committed-use pricing for the cost model's baseline (cost model §2).
-3. Team familiarity, so the first SRE hires can operate the platform.
-4. Maturity of the Crossplane provider and OpenTofu modules for the chosen services.
+2. **The kernel image carries everything else.** `ucos-kernel` includes the spec it reads and its migrations. The image applies the schema itself (`ucos-kernel migrate`, append-only, with digests and an advisory lock). It reports readiness only when the schema is current (`/api/v1/ready`). No provider SDK is linked.
+3. **Manifests are provider-neutral.** `deploy/k8s/apps/kernel` contains:
+   - the Deployment, Service and PodDisruptionBudget;
+   - the migration Job (an Argo CD PreSync hook);
+   - a NetworkPolicy that pins ports only.
+
+   The control plane listens on loopback inside the pod, so operators reach it through `kubectl port-forward`. Access is therefore governed by Kubernetes RBAC on every platform.
+4. **Local first.** `deploy/k8s/overlays/local` is a complete cell on any local cluster. `tools/cell_smoke.sh` deploys it to kind (pinned) and runs the Phase 0 exit flow through it. CI runs the same script. Production uses the same manifests with a different overlay and different dependency endpoints.
+5. **Residency is a placement rule, not a provider choice.** A cell is placed where its data must live (India, the UAE, …). Any infrastructure in that country that meets the contracts above qualifies.
+6. **Provider-specific infrastructure code is optional and replaceable.** Where a cell runs on a provider, its OpenTofu or Crossplane module lives under `deploy/infra/<provider>/`. It is an adapter that produces the contracts above and nothing more. The kernel and the manifests never reference it.
 
 ## Consequences
-Until this ADR is decided, CI validates the provider-neutral layers only, and the first cell cannot be provisioned. After the decision, `deploy/opentofu/` gains the cell module for the chosen provider, validated in CI with a pinned `tofu validate`, and the ApplicationSet lists the real cells.
+- The open decision that blocked the first cell is gone. A cell can be provisioned anywhere the contracts hold, starting with a laptop.
+- CI proves the cell on Kubernetes in every run (the `cell` job) without any cloud account.
+- Production readiness is judged by the same smoke flow against the production overlay. Promotion is a human decision after local testing passes.
+- Cost and credits are compared per placement when production starts. They no longer shape the architecture.

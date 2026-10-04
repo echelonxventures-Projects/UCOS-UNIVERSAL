@@ -100,6 +100,18 @@ Dependency rule (enforced by `go-arch-lint`): `pkg/*` must not import `services/
 - PDP bundle stale beyond 10 min: keep serving and alert (POL fail-safe).
 - Redis down: rate limiting falls back to local token buckets per instance (approximate).
 
+**Phase 0 implementation (A-79, `kernel/internal/policy`):** the PEP runs inside the command bus for every command and query, after context validation and the activation check and before any pack code. It uses the embedded Cedar engine (cedar-go), with no PDP service to operate. It evaluates `spec/policies/*.cedar`:
+- The principal is `User`, `Agent`, `Service`, `Device` or `Anonymous` by actor kind, with the attributes `tenant`, `status` and `roles` and `Role::"<role>"` parents.
+- The action is `Action::"<operationId>"`, with parents `group:write` (commands) or `group:read` (queries) and `group:capability:<capability id>`.
+- The resource is `Object::"<target>"` or `Tenant::"<tenant>"`, carrying `tenant`.
+- The context carries `frame`, `time`, `simulation`, `risk`, `channel` and `purpose`.
+
+Two rules sit on top of Cedar:
+- **Fail closed.** If any policy errors while evaluating, the request is denied. Cedar alone skips an erroring forbid.
+- **Obligations.** Every obligation on the deciding policies must be one the kernel enforces (today `audit:full`). Otherwise the request is refused with `POL_OBLIGATION_UNSUPPORTED`.
+
+A refusal is a 403 with `POL_DENIED` naming the deciding policy ids. A Go test runs every suite in `spec/policies/tests` through cedar-go and requires the same answers as the reference engine CI uses (cedarpy). Residual filters for collection reads (`PartialEvaluate`) come later; Phase 0 relies on RLS for tenant scoping of lists.
+
 ---
 
 ## 2. Context Resolver (`pkg/context`)
@@ -130,6 +142,17 @@ func Verify(token string, ks KeySet) (*Envelope, error)
 func (e *Envelope) Narrow(purpose string) (*Envelope, error) // CTX-L2: only narrowing fields
 ```
 Canonical JSON uses JCS (RFC 8785). Size is limited to 2 KB; larger references are dereferenced by id.
+
+**Phase 0 implementation (A-79, `kernel/internal/auth`):** the envelope is built from the verified token and the issuer's tenant configuration, then narrowed by the request (CTX-L2: headers choose only among what the tenant allows).
+
+- **Actor kind:**
+  - A user token gives `human`, `ucos:identity:<sub>`.
+  - A Keycloak-style service account (`preferred_username` `service-account-<client>`) gives `service`, `ucos:service:<azp>`.
+  - A delegated token with the RFC 8693 `act` claim gives `agent`, `ucos:agent:<act.sub>`, `onBehalfOf` the subject. Until delegated authority is carried, P-003 cannot be evaluated for agents, so the PEP fails closed and refuses them.
+- **Locale:** negotiated from `Accept-Language` (q-values, exact tag before primary-language match) against the tenant's `locale` plus `locales`. If nothing matches, the tenant default stays.
+- **Purpose:** the `UCOS-Purpose` header (`^[a-z][a-z0-9-]{1,62}$`) sets `purpose`. A malformed value is refused with `CTX_INVALID`.
+- **Blueprint:** set to the tenant's active blueprint (cached 2 s).
+- **Not yet built:** signing envelopes for out-of-process packs (Sign/Verify above). Packs run in-process in Phase 0.
 
 ---
 
@@ -416,6 +439,12 @@ REVOKE UPDATE, DELETE ON audit_records FROM PUBLIC;
 | Security | Workload identity (SPIFFE), mTLS between services, no static secrets, distroless images, read-only root fs |
 | Performance budgets | Gateway < 5 ms, PDP < 300 µs embedded, schema resolve < 1 ms, command end to end p99 < 150 ms (simple), query p95 < 50 ms |
 | Testing | Unit ≥ 80% (kernel packages), property tests for money/temporal/allocation, fuzzing for parsers (CEL, RRULE, JSON Schema inputs), contract tests for protos, chaos tests for relay and appender |
+
+**Phase 0 implementation of operations (A-79):**
+- **Metrics.** The Prometheus text format is served on the metrics listener (environment variable UCOS_METRICS_ADDR, default `:9090`) with no client library, so any scraper or the OpenTelemetry Collector can read it. Metrics: `ucos_http_requests_total{method,code}`, `ucos_http_request_duration_seconds{method}`, `ucos_bus_operations_total{kind,operation,status,code}`, `ucos_bus_operation_duration_seconds{kind,operation}`, `ucos_worker_processed_total{worker}`, `ucos_worker_errors_total{worker}`. Operation labels name registered operations only, so cardinality is bounded. Logs are JSON on stdout.
+- **Migrations.** `ucos-kernel migrate` applies `db/migrations` to any PostgreSQL 16+. Each file runs in its own transaction and is recorded with its sha256 in `public.ucos_schema_migrations`. Migrations are append-only (an applied file that changes is refused), and an advisory lock lets replicas race safely. The dev stack, the Kubernetes migration Job and the tests all use it.
+- **Probes.** `/api/v1/health` is liveness. `/api/v1/ready` reports ready only when the database answers and no migration is pending. At startup the kernel waits up to 2 minutes for the database instead of crash-looping.
+- **Deployment.** `deploy/k8s/apps/kernel` runs on any Kubernetes (ADR-037). The control plane listens on loopback and is reached through `kubectl port-forward`.
 
 ---
 

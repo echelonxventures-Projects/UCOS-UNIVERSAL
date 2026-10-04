@@ -12,7 +12,7 @@ errors:
   grpc: PERMISSION_DENIED
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:378
+  source: engineering/KERNEL-DESIGN.md:401
   note: capability not in the tenant's active blueprint
 - code: AGENT_APPROVAL_REQUIRED
   prefix: AGENT
@@ -251,7 +251,7 @@ errors:
   grpc: INVALID_ARGUMENT
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:178
+  source: engineering/KERNEL-DESIGN.md:201
   note: signature, issuer or expiry rejected
 - code: AUTH_LEVEL_INSUFFICIENT
   prefix: AUTH
@@ -279,7 +279,7 @@ errors:
   grpc: FAILED_PRECONDITION
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:178
+  source: engineering/KERNEL-DESIGN.md:201
   note: no bearer token
 - code: AUTH_SCOPE_MISMATCH
   prefix: AUTH
@@ -667,7 +667,7 @@ errors:
   grpc: FAILED_PRECONDITION
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:379
+  source: engineering/KERNEL-DESIGN.md:402
   note: no approving decision record
 - code: CONTROL_CERT_GATE_FAILED
   prefix: CONTROL
@@ -677,7 +677,7 @@ errors:
   grpc: FAILED_PRECONDITION
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:379
+  source: engineering/KERNEL-DESIGN.md:402
   note: no passing, valid, trusted certification for this blueprint
 - code: CONTROL_PRECONDITION_NOT_MET
   prefix: CONTROL
@@ -687,7 +687,7 @@ errors:
   grpc: FAILED_PRECONDITION
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:379
+  source: engineering/KERNEL-DESIGN.md:402
   note: any other refusal, for example a blueprint composed for another tenant
 - code: CONTROL_SOD_VIOLATION
   prefix: CONTROL
@@ -697,7 +697,7 @@ errors:
   grpc: PERMISSION_DENIED
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:379
+  source: engineering/KERNEL-DESIGN.md:402
   note: the requester approves their own request
 - code: CONTROL_UNAUTHENTICATED
   prefix: CONTROL
@@ -707,7 +707,7 @@ errors:
   grpc: UNAUTHENTICATED
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:379
+  source: engineering/KERNEL-DESIGN.md:402
   note: missing or wrong operator token
 - code: CTX_ASOF_FORBIDDEN
   prefix: CTX
@@ -735,7 +735,7 @@ errors:
   grpc: INVALID_ARGUMENT
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:180
+  source: engineering/KERNEL-DESIGN.md:203
   note: envelope fails validation or expired
 - code: CTX_MISSING
   prefix: CTX
@@ -1238,7 +1238,7 @@ errors:
   grpc: FAILED_PRECONDITION
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:180
+  source: engineering/KERNEL-DESIGN.md:203
 - code: IDEMPOTENCY_KEY_REUSED
   prefix: IDEMPOTENCY
   owner: kernel
@@ -1247,7 +1247,7 @@ errors:
   grpc: INVALID_ARGUMENT
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:159
+  source: engineering/KERNEL-DESIGN.md:182
 - code: ID_ACCOUNT_LOCKED
   prefix: ID
   owner: U09-identity
@@ -1374,7 +1374,7 @@ errors:
   grpc: INVALID_ARGUMENT
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:178
+  source: engineering/KERNEL-DESIGN.md:201
 - code: INV_INSUFFICIENT
   prefix: INV
   owner: U34-inventory
@@ -1429,7 +1429,7 @@ errors:
   grpc: INVALID_ARGUMENT
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:160
+  source: engineering/KERNEL-DESIGN.md:183
 - code: KERNEL_UNAVAILABLE
   prefix: KERNEL
   owner: kernel
@@ -1438,7 +1438,7 @@ errors:
   grpc: UNAVAILABLE
   retryable: true
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:178
+  source: engineering/KERNEL-DESIGN.md:201
   note: infrastructure failure; retry with the same key
 - code: L10N_LOCALE_NOT_ENABLED
   prefix: L10N
@@ -1540,7 +1540,7 @@ errors:
   grpc: FAILED_PRECONDITION
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:178
+  source: engineering/KERNEL-DESIGN.md:201
 - code: OBJECT_NOT_FOUND
   prefix: OBJECT
   owner: kernel
@@ -1549,7 +1549,7 @@ errors:
   grpc: NOT_FOUND
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:180
+  source: engineering/KERNEL-DESIGN.md:203
 - code: OFR_APPROVAL_REQUIRED
   prefix: OFR
   owner: U22-offer
@@ -1649,7 +1649,7 @@ errors:
   grpc: INVALID_ARGUMENT
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:180
+  source: engineering/KERNEL-DESIGN.md:203
 - code: ORD_ADJUSTMENT_EXCEEDS_PAID
   prefix: ORD
   owner: U26-order
@@ -1769,7 +1769,7 @@ errors:
   grpc: INVALID_ARGUMENT
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:178
+  source: engineering/KERNEL-DESIGN.md:201
 - code: POL_ANALYSIS_FAILED
   prefix: POL
   owner: U03-policy
@@ -2190,7 +2190,7 @@ errors:
   grpc: INVALID_ARGUMENT
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:180
+  source: engineering/KERNEL-DESIGN.md:203
 - code: UCOS_ADMIN_ADDR
   prefix: UCOS
   owner: kernel
@@ -2199,7 +2199,7 @@ errors:
   grpc: INVALID_ARGUMENT
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:379
+  source: engineering/KERNEL-DESIGN.md:402
 - code: UCOS_SIGNING_SEED
   prefix: UCOS
   owner: kernel
@@ -2208,7 +2208,7 @@ errors:
   grpc: INVALID_ARGUMENT
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:379
+  source: engineering/KERNEL-DESIGN.md:402
 - code: VERSION_CONFLICT
   prefix: VERSION
   owner: kernel
@@ -2217,7 +2217,7 @@ errors:
   grpc: ALREADY_EXISTS
   retryable: false
   derived: heuristic
-  source: engineering/KERNEL-DESIGN.md:180
+  source: engineering/KERNEL-DESIGN.md:203
 - code: WF_GUARD_FAILED
   prefix: WF
   owner: U60-workflow

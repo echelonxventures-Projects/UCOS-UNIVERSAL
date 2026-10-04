@@ -14,6 +14,9 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -23,14 +26,15 @@ import (
 
 // TenantConfig is what the resolver needs to know about a tenant's issuer and defaults.
 type TenantConfig struct {
-	Issuer       string `json:"issuer"`  // exact "iss" value
-	JWKSURL      string `json:"jwksUrl"` // where the issuer publishes keys
-	Tenant       string `json:"tenant"`  // ucos:tenant:...
-	Locale       string `json:"locale"`
-	Currency     string `json:"currency"`
-	TZ           string `json:"tz"`
-	Reality      string `json:"reality"`      // physical | simulated | hypothetical
-	Jurisdiction string `json:"jurisdiction"` // ucos:jur:XX for the actor role
+	Issuer       string   `json:"issuer"`  // exact "iss" value
+	JWKSURL      string   `json:"jwksUrl"` // where the issuer publishes keys
+	Tenant       string   `json:"tenant"`  // ucos:tenant:...
+	Locale       string   `json:"locale"`
+	Currency     string   `json:"currency"`
+	TZ           string   `json:"tz"`
+	Reality      string   `json:"reality"`      // physical | simulated | hypothetical
+	Jurisdiction string   `json:"jurisdiction"` // ucos:jur:XX for the actor role
+	Locales      []string `json:"locales"`      // enabled locales for Accept-Language negotiation (default: Locale only)
 }
 
 type Verifier struct {
@@ -73,7 +77,12 @@ type Claims struct {
 	RealmAccess struct {
 		Roles []string `json:"roles"`
 	} `json:"realm_access"`
-	Locale string `json:"locale"`
+	Locale            string `json:"locale"`
+	PreferredUsername string `json:"preferred_username"`
+	// Act is the RFC 8693 actor claim: the token's subject is represented by another party (an agent).
+	Act *struct {
+		Sub string `json:"sub"`
+	} `json:"act"`
 }
 
 func b64(s string) ([]byte, error) {
@@ -185,10 +194,77 @@ func Envelope(c *Claims, tc TenantConfig, channel string, now time.Time) *ctxenv
 	if tc.Jurisdiction != "" {
 		jur["actor"] = []string{tc.Jurisdiction}
 	}
+	actor := ctxenv.Actor{Identity: "ucos:identity:" + c.Sub, Kind: "human"}
+	switch {
+	case c.Act != nil && c.Act.Sub != "":
+		actor = ctxenv.Actor{Identity: "ucos:agent:" + c.Act.Sub, Kind: "agent", OnBehalfOf: "ucos:identity:" + c.Sub}
+	case strings.HasPrefix(c.PreferredUsername, "service-account-") && c.Azp != "":
+		actor = ctxenv.Actor{Identity: "ucos:service:" + c.Azp, Kind: "service"}
+	}
 	return &ctxenv.Envelope{
-		V: 1, Tenant: tc.Tenant, Actor: ctxenv.Actor{Identity: "ucos:identity:" + c.Sub, Kind: "human"},
+		V: 1, Tenant: tc.Tenant, Actor: actor,
 		Roles: c.RealmAccess.Roles, Jurisdiction: jur, Locale: locale, Currency: tc.Currency, TZ: tc.TZ,
 		Time: ctxenv.Time{Now: now}, Frame: ctxenv.Frame{Reality: reality, SideEffectPolicy: sideEffects},
 		Channel: channel, Risk: ctxenv.Risk{Band: "unknown"}, Simulation: reality != "physical", Exp: c.Exp,
 	}
+}
+
+var purposeRe = regexp.MustCompile(`^[a-z][a-z0-9-]{1,62}$`)
+
+// Narrow applies request-level context to an envelope built from the token (CTX-L2: request headers may only
+// choose among what the tenant allows, never widen): Accept-Language picks one of the tenant's enabled locales,
+// and UCOS-Purpose declares the processing purpose that purpose-bound policies check.
+func Narrow(env *ctxenv.Envelope, tc TenantConfig, h http.Header) error {
+	if al := h.Get("Accept-Language"); al != "" {
+		if l := negotiate(al, append([]string{tc.Locale}, tc.Locales...)); l != "" {
+			env.Locale = l
+		}
+	}
+	if p := h.Get("UCOS-Purpose"); p != "" {
+		if !purposeRe.MatchString(p) {
+			return fmt.Errorf("UCOS-Purpose must match %s", purposeRe)
+		}
+		env.Purpose = p
+	}
+	return nil
+}
+
+// negotiate returns the enabled locale that best matches an Accept-Language header (RFC 9110 §12.5.4):
+// highest q first, exact tag before primary-language match; "" when nothing matches.
+func negotiate(header string, enabled []string) string {
+	type pref struct {
+		tag string
+		q   float64
+		i   int
+	}
+	var prefs []pref
+	for i, part := range strings.Split(header, ",") {
+		fields := strings.Split(strings.TrimSpace(part), ";")
+		tag, q := strings.TrimSpace(fields[0]), 1.0
+		for _, f := range fields[1:] {
+			if v, ok := strings.CutPrefix(strings.TrimSpace(f), "q="); ok {
+				if x, err := strconv.ParseFloat(v, 64); err == nil {
+					q = x
+				}
+			}
+		}
+		if tag != "" && tag != "*" && q > 0 {
+			prefs = append(prefs, pref{tag, q, i})
+		}
+	}
+	sort.SliceStable(prefs, func(a, b int) bool { return prefs[a].q > prefs[b].q })
+	for _, p := range prefs {
+		for _, e := range enabled {
+			if strings.EqualFold(p.tag, e) {
+				return e
+			}
+		}
+		primary := strings.SplitN(p.tag, "-", 2)[0]
+		for _, e := range enabled {
+			if strings.EqualFold(strings.SplitN(e, "-", 2)[0], primary) {
+				return e
+			}
+		}
+	}
+	return ""
 }

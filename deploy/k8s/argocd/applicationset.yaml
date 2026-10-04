@@ -1,5 +1,5 @@
-# Argo CD deploys each cell from this repository (ADR-024). One Application per cell; cells are listed here
-# once the cloud provider is chosen (ADR-037) and the cell is provisioned.
+# Argo CD deploys each cell from this repository (ADR-024). One Application per cell, on any Kubernetes
+# (ADR-037: provider-agnostic); a cell is listed here once it is provisioned and has passed tools/cell_smoke.sh.
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata: { name: ucos-cells, namespace: argocd }

@@ -45,6 +45,7 @@ func TestComposeCertifyActivate(t *testing.T) {
 
 	b := bus.New(db, "sandbox-1", func() time.Time { return now })
 	b.Register(sample.Pack{})
+	b.PEP = pep(t)
 	act := &controlplane.Active{DB: db} // TTL 0: no caching, so the test sees each change
 	b.Active = act.Check
 

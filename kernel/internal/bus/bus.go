@@ -16,11 +16,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 
+	"ucos.io/kernel/internal/metrics"
 	"ucos.io/kernel/internal/store"
 	"ucos.io/kernel/pkg/ctxenv"
 	"ucos.io/kernel/pkg/money"
@@ -54,6 +56,9 @@ type Bus struct {
 	ttl      time.Duration
 	// Active, when set, gates every operation on the tenant's active blueprint (activation, U73).
 	Active func(ctx context.Context, tenant, capability string) (bool, error)
+	// PEP, when set, authorizes every operation before it reaches a pack (policy enforcement point, U03).
+	// It returns an empty code to allow, or a registry code (POL_DENIED, …) and a detail to refuse.
+	PEP func(env *ctxenv.Envelope, op, kind, capability, target string) (code, detail string)
 }
 
 func New(db *store.DB, cell string, clock func() time.Time) *Bus {
@@ -78,6 +83,28 @@ func (b *Bus) Register(p pack.Pack) {
 	}
 }
 
+var (
+	opsTotal = metrics.NewCounter("ucos_bus_operations_total",
+		"Commands and queries by operation, outcome status and problem code.", "kind", "operation", "status", "code")
+	opsDuration = metrics.NewHistogram("ucos_bus_operation_duration_seconds",
+		"Command and query latency, including the tenant transaction.", metrics.DurationBuckets, "kind", "operation")
+)
+
+func (b *Bus) observe(kind, op string, resp Response, err error, start time.Time) {
+	if _, ok := b.caps[op]; !ok {
+		op = "unknown" // bounded label values: only registered operations are named
+	}
+	status, code := strconv.Itoa(resp.Status), ""
+	if resp.Problem != nil {
+		code = resp.Problem.Code
+	}
+	if err != nil {
+		status, code = "error", "INFRASTRUCTURE"
+	}
+	opsTotal.Inc(kind, op, status, code)
+	opsDuration.Since(start, kind, op)
+}
+
 func problem(status int, code, title string) Response {
 	return Response{Status: status, Problem: pack.NewProblem(status, code, title, "")}
 }
@@ -85,6 +112,13 @@ func problem(status int, code, title string) Response {
 // Execute runs a command. The returned error is reserved for infrastructure failures (retry is safe);
 // business outcomes, including problems, come back in the Response.
 func (b *Bus) Execute(ctx context.Context, req Request) (Response, error) {
+	start := time.Now()
+	resp, err := b.execute(ctx, req)
+	b.observe("command", req.OperationID, resp, err, start)
+	return resp, err
+}
+
+func (b *Bus) execute(ctx context.Context, req Request) (Response, error) {
 	now := b.clock().UTC()
 	if req.Envelope == nil {
 		return problem(http.StatusUnauthorized, "CTX_MISSING", "context envelope required"), nil
@@ -98,6 +132,9 @@ func (b *Bus) Execute(ctx context.Context, req Request) (Response, error) {
 	}
 	if r, err := b.activated(ctx, req); err != nil || r != nil {
 		return derefOr(r), err
+	}
+	if r := b.authorize(req, "command"); r != nil {
+		return *r, nil
 	}
 	if len(req.IdempotencyKey) < 8 {
 		return problem(http.StatusBadRequest, "IDEMPOTENCY_KEY_REQUIRED", "an Idempotency-Key of at least 8 characters is required"), nil
@@ -177,6 +214,13 @@ func (b *Bus) Execute(ctx context.Context, req Request) (Response, error) {
 
 // Query runs a read-only query in a tenant transaction (no idempotency, no audit of reads in Phase 0).
 func (b *Bus) Query(ctx context.Context, req Request) (Response, error) {
+	start := time.Now()
+	resp, err := b.query(ctx, req)
+	b.observe("query", req.OperationID, resp, err, start)
+	return resp, err
+}
+
+func (b *Bus) query(ctx context.Context, req Request) (Response, error) {
 	now := b.clock().UTC()
 	if req.Envelope == nil {
 		return problem(http.StatusUnauthorized, "CTX_MISSING", "context envelope required"), nil
@@ -190,6 +234,9 @@ func (b *Bus) Query(ctx context.Context, req Request) (Response, error) {
 	}
 	if r, err := b.activated(ctx, req); err != nil || r != nil {
 		return derefOr(r), err
+	}
+	if r := b.authorize(req, "query"); r != nil {
+		return *r, nil
 	}
 	var resp Response
 	err := b.db.InTenant(ctx, req.Envelope.Tenant, store.RoleApp, func(tx pgx.Tx) error {
@@ -230,6 +277,19 @@ func (b *Bus) activated(ctx context.Context, req Request) (*Response, error) {
 		return &r, nil
 	}
 	return nil, nil
+}
+
+// authorize asks the policy enforcement point; a refusal is a 403 problem with the policy's code.
+func (b *Bus) authorize(req Request, kind string) *Response {
+	if b.PEP == nil {
+		return nil
+	}
+	code, detail := b.PEP(req.Envelope, req.OperationID, kind, b.caps[req.OperationID], req.TargetID)
+	if code == "" {
+		return nil
+	}
+	r := Response{Status: http.StatusForbidden, Problem: pack.NewProblem(http.StatusForbidden, code, "refused by policy", detail)}
+	return &r
 }
 
 func derefOr(r *Response) Response {

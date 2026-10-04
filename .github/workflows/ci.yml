@@ -80,3 +80,18 @@ jobs:
           cache-dependency-path: kernel/go.sum
       - name: Start the stack, smoke-test every service, run the Phase 0 flow through ucos-kernel
         run: tools/devstack_smoke.sh
+
+  cell:
+    name: Cell on Kubernetes (kind) runs the Phase 0 flow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: kernel/go.mod
+          cache-dependency-path: kernel/go.sum
+      - name: Create a kind cluster, deploy deploy/k8s/overlays/local, run the Phase 0 flow through it
+        run: tools/cell_smoke.sh

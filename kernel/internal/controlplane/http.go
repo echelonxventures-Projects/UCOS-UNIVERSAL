@@ -136,6 +136,7 @@ var (
 func problem(w http.ResponseWriter, status int, code, detail string) {
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(map[string]any{"type": "https://ucos.io/errors/" + code, "title": code,
-		"status": status, "code": code, "detail": detail})
+	// Same RFC 9457 shape as the gateway (ucos.code is the registry code).
+	_ = json.NewEncoder(w).Encode(map[string]any{"type": "https://errors.ucos.io/" + strings.ToLower(strings.ReplaceAll(code, "_", "-")),
+		"title": code, "status": status, "detail": detail, "ucos": map[string]string{"code": code}})
 }

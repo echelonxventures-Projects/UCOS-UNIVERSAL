@@ -38,6 +38,10 @@ type Gateway struct {
 	routes   []route
 	clock    func() time.Time
 	maxBody  int64
+	// Ready, when set, backs GET /api/v1/ready (readiness: dependencies reachable, schema current).
+	Ready func(context.Context) error
+	// Blueprint, when set, returns the tenant's active blueprint id for the context envelope ("" if none).
+	Blueprint func(ctx context.Context, tenant string) string
 }
 
 // New loads routes from spec/api/openapi/capabilities/*.yaml under repoRoot, keeping registered operations only.
@@ -95,6 +99,16 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 		return
 	}
+	if r.Method == http.MethodGet && r.URL.Path == base+"/ready" {
+		if g.Ready != nil {
+			if err := g.Ready(r.Context()); err != nil {
+				writeProblem(w, r, pack.NewProblem(http.StatusServiceUnavailable, "KERNEL_UNAVAILABLE", "not ready", err.Error()))
+				return
+			}
+		}
+		writeJSON(w, http.StatusOK, map[string]string{"status": "ready"})
+		return
+	}
 	var rt *route
 	var id string
 	methodMismatch := false
@@ -132,6 +146,13 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	env := auth.Envelope(claims, tc, "api", g.clock().UTC())
+	if err := auth.Narrow(env, tc, r.Header); err != nil {
+		writeProblem(w, r, pack.NewProblem(http.StatusBadRequest, "CTX_INVALID", "invalid request context", err.Error()))
+		return
+	}
+	if g.Blueprint != nil {
+		env.Blueprint = g.Blueprint(r.Context(), env.Tenant)
+	}
 	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 	defer cancel()
 	var resp bus.Response

@@ -431,6 +431,7 @@ type Active struct {
 	TTL time.Duration
 	mu  sync.Mutex
 	c   map[string]cached
+	bp  map[string]cachedID
 }
 
 type cached struct {
@@ -462,4 +463,35 @@ func (a *Active) Check(ctx context.Context, tenant, capability string) (bool, er
 	a.c[k] = cached{ok, time.Now()}
 	a.mu.Unlock()
 	return ok, nil
+}
+
+// Blueprint returns the tenant's active blueprint id ("" when none), cached for TTL like Check.
+func (a *Active) Blueprint(ctx context.Context, tenant string) string {
+	k := tenant + "\x00#blueprint"
+	a.mu.Lock()
+	if a.bp == nil {
+		a.bp = map[string]cachedID{}
+	}
+	if v, ok := a.bp[k]; ok && time.Since(v.at) < a.TTL {
+		a.mu.Unlock()
+		return v.id
+	}
+	a.mu.Unlock()
+	var id *string
+	_ = a.DB.AsRole(ctx, store.RoleApp, func(tx pgx.Tx) error {
+		return tx.QueryRow(ctx, `SELECT active_blueprint FROM registry.tenants WHERE id = $1 AND status = 'active'`, tenant).Scan(&id)
+	})
+	out := ""
+	if id != nil {
+		out = *id
+	}
+	a.mu.Lock()
+	a.bp[k] = cachedID{out, time.Now()}
+	a.mu.Unlock()
+	return out
+}
+
+type cachedID struct {
+	id string
+	at time.Time
 }

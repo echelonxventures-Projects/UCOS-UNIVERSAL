@@ -14,6 +14,7 @@ import (
 
 	"ucos.io/kernel/internal/audit"
 	"ucos.io/kernel/internal/bus"
+	"ucos.io/kernel/internal/policy"
 	"ucos.io/kernel/internal/relay"
 	"ucos.io/kernel/internal/store"
 	"ucos.io/kernel/internal/triggers"
@@ -35,6 +36,16 @@ func (m *memPub) Publish(_ context.Context, topic, key string, value []byte) err
 	m.msgs = append(m.msgs, topic+"|"+ev.Type+"|"+key)
 	m.mu.Unlock()
 	return nil
+}
+
+// pep loads the real policy files, so every end-to-end test runs with policy enforcement as in production.
+func pep(t *testing.T) func(*ctxenv.Envelope, string, string, string, string) (string, string) {
+	t.Helper()
+	e, err := policy.Load("../../..")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return e.PEP
 }
 
 func envelope(tenant, actor string, roles []string, now time.Time) *ctxenv.Envelope {
@@ -62,6 +73,7 @@ func TestPhase0ExitFlow(t *testing.T) {
 	clock := func() time.Time { return now }
 	b := bus.New(db, "sandbox-1", clock)
 	b.Register(sample.Pack{})
+	b.PEP = pep(t)
 	tenant := fmt.Sprintf("ucos:tenant:it-%d", now.UnixNano())
 	other := tenant + "-other"
 	asha := envelope(tenant, "ucos:identity:asha", []string{"sample-editor"}, now)
@@ -89,6 +101,15 @@ func TestPhase0ExitFlow(t *testing.T) {
 	r3 := exec(asha, "sample:CreateNote", "", "key-create-0001", `{"title":{"en":"Different"}}`)
 	if r3.Status != 409 || r3.Problem.Code != "IDEMPOTENCY_KEY_REUSED" {
 		t.Fatalf("reused key with different body: %+v", r3)
+	}
+
+	// Policy enforcement: a write "as of" a past time outside simulation is refused by P-005 before any pack runs.
+	past := now.Add(-24 * time.Hour)
+	tt := envelope(tenant, "ucos:identity:asha", []string{"sample-editor"}, now)
+	tt.Time.AsOf = &past
+	if r := exec(tt, "sample:CreateNote", "", "key-time-travel", `{"title":{"en":"x"}}`); r.Status != 403 || r.Problem.Code != "POL_DENIED" ||
+		!strings.Contains(r.Problem.Detail, "P-005") {
+		t.Fatalf("time-travel write must be refused by policy: %+v", r)
 	}
 
 	// Tenant isolation: another tenant cannot see or change the note.
@@ -185,6 +206,7 @@ func TestConcurrentDuplicateAppliesOnce(t *testing.T) {
 	now := time.Now().UTC()
 	b := bus.New(db, "sandbox-1", func() time.Time { return now })
 	b.Register(sample.Pack{})
+	b.PEP = pep(t)
 	tenant := fmt.Sprintf("ucos:tenant:race-%d", now.UnixNano())
 	env := envelope(tenant, "ucos:identity:asha", nil, now)
 	var wg sync.WaitGroup

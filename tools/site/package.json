@@ -4,5 +4,5 @@
   "type": "module",
   "description": "Renders the master architecture and every companion document to HTML pages",
   "scripts": { "build": "node build.mjs ../../generated/site" },
-  "dependencies": { "marked": "14.1.4" }
+  "dependencies": { "marked": "18.1.0" }
 }

@@ -6,4 +6,4 @@ jsonschema==4.26.0
 openapi-spec-validator==0.9.0
 grpcio-tools==1.84.0
 gherkin-official==42.0.1
-cedarpy==4.12.1
+cedarpy==4.12.2
